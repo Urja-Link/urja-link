@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Urja-Link India | AI-Powered Rooftop Solar Platform",
   description:
     "India's AI-powered national platform for rooftop solar potential estimation, PM Surya Ghar subsidies, and smart energy planning.",
+  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
@@ -38,6 +39,21 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </LanguageProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                      }, function(err) {
+                          console.log('ServiceWorker registration failed: ', err);
+                      });
+                  });
+              }
+            `
+          }}
+        />
       </body>
     </html>
   );

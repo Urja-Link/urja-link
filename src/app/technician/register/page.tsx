@@ -63,7 +63,7 @@ export default function TechnicianRegistrationPage() {
                 </div>
 
                 {error && (
-                    <div style={{ padding: "10px 14px", borderRadius: 8, marginBottom: 16, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#ef4444", fontSize: 13 }}>
+                    <div style={{ padding: "10px 14px", borderRadius: 8, marginBottom: 16, background: "var(--card-bg)", border: "1px solid var(--danger)", color: "var(--danger)", fontSize: 13 }}>
                         {error}
                     </div>
                 )}
@@ -87,7 +87,7 @@ export default function TechnicianRegistrationPage() {
 
                     <div className="form-group" style={{ position: "relative" }}>
                         <label className="form-label">Company ID Linkage Code</label>
-                        <input className="form-input" required placeholder="Ex: CMP-A893BF" style={{ border: "1px solid var(--accent)", background: "rgba(16, 185, 129, 0.05)" }} value={form.company_id} onChange={(e) => setForm({ ...form, company_id: e.target.value })} />
+                        <input className="form-input" required placeholder="Ex: CMP-A893BF" style={{ border: "1px solid var(--warning)", background: "var(--background)" }} value={form.company_id} onChange={(e) => setForm({ ...form, company_id: e.target.value })} />
                         <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>Ask your installation agency for this 8-digit unique code.</p>
                     </div>
 

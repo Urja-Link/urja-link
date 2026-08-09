@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { HelpCircle } from "lucide-react";
 
 const FAQ_ITEMS = [
     {
@@ -100,7 +101,7 @@ export default function FAQPage() {
         <div className="page-container">
             <header className="page-header">
                 <Link href="/" className="back-link">← Back to Map</Link>
-                <h1 className="page-title">❓ Frequently Asked Questions</h1>
+                <h1 className="page-title"><HelpCircle size={32} style={{ marginRight: 10 }} /> Frequently Asked Questions</h1>
                 <p className="page-subtitle">Everything you need to know about rooftop solar in India</p>
             </header>
 
@@ -109,7 +110,7 @@ export default function FAQPage() {
                     <div key={cat.category} style={{ marginBottom: 32 }}>
                         <h2 style={{
                             fontSize: 20, fontWeight: 700, marginBottom: 16,
-                            color: "var(--accent)", display: "flex", alignItems: "center", gap: 8,
+                            color: "var(--warning)", display: "flex", alignItems: "center", gap: 8,
                         }}>
                             {cat.category}
                         </h2>

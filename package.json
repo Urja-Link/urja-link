@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@react-google-maps/api": "^2.20.8",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@supabase/supabase-js": "^2.112.2",
+    "@types/three": "^0.185.4",
     "framer-motion": "^13.0.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
@@ -20,6 +23,8 @@
     "react-dom": "19.2.8",
     "react-leaflet": "^5.0.0",
     "recharts": "^3.10.1",
+    "suncalc": "^2.0.1",
+    "three": "^0.185.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -29,6 +34,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-leaflet": "^2.8.3",
+    "@types/suncalc": "^1.9.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4",

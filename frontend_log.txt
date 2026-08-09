@@ -1,0 +1,395 @@
+
+> frontend_v2@0.1.0 dev
+> next dev
+
+Γû▓ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.137.1:3000
+- Environments: .env.local
+Γ£ô Ready in 9.2s
+ΓÜá Warning: Next.js ignored package-lock.json in C:\Users\acer because it is outside the current Git repository (C:\Users\acer\urja-link\urja-link-india\frontend_v2).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+Γ£ô Running next.config.ts took 516ms
+
+Γùï Compiling /_not-found/page ...
+ GET /logo-192.png 404 in 6.3s (next.js: 5.9s, application-code: 458ms)
+ HEAD / 200 in 344ms (next.js: 59ms, application-code: 285ms)
+ GET / 200 in 51ms (next.js: 6ms, application-code: 45ms)
+ GET /logo-192.png 404 in 142ms (next.js: 29ms, application-code: 114ms)
+ GET /logo-192.png 404 in 113ms (next.js: 14ms, application-code: 99ms)
+ GET /logo-192.png 404 in 137ms (next.js: 15ms, application-code: 122ms)
+ GET /logo-192.png 404 in 136ms (next.js: 16ms, application-code: 121ms)
+ GET /logo-192.png 404 in 83ms (next.js: 11ms, application-code: 72ms)
+ GET /logo-192.png 404 in 147ms (next.js: 20ms, application-code: 126ms)
+ GET /logo-192.png 404 in 159ms (next.js: 22ms, application-code: 137ms)
+ GET / 200 in 1176ms (next.js: 54ms, application-code: 1122ms)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+ GET / 200 in 494ms (next.js: 13ms, application-code: 481ms)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+ GET / 200 in 88ms (next.js: 39ms, application-code: 49ms)
+ GET / 200 in 590ms (next.js: 139ms, application-code: 451ms)
+ GET /analytics 200 in 335ms (next.js: 271ms, application-code: 64ms)
+ GET /marketplace 200 in 226ms (next.js: 161ms, application-code: 65ms)
+ GET /store 200 in 1115ms (next.js: 867ms, application-code: 247ms)
+ GET /store 200 in 183ms (next.js: 68ms, application-code: 115ms)
+ GET /energy-deficit 200 in 236ms (next.js: 163ms, application-code: 73ms)
+[browser] Failed to fetch energy data: TypeError: Failed to fetch
+    at fetchData (src/app/energy-deficit/page.tsx:130:21)
+    at EnergyDeficitPage.useEffect (src/app/energy-deficit/page.tsx:143:9)
+  128 |             try {
+  129 |                 const [statesRes, summaryRes] = await Promise.all([
+> 130 |                     fetch(`${API_BASE}/api/energy/states`),
+      |                     ^
+  131 |                     fetch(`${API_BASE}/api/energy/summary`),
+  132 |                 ]);
+  133 |                 const statesData = await statesRes.json(); (src/app/energy-deficit/page.tsx:138:25)
+[browser] Failed to fetch energy data: TypeError: Failed to fetch
+    at fetchData (src/app/energy-deficit/page.tsx:130:21)
+    at EnergyDeficitPage.useEffect (src/app/energy-deficit/page.tsx:143:9)
+  128 |             try {
+  129 |                 const [statesRes, summaryRes] = await Promise.all([
+> 130 |                     fetch(`${API_BASE}/api/energy/states`),
+      |                     ^
+  131 |                     fetch(`${API_BASE}/api/energy/summary`),
+  132 |                 ]);
+  133 |                 const statesData = await statesRes.json(); (src/app/energy-deficit/page.tsx:138:25)
+ GET /energy-deficit 200 in 934ms (next.js: 12ms, application-code: 922ms)
+ GET /energy-deficit 200 in 473ms (next.js: 13ms, application-code: 460ms)
+ GET /logo-192.png 404 in 177ms (next.js: 40ms, application-code: 138ms)
+[browser] Failed to fetch energy data: TypeError: Failed to fetch
+    at fetchData (src/app/energy-deficit/page.tsx:130:21)
+    at EnergyDeficitPage.useEffect (src/app/energy-deficit/page.tsx:143:9)
+  128 |             try {
+  129 |                 const [statesRes, summaryRes] = await Promise.all([
+> 130 |                     fetch(`${API_BASE}/api/energy/states`),
+      |                     ^
+  131 |                     fetch(`${API_BASE}/api/energy/summary`),
+  132 |                 ]);
+  133 |                 const statesData = await statesRes.json(); (src/app/energy-deficit/page.tsx:138:25)
+[browser] Failed to fetch energy data: TypeError: Failed to fetch
+    at fetchData (src/app/energy-deficit/page.tsx:130:21)
+    at EnergyDeficitPage.useEffect (src/app/energy-deficit/page.tsx:143:9)
+  128 |             try {
+  129 |                 const [statesRes, summaryRes] = await Promise.all([
+> 130 |                     fetch(`${API_BASE}/api/energy/states`),
+      |                     ^
+  131 |                     fetch(`${API_BASE}/api/energy/summary`),
+  132 |                 ]);
+  133 |                 const statesData = await statesRes.json(); (src/app/energy-deficit/page.tsx:138:25)
+ GET /energy-deficit 200 in 311ms (next.js: 41ms, application-code: 270ms)
+[browser] Failed to fetch energy data: TypeError: Failed to fetch
+    at fetchData (src/app/energy-deficit/page.tsx:130:21)
+    at EnergyDeficitPage.useEffect (src/app/energy-deficit/page.tsx:143:9)
+  128 |             try {
+  129 |                 const [statesRes, summaryRes] = await Promise.all([
+> 130 |                     fetch(`${API_BASE}/api/energy/states`),
+      |                     ^
+  131 |                     fetch(`${API_BASE}/api/energy/summary`),
+  132 |                 ]);
+  133 |                 const statesData = await statesRes.json(); (src/app/energy-deficit/page.tsx:138:25)
+[browser] Failed to fetch energy data: TypeError: Failed to fetch
+    at fetchData (src/app/energy-deficit/page.tsx:130:21)
+    at EnergyDeficitPage.useEffect (src/app/energy-deficit/page.tsx:143:9)
+  128 |             try {
+  129 |                 const [statesRes, summaryRes] = await Promise.all([
+> 130 |                     fetch(`${API_BASE}/api/energy/states`),
+      |                     ^
+  131 |                     fetch(`${API_BASE}/api/energy/summary`),
+  132 |                 ]);
+  133 |                 const statesData = await statesRes.json(); (src/app/energy-deficit/page.tsx:138:25)
+ GET /agency 200 in 1016ms (next.js: 835ms, application-code: 181ms)
+[browser] TypeError: Failed to fetch
+    at load (src/app/agency/page.tsx:43:21)
+    at AgencyPage.useEffect (src/app/agency/page.tsx:53:9)
+  41 |             try {
+  42 |                 const [iRes, tRes] = await Promise.all([
+> 43 |                     fetch(`${API_BASE}/api/agency/installers`),
+     |                     ^
+  44 |                     fetch(`${API_BASE}/api/agency/installations`),
+  45 |                 ]);
+  46 |                 const iData = await iRes.json(); (src/app/agency/page.tsx:50:35)
+[browser] TypeError: Failed to fetch
+    at load (src/app/agency/page.tsx:43:21)
+    at AgencyPage.useEffect (src/app/agency/page.tsx:53:9)
+  41 |             try {
+  42 |                 const [iRes, tRes] = await Promise.all([
+> 43 |                     fetch(`${API_BASE}/api/agency/installers`),
+     |                     ^
+  44 |                     fetch(`${API_BASE}/api/agency/installations`),
+  45 |                 ]);
+  46 |                 const iData = await iRes.json(); (src/app/agency/page.tsx:50:35)
+[browser] Removing a style property during rerender (borderColor) when a conflicting property is set (border) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (borderColor) when a conflicting property is set (border) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+ GET /maintenance 200 in 140ms (next.js: 88ms, application-code: 51ms)
+[browser] TypeError: Failed to fetch
+    at load (src/app/maintenance/page.tsx:42:35)
+    at MaintenancePage.useEffect (src/app/maintenance/page.tsx:48:9)
+  40 |         async function load() {
+  41 |             try {
+> 42 |                 const res = await fetch(`${API_BASE}/api/agency/maintenance`);
+     |                                   ^
+  43 |                 const data = await res.json();
+  44 |                 setRequests(data.maintenance_requests || []);
+  45 |             } catch (e) { console.error(e); } (src/app/maintenance/page.tsx:45:35)
+[browser] TypeError: Failed to fetch
+    at load (src/app/maintenance/page.tsx:42:35)
+    at MaintenancePage.useEffect (src/app/maintenance/page.tsx:48:9)
+  40 |         async function load() {
+  41 |             try {
+> 42 |                 const res = await fetch(`${API_BASE}/api/agency/maintenance`);
+     |                                   ^
+  43 |                 const data = await res.json();
+  44 |                 setRequests(data.maintenance_requests || []);
+  45 |             } catch (e) { console.error(e); } (src/app/maintenance/page.tsx:45:35)
+ GET /about 200 in 222ms (next.js: 157ms, application-code: 65ms)
+ GET /contact 200 in 289ms (next.js: 237ms, application-code: 53ms)
+ GET /faq 200 in 180ms (next.js: 123ms, application-code: 57ms)
+ GET / 200 in 84ms (next.js: 18ms, application-code: 65ms)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+ GET / 200 in 2.0s (next.js: 733ms, application-code: 1299ms)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+ GET / 200 in 9.7s (next.js: 5.3s, application-code: 4.4s)
+ GET / 200 in 93ms (next.js: 19ms, application-code: 74ms)
+ GET / 200 in 96ms (next.js: 21ms, application-code: 75ms)
+ GET /logo-192.png 404 in 142ms (next.js: 26ms, application-code: 116ms)
+ GET /logo-192.png 404 in 173ms (next.js: 50ms, application-code: 123ms)
+ GET / 200 in 976ms (next.js: 334ms, application-code: 643ms)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+[browser] TypeError: Failed to fetch
+    at MapLeaflet.useEffect (src/components/MapLeaflet.tsx:38:9)
+  36 |         // Fetch Astronomical calculations
+  37 |         const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+> 38 |         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
+     |         ^
+  39 |             .then(r => r.json())
+  40 |             .then(data => setSunPos(data))
+  41 |             .catch(e => console.error(e)); (src/components/MapLeaflet.tsx:41:33)
+Γ£ô Compiled in 8.5s
+ GET / 200 in 181ms (next.js: 89ms, application-code: 92ms)
+Γ£ô Compiled in 5.2s
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+ GET / 200 in 3.2s (next.js: 1776ms, application-code: 1425ms)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+ GET / 200 in 176ms (next.js: 106ms, application-code: 70ms)
+ GET / 200 in 197ms (next.js: 82ms, application-code: 115ms)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+Γ£ô Compiled in 205ms
+ GET / 200 in 50ms (next.js: 16ms, application-code: 34ms)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+ GET /logo-192.png 404 in 138ms (next.js: 22ms, application-code: 117ms)
+ GET / 200 in 162ms (next.js: 27ms, application-code: 135ms)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+ GET / 200 in 48ms (next.js: 16ms, application-code: 32ms)
+ GET / 200 in 88ms (next.js: 20ms, application-code: 68ms)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+ GET / 200 in 10.0s (next.js: 6.7s, application-code: 3.3s)
+ GET / 200 in 100ms (next.js: 51ms, application-code: 49ms)
+ GET / 200 in 112ms (next.js: 31ms, application-code: 81ms)
+ GET /analytics 200 in 377ms (next.js: 204ms, application-code: 173ms)
+ GET /marketplace 200 in 334ms (next.js: 217ms, application-code: 118ms)
+ GET /store 200 in 379ms (next.js: 154ms, application-code: 225ms)
+ GET /store/checkout 200 in 8.0s (next.js: 1279ms, application-code: 6.8s)
+ GET /dashboard 200 in 5.1s (next.js: 561ms, application-code: 4.5s)
+ GET /government 200 in 383ms (next.js: 279ms, application-code: 104ms)
+ GET /energy-deficit 200 in 187ms (next.js: 69ms, application-code: 117ms)
+ GET /maintenance 200 in 307ms (next.js: 194ms, application-code: 113ms)
+ GET /legal 200 in 1597ms (next.js: 1131ms, application-code: 466ms)
+ GET / 200 in 59ms (next.js: 16ms, application-code: 44ms)
+Γ£ô Compiled in 348ms
+ GET /logo-192.png 404 in 208ms (next.js: 42ms, application-code: 166ms)
+ GET / 200 in 241ms (next.js: 16ms, application-code: 225ms)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+ GET /analytics 200 in 245ms (next.js: 26ms, application-code: 219ms)
+ GET / 200 in 132ms (next.js: 20ms, application-code: 112ms)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+[browser] Sun position API unavailable. Mocking sun position based on hour. (src/components/MapLeaflet.tsx:42:25)
+[browser] Failed to fetch calculation API, utilizing local fallback engine. (src/app/page.tsx:71:17)
+ GET /logo-192.png 404 in 147ms (next.js: 27ms, application-code: 120ms)
+ GET /logo-192.png 404 in 144ms (next.js: 21ms, application-code: 123ms)
+ GET /logo-192.png 404 in 341ms (next.js: 125ms, application-code: 215ms)
+ GET / 200 in 578ms (next.js: 14ms, application-code: 564ms)
+ GET /analytics 200 in 5.2s (next.js: 2.2s, application-code: 3.0s)
+ GET /analytics 200 in 282ms (next.js: 79ms, application-code: 203ms)
+ GET /energy-deficit 200 in 1989ms (next.js: 1146ms, application-code: 843ms)

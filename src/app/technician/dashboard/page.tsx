@@ -42,7 +42,7 @@ export default function TechnicianDashboard() {
                             </h1>
                             <p style={{ color: "var(--text-muted)", marginTop: 8 }}>My Tasks & Dispatches</p>
                         </div>
-                        <div style={{ padding: "8px 16px", borderRadius: 100, background: "rgba(16, 185, 129, 0.1)", color: "#10b981", fontWeight: 600, fontSize: 13, border: "1px solid rgba(16, 185, 129, 0.3)" }}>
+                        <div style={{ padding: "8px 16px", borderRadius: 100, background: "var(--card-bg)", color: "var(--success)", fontWeight: 600, fontSize: 13, border: "1px solid var(--success)" }}>
                             ● Online (Device Linked)
                         </div>
                     </div>
@@ -52,7 +52,7 @@ export default function TechnicianDashboard() {
                             <motion.div
                                 key={job.id}
                                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-                                className="glass-card" style={{ padding: 24, borderLeft: `4px solid ${job.status === 'completed' ? '#10b981' : job.status === 'assigned' ? '#f59e0b' : 'var(--accent)'}` }}
+                                className="glass-card" style={{ padding: 24, border: "1px solid var(--card-border)", borderRadius: 12, marginBottom: 16 }}
                             >
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                                     <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>{job.time}</div>
@@ -72,23 +72,23 @@ export default function TechnicianDashboard() {
                                 {job.status !== "completed" ? (
                                     <div style={{ display: "flex", gap: 12 }}>
                                         {job.status === "assigned" && (
-                                            <button onClick={() => updateStatus(job.id, "en_route")} className="btn-primary" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 12, background: "rgba(56, 189, 248, 0.1)", color: "var(--accent)", border: "1px solid var(--accent)" }}>
+                                            <button onClick={() => updateStatus(job.id, "en_route")} className="btn-primary" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 12, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)" }}>
                                                 <Navigation size={18} /> Mark En-Route
                                             </button>
                                         )}
                                         {job.status === "en_route" && (
-                                            <button onClick={() => updateStatus(job.id, "working")} className="btn-primary" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 12, background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", border: "1px solid #f59e0b" }}>
+                                            <button onClick={() => updateStatus(job.id, "working")} className="btn-primary" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 12, background: "var(--card-bg)", color: "var(--warning)", border: "1px solid var(--warning)" }}>
                                                 <Clock size={18} /> Start Work
                                             </button>
                                         )}
                                         {job.status === "working" && (
-                                            <button onClick={() => updateStatus(job.id, "completed")} className="btn-primary" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 12, background: "rgba(16, 185, 129, 0.1)", color: "#10b981", border: "1px solid #10b981" }}>
+                                            <button onClick={() => updateStatus(job.id, "completed")} className="btn-primary" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: 12, background: "var(--card-bg)", color: "var(--success)", border: "1px solid var(--success)" }}>
                                                 <CheckCircle size={18} /> Complete Job
                                             </button>
                                         )}
                                     </div>
                                 ) : (
-                                    <div style={{ color: "#10b981", display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600 }}>
+                                    <div style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600 }}>
                                         <CheckCircle size={18} /> Diagnostics Logged & Authorized
                                     </div>
                                 )}

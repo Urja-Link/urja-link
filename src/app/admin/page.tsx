@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AnalyticsDashboard from "../../components/AnalyticsDashboard";
+import { ShieldAlert, ClipboardList, Users, LineChart, Terminal, CheckCircle, Construction } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -78,10 +79,10 @@ export default function AdminDashboard() {
             {/* Sidebar (Local to Admin context) */}
             <div style={S.sidebar}>
                 <div style={S.brand}>
-                    <span style={{ fontSize: 24 }}>🛡️</span>
+                    <ShieldAlert size={28} color="var(--warning)" />
                     <div>
-                        <h2 style={{ margin: 0, fontSize: 16, color: "#e8ecf1" }}>Urja-Link</h2>
-                        <span style={{ fontSize: 11, color: "#38bdf8", fontWeight: 700, letterSpacing: 1 }}>ADMIN PORTAL</span>
+                        <h2 style={{ margin: 0, fontSize: 16, color: "var(--foreground)" }}>Urja-Link</h2>
+                        <span style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 700, letterSpacing: 1 }}>ADMIN PORTAL</span>
                     </div>
                 </div>
 
@@ -90,25 +91,25 @@ export default function AdminDashboard() {
                         style={activeTab === "verifications" ? S.navItemActive : S.navItem}
                         onClick={() => setActiveTab("verifications")}
                     >
-                        📋 Mod Queue ({pendingCompanies.length})
+                        <ClipboardList size={16} /> Mod Queue ({pendingCompanies.length})
                     </button>
                     <button
                         style={activeTab === "users" ? S.navItemActive : S.navItem}
                         onClick={() => setActiveTab("users")}
                     >
-                        👥 User Management
+                        <Users size={16} /> User Management
                     </button>
                     <button
                         style={activeTab === "analytics" ? S.navItemActive : S.navItem}
                         onClick={() => setActiveTab("analytics")}
                     >
-                        📈 Analytics Board
+                        <LineChart size={16} /> Analytics Board
                     </button>
                     <button
                         style={activeTab === "logs" ? S.navItemActive : S.navItem}
                         onClick={() => setActiveTab("logs")}
                     >
-                        🖥️ System Logs
+                        <Terminal size={16} /> System Logs
                     </button>
                 </div>
 
@@ -133,12 +134,12 @@ export default function AdminDashboard() {
                             <p style={{ color: "#94a3b8", marginBottom: 24 }}>Review and approve solar installer & agency applications before they are listed on the Marketplace.</p>
 
                             {isLoading ? (
-                                <p style={{ color: "#38bdf8" }}>Loading pending applications...</p>
+                                <p style={{ color: "var(--text-secondary)" }}>Loading pending applications...</p>
                             ) : error ? (
-                                <p style={{ color: "#ef4444" }}>{error}</p>
+                                <p style={{ color: "var(--danger)" }}>{error}</p>
                             ) : pendingCompanies.length === 0 ? (
                                 <div style={S.emptyState}>
-                                    <span style={{ fontSize: 40, marginBottom: 12 }}>✨</span>
+                                    <CheckCircle size={40} color="var(--success)" style={{ marginBottom: 12 }} />
                                     <h3>Total Zero Inbox</h3>
                                     <p>There are no pending company registrations.</p>
                                 </div>
@@ -185,7 +186,7 @@ export default function AdminDashboard() {
 
                     {activeTab !== "verifications" && activeTab !== "analytics" && (
                         <div style={S.emptyState}>
-                            <span style={{ fontSize: 40, marginBottom: 12 }}>🚧</span>
+                            <Construction size={40} color="var(--warning)" style={{ marginBottom: 12 }} />
                             <h3>Under Construction</h3>
                             <p>This module is slated for deployment in Q4.</p>
                         </div>
@@ -197,31 +198,31 @@ export default function AdminDashboard() {
 }
 
 const S: Record<string, React.CSSProperties> = {
-    page: { display: "flex", height: "100vh", background: "#0a0f1a", fontFamily: "Arial, sans-serif" },
-    sidebar: { width: 260, background: "#0f172a", borderRight: "1px solid rgba(56,189,248,0.1)", display: "flex", flexDirection: "column", padding: "24px 16px" },
+    page: { display: "flex", height: "100vh", background: "var(--background)", fontFamily: "var(--font-geist-sans), Arial, sans-serif" },
+    sidebar: { width: 260, background: "var(--card-bg)", borderRight: "1px solid var(--card-border)", display: "flex", flexDirection: "column", padding: "24px 16px" },
     brand: { display: "flex", alignItems: "center", gap: 12, marginBottom: 40, padding: "0 8px" },
     navGroup: { display: "flex", flexDirection: "column", gap: 8 },
-    navItem: { padding: "12px 16px", background: "transparent", border: "none", color: "#94a3b8", textAlign: "left", borderRadius: 8, cursor: "pointer", fontSize: 14, fontWeight: 500, transition: "0.2s" },
-    navItemActive: { padding: "12px 16px", background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.2)", color: "#38bdf8", textAlign: "left", borderRadius: 8, cursor: "pointer", fontSize: 14, fontWeight: 600 },
-    backToApp: { display: "block", textAlign: "center", color: "#64748b", textDecoration: "none", fontSize: 13, padding: "12px", borderRadius: 8, border: "1px dashed rgba(255,255,255,0.1)" },
-    main: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" },
-    header: { height: 70, borderBottom: "1px solid rgba(56,189,248,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px" },
-    title: { fontSize: 20, color: "#e8ecf1", margin: 0 },
-    adminProfile: { display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", fontSize: 14 },
-    avatar: { width: 32, height: 32, borderRadius: "50%", background: "#38bdf8", color: "#0f172a", display: "flex", justifyContent: "center", alignItems: "center", fontWeight: "bold" },
+    navItem: { padding: "12px 16px", background: "transparent", border: "none", color: "var(--text-secondary)", textAlign: "left", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 500, transition: "0.2s", display: "flex", alignItems: "center", gap: 10 },
+    navItemActive: { padding: "12px 16px", background: "var(--foreground)", border: "1px solid var(--card-border)", color: "var(--background)", textAlign: "left", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 10 },
+    backToApp: { display: "block", textAlign: "center", color: "var(--text-muted)", textDecoration: "none", fontSize: 13, padding: "12px", borderRadius: 8, border: "1px dashed var(--card-border)" },
+    main: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", paddingTop: 90 },
+    header: { height: 70, borderBottom: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px" },
+    title: { fontSize: 20, color: "var(--foreground)", margin: 0 },
+    adminProfile: { display: "flex", alignItems: "center", gap: 12, color: "var(--text-secondary)", fontSize: 14 },
+    avatar: { width: 32, height: 32, borderRadius: "50%", background: "var(--accent)", color: "white", display: "flex", justifyContent: "center", alignItems: "center", fontWeight: "bold" },
     content: { padding: 32, overflowY: "auto", flex: 1 },
     grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 20 },
-    card: { background: "rgba(15,23,42,0.6)", borderRadius: 12, border: "1px solid rgba(56,189,248,0.15)", overflow: "hidden" },
-    cardHeader: { padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(0,0,0,0.2)" },
-    companyName: { margin: 0, fontSize: 16, color: "#e8ecf1" },
-    badgePending: { background: "rgba(245,158,11,0.1)", color: "#f59e0b", padding: "4px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, letterSpacing: 0.5 },
+    card: { background: "var(--card-bg)", borderRadius: 12, border: "1px solid var(--card-border)", overflow: "hidden" },
+    cardHeader: { padding: "16px 20px", borderBottom: `1px solid var(--card-border)`, display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(0,0,0,0.1)" },
+    companyName: { margin: 0, fontSize: 16, color: "var(--foreground)" },
+    badgePending: { background: "var(--card-bg)", color: "var(--warning)", border: "1px solid var(--warning)", padding: "4px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, letterSpacing: 0.5 },
     cardBody: { padding: "20px" },
     detailRow: { display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 13 },
-    label: { color: "#64748b" },
-    value: { color: "#cbd5e1" },
-    divider: { height: 1, background: "rgba(255,255,255,0.05)", margin: "14px 0" },
-    cardActions: { display: "flex", gap: 12, padding: "16px 20px", background: "rgba(0,0,0,0.2)", borderTop: "1px solid rgba(255,255,255,0.05)" },
-    btnReject: { flex: 1, padding: "10px", background: "transparent", border: "1px solid #ef4444", color: "#ef4444", borderRadius: 6, fontWeight: 600, cursor: "pointer" },
-    btnApprove: { flex: 1.5, padding: "10px", background: "#10b981", border: "none", color: "white", borderRadius: 6, fontWeight: 600, cursor: "pointer" },
-    emptyState: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, background: "rgba(15,23,42,0.4)", borderRadius: 12, border: "1px dashed rgba(56,189,248,0.2)", color: "#94a3b8" }
+    label: { color: "var(--text-muted)" },
+    value: { color: "var(--text-secondary)" },
+    divider: { height: 1, background: "var(--card-border)", margin: "14px 0" },
+    cardActions: { display: "flex", gap: 12, padding: "16px 20px", background: "rgba(0,0,0,0.1)", borderTop: `1px solid var(--card-border)` },
+    btnReject: { flex: 1, padding: "10px", background: "transparent", border: "1px solid var(--card-border)", color: "var(--danger)", borderRadius: 6, fontWeight: 600, cursor: "pointer" },
+    btnApprove: { flex: 1.5, padding: "10px", background: "var(--foreground)", border: "none", color: "var(--background)", borderRadius: 6, fontWeight: 600, cursor: "pointer" },
+    emptyState: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, background: "var(--card-bg)", borderRadius: 12, border: "1px dashed var(--card-border)", color: "var(--text-secondary)" }
 };

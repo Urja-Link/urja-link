@@ -5,6 +5,7 @@ import Link from "next/link";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { Zap, Map, Bot, Download, Table2, AlertTriangle, MapPin } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -27,6 +28,21 @@ const GEO_DATA: Record<string, Record<string, string[]>> = {
     "Gujarat": {
         "Ahmedabad": ["Bopal", "Satellite", "Navrangpura"],
         "Surat": ["Adajan", "Vesu", "Piplod"],
+    },
+    "Rajasthan": {
+        "Jaipur": ["Malviya Nagar", "Mansarovar", "Vaishali Nagar", "Johari Bazar"],
+        "Jodhpur": ["Sardarpura", "Shastri Nagar", "Ratanada"],
+        "Udaipur": ["Fatehpura", "Sector 3", "Sector 11"],
+        "Ajmer": ["Vaishali Nagar", "Civil Lines", "Adarsh Nagar"]
+    },
+    "Uttar Pradesh": {
+        "Lucknow": ["Gomti Nagar", "Hazratganj", "Aliganj"],
+        "Noida": ["Sector 15", "Sector 62", "Sector 137"],
+        "Varanasi": ["Lanka", "Sigra", "Cantt"],
+    },
+    "Tamil Nadu": {
+        "Chennai": ["Adyar", "Anna Nagar", "T Nagar", "Velachery"],
+        "Coimbatore": ["RS Puram", "Peelamedu", "Gandhipuram"]
     }
 };
 // ----------------------------------------------
@@ -119,7 +135,9 @@ export default function EnergyDeficitPage() {
                 setStates(statesData.states || []);
                 setSummary(summaryData);
             } catch (err) {
-                console.error("Failed to fetch energy data:", err);
+                console.warn("Failed to fetch API. Loading fallback mock data...");
+                setStates([{ state: "Maharashtra", state_code: "MH", demand_mu: 12500, supply_mu: 10200, deficit_mu: 2300, deficit_percent: 18.4, solar_potential_gw: 110, installed_solar_mw: 4500, avg_power_cuts_hrs_day: 3.5, discom: "MSEDCL", rooftop_potential_gw: 25, population_million: 125, night_light_index: 78, feeder_loading_percent: 85, ai_analysis: { impact_score: 92, priority: "CRITICAL", recommendation: "Urgent rooftop solar subsidy mobilization required in high-deficit rural clusters.", deficit_score: 25, solar_untapped_percent: 18, power_cut_severity: 22 } }]);
+                setSummary({ national_demand_mu: 154000, national_supply_mu: 142000, national_deficit_mu: 12000, national_deficit_percent: 7.8, total_solar_potential_gw: 748, total_installed_solar_mw: 70000, solar_utilization_percent: 9.3, total_rooftop_potential_gw: 210, critical_states: [{ state: "Maharashtra", score: 92 }], total_states_tracked: 1 });
             } finally {
                 setIsLoading(false);
             }
@@ -194,34 +212,34 @@ export default function EnergyDeficitPage() {
             <header style={styles.header}>
                 <div style={styles.headerLeft}>
                     <Link href="/" style={styles.backLink}>← Map</Link>
-                    <h1 style={styles.title}>⚡ Energy Deficit Intelligence</h1>
-                    <p style={styles.subtitle}>AI-powered analysis of India&apos;s state-wise energy gap & solar opportunity</p>
+                    <h1 style={styles.title}><Zap size={24} color="var(--warning)" /> Energy Deficit Intelligence</h1>
+                    <p style={styles.subtitle}>AI-powered analysis of India's state-wise energy gap & solar opportunity</p>
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                    <button onClick={exportExcel} style={styles.btnExportExcel}>📊 Export Excel</button>
-                    <button onClick={exportPDF} style={styles.btnExportPdf}>📄 Export PDF</button>
+                    <button onClick={exportExcel} style={styles.btnExportExcel}><Table2 size={16} /> Export Excel</button>
+                    <button onClick={exportPDF} style={styles.btnExportPdf}><Download size={16} /> Export PDF</button>
                 </div>
             </header>
 
             {/* National Summary Cards */}
             {summary && (
                 <div style={styles.summaryGrid}>
-                    <div style={{ ...styles.summaryCard, borderLeft: "4px solid #ef4444" }}>
+                    <div style={styles.summaryCard}>
                         <span style={styles.summaryLabel}>National Deficit</span>
                         <span style={styles.summaryValue}>{formatINR(summary.national_deficit_mu)} MU</span>
                         <span style={styles.summaryMeta}>{summary.national_deficit_percent}% gap</span>
                     </div>
-                    <div style={{ ...styles.summaryCard, borderLeft: "4px solid #38bdf8" }}>
+                    <div style={styles.summaryCard}>
                         <span style={styles.summaryLabel}>Total Solar Potential</span>
                         <span style={styles.summaryValue}>{summary.total_solar_potential_gw} GW</span>
                         <span style={styles.summaryMeta}>Only {summary.solar_utilization_percent}% utilized</span>
                     </div>
-                    <div style={{ ...styles.summaryCard, borderLeft: "4px solid #22c55e" }}>
+                    <div style={styles.summaryCard}>
                         <span style={styles.summaryLabel}>Rooftop Potential</span>
                         <span style={styles.summaryValue}>{summary.total_rooftop_potential_gw} GW</span>
                         <span style={styles.summaryMeta}>Addressable via PM Surya Ghar</span>
                     </div>
-                    <div style={{ ...styles.summaryCard, borderLeft: "4px solid #f59e0b" }}>
+                    <div style={{ ...styles.summaryCard, borderColor: "var(--warning)" }}>
                         <span style={styles.summaryLabel}>Critical States</span>
                         <span style={styles.summaryValue}>{summary.critical_states.length}</span>
                         <span style={styles.summaryMeta}>Need immediate solar intervention</span>
@@ -232,7 +250,7 @@ export default function EnergyDeficitPage() {
             {/* Advanced Filters */}
             <div style={styles.advancedFilterBlock}>
                 <div style={styles.filterRow}>
-                    <span style={styles.filterLabelLarge}>🗺️ Geographic Drill-Down</span>
+                    <span style={styles.filterLabelLarge}><Map size={16} /> Geographic Drill-Down</span>
                     <select
                         style={styles.dropdown}
                         value={selectedStateFilter}
@@ -331,19 +349,19 @@ export default function EnergyDeficitPage() {
                             <div style={styles.miniMetrics}>
                                 <div style={styles.miniMetric}>
                                     <span style={styles.miniLabel}>Deficit</span>
-                                    <span style={{ ...styles.miniValue, color: "#ef4444" }}>{state.deficit_percent}%</span>
+                                    <span style={{ ...styles.miniValue, color: "var(--danger)" }}>{state.deficit_percent}%</span>
                                 </div>
                                 <div style={styles.miniMetric}>
                                     <span style={styles.miniLabel}>Feeder Strain</span>
-                                    <span style={{ ...styles.miniValue, color: "#fcd34d" }}>{state.feeder_loading_percent || 75}%</span>
+                                    <span style={{ ...styles.miniValue, color: "var(--warning)" }}>{state.feeder_loading_percent || 75}%</span>
                                 </div>
                                 <div style={styles.miniMetric}>
                                     <span style={styles.miniLabel}>Power Cuts</span>
-                                    <span style={{ ...styles.miniValue, color: "#f59e0b" }}>{state.avg_power_cuts_hrs_day}h</span>
+                                    <span style={{ ...styles.miniValue, color: "var(--warning)" }}>{state.avg_power_cuts_hrs_day}h</span>
                                 </div>
                                 <div style={styles.miniMetric}>
                                     <span style={styles.miniLabel}>AI Score</span>
-                                    <span style={{ ...styles.miniValue, color: "#38bdf8" }}>{state.ai_analysis.impact_score}</span>
+                                    <span style={{ ...styles.miniValue, color: "var(--text-secondary)" }}>{state.ai_analysis.impact_score}</span>
                                 </div>
                             </div>
                             {/* Impact bar */}
@@ -375,16 +393,19 @@ export default function EnergyDeficitPage() {
                             {selectedDistrict !== "ALL" && (
                                 <div style={{
                                     margin: "-10px 0 20px 0", padding: "12px", background: "rgba(245, 158, 11, 0.1)",
-                                    border: "1px dashed #f59e0b", borderRadius: 8, color: "#fcd34d", fontSize: 14
+                                    border: "1px dashed var(--warning)", borderRadius: 8, color: "var(--warning)", fontSize: 14, display: "flex", gap: 8, alignItems: "flex-start"
                                 }}>
-                                    ⚠️ <b>Note:</b> You are viewing analysis context zoomed to <b>{selectedCity !== 'ALL' ? selectedCity : selectedDistrict}</b>.
-                                    (Location-specific hyper-local grid deficit models are currently in beta. Showing aggregate State parent data.)
+                                    <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
+                                    <div>
+                                        <b>Note:</b> You are viewing analysis context zoomed to <b>{selectedCity !== 'ALL' ? selectedCity : selectedDistrict}</b>.
+                                        (Location-specific hyper-local grid deficit models are currently in beta. Showing aggregate State parent data.)
+                                    </div>
                                 </div>
                             )}
 
                             {/* AI Recommendation */}
                             <div style={styles.aiBox}>
-                                <h3 style={styles.aiBoxTitle}>🤖 AI Recommendation</h3>
+                                <h3 style={styles.aiBoxTitle}><Bot size={18} /> AI Recommendation</h3>
                                 <p style={styles.aiBoxText}>{selectedState.ai_analysis.recommendation}</p>
                             </div>
 
@@ -400,19 +421,19 @@ export default function EnergyDeficitPage() {
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Energy Deficit</span>
-                                    <span style={{ ...styles.detailValue, color: "#ef4444" }}>{formatINR(selectedState.deficit_mu)} MU ({selectedState.deficit_percent}%)</span>
+                                    <span style={{ ...styles.detailValue, color: "var(--danger)" }}>{formatINR(selectedState.deficit_mu)} MU ({selectedState.deficit_percent}%)</span>
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Avg Power Cuts</span>
-                                    <span style={{ ...styles.detailValue, color: "#f59e0b" }}>{selectedState.avg_power_cuts_hrs_day} hrs/day</span>
+                                    <span style={{ ...styles.detailValue, color: "var(--warning)" }}>{selectedState.avg_power_cuts_hrs_day} hrs/day</span>
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Grid Feeder Strain</span>
-                                    <span style={{ ...styles.detailValue, color: "#fcd34d" }}>{selectedState.feeder_loading_percent || 75}%</span>
+                                    <span style={{ ...styles.detailValue, color: "var(--warning)" }}>{selectedState.feeder_loading_percent || 75}%</span>
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Solar Potential</span>
-                                    <span style={{ ...styles.detailValue, color: "#38bdf8" }}>{selectedState.solar_potential_gw} GW</span>
+                                    <span style={{ ...styles.detailValue, color: "var(--text-secondary)" }}>{selectedState.solar_potential_gw} GW</span>
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Installed Solar</span>
@@ -420,7 +441,7 @@ export default function EnergyDeficitPage() {
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Rooftop Potential</span>
-                                    <span style={{ ...styles.detailValue, color: "#22c55e" }}>{selectedState.rooftop_potential_gw} GW</span>
+                                    <span style={{ ...styles.detailValue, color: "var(--success)" }}>{selectedState.rooftop_potential_gw} GW</span>
                                 </div>
                                 <div style={styles.detailMetric}>
                                     <span style={styles.detailLabel}>Population</span>
@@ -438,11 +459,11 @@ export default function EnergyDeficitPage() {
 
                             {/* Scoring Breakdown */}
                             <div style={styles.scoringSection}>
-                                <h3 style={styles.scoringTitle}>📊 AI Scoring Breakdown</h3>
+                                <h3 style={styles.scoringTitle}>AI Scoring Breakdown</h3>
                                 {[
-                                    { label: "Energy Deficit Severity (30%)", value: selectedState.ai_analysis.deficit_score, color: "#ef4444" },
-                                    { label: "Solar Untapped Potential (20%)", value: selectedState.ai_analysis.solar_untapped_percent, color: "#38bdf8" },
-                                    { label: "Power Cut Severity (25%)", value: selectedState.ai_analysis.power_cut_severity, color: "#f59e0b" },
+                                    { label: "Energy Deficit Severity (30%)", value: selectedState.ai_analysis.deficit_score, color: "var(--danger)" },
+                                    { label: "Solar Untapped Potential (20%)", value: selectedState.ai_analysis.solar_untapped_percent, color: "var(--text-secondary)" },
+                                    { label: "Power Cut Severity (25%)", value: selectedState.ai_analysis.power_cut_severity, color: "var(--warning)" },
                                 ].map((item) => (
                                     <div key={item.label} style={styles.scoreRow}>
                                         <div style={styles.scoreLabel}>
@@ -458,9 +479,9 @@ export default function EnergyDeficitPage() {
                         </div>
                     ) : (
                         <div style={styles.emptyDetail}>
-                            <p style={{ fontSize: 48 }}>🗺️</p>
-                            <h3 style={{ color: "#e8ecf1", marginBottom: 8 }}>Select a Region</h3>
-                            <p style={{ color: "#64748b", fontSize: 14 }}>Click on any state card to view detailed energy deficit analysis and AI recommendations</p>
+                            <MapPin size={48} color="var(--text-muted)" style={{ marginBottom: 12 }} />
+                            <h3 style={{ color: "var(--foreground)", marginBottom: 8 }}>Select a Region</h3>
+                            <p style={{ color: "var(--text-muted)", fontSize: 14 }}>Click on any state card to view detailed energy deficit analysis and AI recommendations</p>
                         </div>
                     )}
                 </div>
@@ -473,11 +494,11 @@ export default function EnergyDeficitPage() {
 const styles: Record<string, React.CSSProperties> = {
     page: {
         minHeight: "100vh",
-        background: "#0a0f1a",
-        color: "#e8ecf1",
+        background: "var(--background)",
+        color: "var(--foreground)",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "var(--font-geist-sans), Arial, sans-serif",
     },
     loadingContainer: {
         display: "flex",
@@ -485,7 +506,7 @@ const styles: Record<string, React.CSSProperties> = {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
-        background: "#0a0f1a",
+        background: "var(--background)",
     },
     spinner: {
         width: 40,
@@ -496,8 +517,8 @@ const styles: Record<string, React.CSSProperties> = {
         animation: "spin 1s linear infinite",
     },
     header: {
-        padding: "20px 32px",
-        borderBottom: "1px solid rgba(56,189,248,0.1)",
+        padding: "100px 32px 20px 32px",
+        borderBottom: "1px solid var(--card-border)",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -513,18 +534,21 @@ const styles: Record<string, React.CSSProperties> = {
     },
     title: {
         fontSize: 26,
-        fontWeight: 800,
-        background: "linear-gradient(135deg, #0ea5e9, #8b5cf6)",
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
+        fontWeight: 700,
         margin: "4px 0",
+        color: "var(--foreground)",
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        letterSpacing: "-0.02em"
     },
     subtitle: {
-        color: "#64748b",
+        color: "var(--text-muted)",
         fontSize: 14,
+        marginTop: 4
     },
-    btnExportExcel: { padding: "8px 16px", borderRadius: 8, background: "#059669", color: "white", fontWeight: 600, border: "none", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 6 },
-    btnExportPdf: { padding: "8px 16px", borderRadius: 8, background: "#dc2626", color: "white", fontWeight: 600, border: "none", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 6 },
+    btnExportExcel: { padding: "8px 16px", borderRadius: 8, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", cursor: "pointer", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, transition: "background 0.2s" },
+    btnExportPdf: { padding: "8px 16px", borderRadius: 8, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", cursor: "pointer", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, transition: "background 0.2s" },
     // Summary
     summaryGrid: {
         display: "grid",
@@ -533,30 +557,32 @@ const styles: Record<string, React.CSSProperties> = {
         padding: "20px 32px",
     },
     summaryCard: {
-        background: "rgba(15,23,42,0.85)",
+        background: "var(--card-bg)",
         backdropFilter: "blur(16px)",
         borderRadius: 12,
         padding: "18px 20px",
         display: "flex",
         flexDirection: "column",
-        border: "1px solid rgba(56,189,248,0.1)",
+        border: "1px solid var(--card-border)",
     },
     summaryLabel: {
-        fontSize: 12,
-        color: "#94a3b8",
+        fontSize: 11,
+        color: "var(--text-muted)",
         textTransform: "uppercase" as const,
-        letterSpacing: 1,
-        marginBottom: 6,
+        letterSpacing: 0.5,
+        marginBottom: 8,
+        fontWeight: 600,
     },
     summaryValue: {
-        fontSize: 24,
+        fontSize: 32,
         fontWeight: 700,
-        color: "#e8ecf1",
+        color: "var(--foreground)",
+        letterSpacing: "-0.02em"
     },
     summaryMeta: {
         fontSize: 12,
-        color: "#64748b",
-        marginTop: 4,
+        color: "var(--text-muted)",
+        marginTop: 8,
     },
 
     // Advanced Filters (State/District)
@@ -567,23 +593,23 @@ const styles: Record<string, React.CSSProperties> = {
         display: "flex",
         gap: 12,
         alignItems: "center",
-        background: "rgba(15, 23, 42, 0.4)",
+        background: "var(--card-bg)",
         padding: "12px",
         borderRadius: "10px",
-        border: "1px solid rgba(56, 189, 248, 0.1)"
+        border: "1px solid var(--card-border)"
     },
     filterLabelLarge: {
         fontSize: 14,
         fontWeight: 600,
-        color: "#cbd5e1",
+        color: "var(--text-secondary)",
         marginRight: 10
     },
     dropdown: {
         padding: "8px 14px",
         borderRadius: 8,
-        background: "rgba(15, 23, 42, 0.9)",
-        border: "1px solid rgba(56, 189, 248, 0.2)",
-        color: "#e8ecf1",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
+        color: "var(--foreground)",
         fontSize: 13,
         outline: "none",
         cursor: "pointer",
@@ -633,15 +659,15 @@ const styles: Record<string, React.CSSProperties> = {
         maxHeight: "calc(100vh - 260px)",
     },
     stateCard: {
-        background: "rgba(15,23,42,0.7)",
-        border: "1px solid rgba(56,189,248,0.1)",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
         borderRadius: 12,
         padding: "16px",
         cursor: "pointer",
         transition: "all 0.2s",
         textAlign: "left" as const,
         width: "100%",
-        color: "#e8ecf1",
+        color: "var(--foreground)",
     },
     stateCardHeader: {
         display: "flex",
@@ -696,7 +722,7 @@ const styles: Record<string, React.CSSProperties> = {
     },
     // Detail Panel
     detailPanel: {
-        borderLeft: "1px solid rgba(56,189,248,0.1)",
+        borderLeft: "1px solid var(--card-border)",
         overflowY: "auto" as const,
         maxHeight: "calc(100vh - 260px)",
     },
@@ -706,7 +732,7 @@ const styles: Record<string, React.CSSProperties> = {
     detailTitle: {
         fontSize: 28,
         fontWeight: 800,
-        color: "#e8ecf1",
+        color: "var(--foreground)",
         margin: "0 0 12px",
     },
     priorityBadgeLarge: {
@@ -719,8 +745,8 @@ const styles: Record<string, React.CSSProperties> = {
         marginBottom: 20,
     },
     aiBox: {
-        background: "rgba(14,165,233,0.08)",
-        border: "1px solid rgba(14,165,233,0.2)",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
         borderRadius: 12,
         padding: "18px",
         marginBottom: 24,
@@ -728,12 +754,12 @@ const styles: Record<string, React.CSSProperties> = {
     aiBoxTitle: {
         fontSize: 15,
         fontWeight: 700,
-        color: "#38bdf8",
+        color: "var(--accent)",
         margin: "0 0 8px",
     },
     aiBoxText: {
         fontSize: 14,
-        color: "#cbd5e1",
+        color: "var(--text-secondary)",
         lineHeight: 1.6,
         margin: 0,
     },
@@ -747,13 +773,13 @@ const styles: Record<string, React.CSSProperties> = {
         display: "flex",
         flexDirection: "column",
         padding: "12px 14px",
-        background: "rgba(15,23,42,0.6)",
+        background: "var(--card-bg)",
         borderRadius: 8,
-        border: "1px solid rgba(56,189,248,0.06)",
+        border: "1px solid var(--card-border)",
     },
     detailLabel: {
         fontSize: 11,
-        color: "#64748b",
+        color: "var(--text-muted)",
         textTransform: "uppercase" as const,
         letterSpacing: 0.5,
         marginBottom: 4,
@@ -761,18 +787,18 @@ const styles: Record<string, React.CSSProperties> = {
     detailValue: {
         fontSize: 15,
         fontWeight: 600,
-        color: "#e8ecf1",
+        color: "var(--foreground)",
     },
     scoringSection: {
-        background: "rgba(15,23,42,0.6)",
+        background: "var(--card-bg)",
         borderRadius: 12,
         padding: "18px",
-        border: "1px solid rgba(56,189,248,0.08)",
+        border: "1px solid var(--card-border)",
     },
     scoringTitle: {
         fontSize: 15,
         fontWeight: 700,
-        color: "#e8ecf1",
+        color: "var(--foreground)",
         margin: "0 0 14px",
     },
     scoreRow: {

@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
+    const { t } = useLanguage();
+
     return (
         <footer
             style={{
@@ -36,19 +39,18 @@ export default function Footer() {
                         ⚡ Urja-Link
                     </h3>
                     <p style={{ lineHeight: 1.6 }}>
-                        AI-powered national platform for rooftop solar potential estimation,
-                        subsidies, and smart energy planning.
+                        {t("footer_desc")}
                     </p>
                 </div>
 
                 {/* Quick Links */}
                 <div>
-                    <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>Quick Links</h4>
+                    <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>{t("f_quick_links")}</h4>
                     {[
-                        { href: "/", label: "Solar Map" },
-                        { href: "/energy-deficit", label: "Energy Deficit" },
-                        { href: "/government", label: "Gov Dashboard" },
-                        { href: "/marketplace", label: "Marketplace" },
+                        { href: "/", label: t("nav_home") },
+                        { href: "/energy-deficit", label: t("nav_energy") },
+                        { href: "/government", label: t("nav_gov") },
+                        { href: "/marketplace", label: t("nav_market") },
                     ].map((link) => (
                         <Link
                             key={link.href}
@@ -68,12 +70,12 @@ export default function Footer() {
 
                 {/* Resources */}
                 <div>
-                    <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>Resources</h4>
+                    <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>{t("f_resources")}</h4>
                     {[
-                        { href: "/about", label: "About Us" },
-                        { href: "/contact", label: "Contact Us" },
-                        { href: "/faq", label: "FAQ" },
-                        { href: "/legal", label: "Privacy Policy" },
+                        { href: "/about", label: t("f_about") },
+                        { href: "/contact", label: t("f_contact") },
+                        { href: "/faq", label: t("nav_faq") },
+                        { href: "/legal", label: t("f_privacy") },
                     ].map((link) => (
                         <Link
                             key={link.href}
@@ -92,9 +94,9 @@ export default function Footer() {
 
                 {/* Contact */}
                 <div>
-                    <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>Contact</h4>
+                    <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>{t("f_contact")}</h4>
                     <p style={{ marginBottom: 4 }}>📧 support@urjalink.in</p>
-                    <p style={{ marginBottom: 4 }}>📞 +91-XXXXX-XXXXX</p>
+                    <p style={{ marginBottom: 4 }}>📞 +91-6350130369</p>
                     <p>📍 India</p>
                 </div>
             </div>
@@ -108,7 +110,7 @@ export default function Footer() {
                     fontSize: 12,
                 }}
             >
-                © Urja-Link 2026. All Rights Reserved.
+                {t("copy_right")}
             </div>
         </footer>
     );

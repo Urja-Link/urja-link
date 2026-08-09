@@ -2,21 +2,22 @@
 
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { ScrollText, Lock, ClipboardList } from "lucide-react";
 
 export default function LegalPage() {
     return (
         <div className="page-container">
             <header className="page-header">
                 <Link href="/" className="back-link">← Back to Map</Link>
-                <h1 className="page-title">📜 Privacy Policy & Terms</h1>
+                <h1 className="page-title"><ScrollText size={32} style={{ marginRight: 10 }} /> Privacy Policy & Terms</h1>
                 <p className="page-subtitle">Last updated: August 2026</p>
             </header>
 
             <div className="content-section" style={{ maxWidth: 800 }}>
                 {/* Privacy Policy */}
                 <div className="info-card" style={{ marginBottom: 32 }}>
-                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "var(--accent)" }}>
-                        🔒 Privacy Policy
+                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "var(--warning)", display: "flex", alignItems: "center", gap: 8 }}>
+                        <Lock size={24} /> Privacy Policy
                     </h2>
                     <div style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-secondary)" }}>
                         <h3 style={{ color: "var(--foreground)", margin: "16px 0 8px", fontWeight: 600 }}>1. Information We Collect</h3>
@@ -56,8 +57,8 @@ export default function LegalPage() {
 
                 {/* Terms & Conditions */}
                 <div className="info-card">
-                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "var(--accent)" }}>
-                        📋 Terms & Conditions
+                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "var(--warning)", display: "flex", alignItems: "center", gap: 8 }}>
+                        <ClipboardList size={24} /> Terms & Conditions
                     </h2>
                     <div style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-secondary)" }}>
                         <h3 style={{ color: "var(--foreground)", margin: "16px 0 8px", fontWeight: 600 }}>1. Acceptance of Terms</h3>
@@ -90,7 +91,7 @@ export default function LegalPage() {
                         <h3 style={{ color: "var(--foreground)", margin: "16px 0 8px", fontWeight: 600 }}>5. Contact</h3>
                         <p>
                             For any questions about these terms, contact us at support@urjalink.in or visit
-                            our <Link href="/contact" style={{ color: "var(--accent)" }}>Contact page</Link>.
+                            our <Link href="/contact" style={{ color: "var(--foreground)" }}>Contact page</Link>.
                         </p>
                     </div>
                 </div>

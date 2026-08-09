@@ -2,21 +2,22 @@
 
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { Info, Target, Bot, Satellite, Sun, CloudRain, Coins, Landmark, Wrench, BarChart2 } from "lucide-react";
 
 export default function AboutPage() {
     return (
         <div className="page-container">
             <header className="page-header">
                 <Link href="/" className="back-link">← Back to Map</Link>
-                <h1 className="page-title">ℹ️ About Urja-Link India</h1>
+                <h1 className="page-title"><Info size={32} style={{ marginRight: 8 }} /> About Urja-Link India</h1>
                 <p className="page-subtitle">Empowering India&apos;s solar revolution through AI and technology</p>
             </header>
 
             <div className="content-section">
                 {/* Mission */}
                 <div className="info-card" style={{ marginBottom: 24 }}>
-                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, color: "var(--accent)" }}>
-                        🎯 Our Mission
+                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 8 }}>
+                        <Target size={24} color="var(--warning)" /> Our Mission
                     </h2>
                     <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-secondary)" }}>
                         Urja-Link India is an AI-powered national platform designed to accelerate rooftop solar
@@ -30,32 +31,32 @@ export default function AboutPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 24 }}>
                     {[
                         {
-                            icon: "🤖", title: "AI Rooftop Detection",
+                            icon: <Bot size={36} color="var(--warning)" />, title: "AI Rooftop Detection",
                             desc: "Custom-trained models detect rooftops, obstacles, and shadows from satellite imagery for accurate usable area calculation.",
                         },
                         {
-                            icon: "🛰️", title: "Real Satellite Data",
+                            icon: <Satellite size={36} color="var(--warning)" />, title: "Real Satellite Data",
                             desc: "Integration with Sentinel-2 and Google Earth Engine for high-resolution multispectral analysis of rooftop surfaces.",
                         },
                         {
-                            icon: "☀️", title: "NASA POWER Integration",
+                            icon: <Sun size={36} color="var(--warning)" />, title: "NASA POWER Integration",
                             desc: "Real solar irradiance data from NASA's POWER database — monthly climatology and peak sun hours for any location in India.",
                         },
                         {
-                            icon: "🌦️", title: "Live Weather Data",
+                            icon: <CloudRain size={36} color="var(--warning)" />, title: "Live Weather Data",
                             desc: "Open-Meteo provides real-time temperature, cloud cover, humidity, wind speed, and air quality for accurate loss calculations.",
                         },
                         {
-                            icon: "💰", title: "Financial Analysis",
+                            icon: <Coins size={36} color="var(--warning)" />, title: "Financial Analysis",
                             desc: "25-year ROI projection with PM Surya Ghar subsidy, net metering, degradation modeling, and inflation-adjusted tariffs.",
                         },
                         {
-                            icon: "🏛️", title: "Government Dashboard",
+                            icon: <Landmark size={36} color="var(--warning)" />, title: "Government Dashboard",
                             desc: "National solar progress tracking, state-wise analytics, PM Surya Ghar Yojana monitoring, and energy deficit intelligence.",
                         },
                     ].map((f) => (
                         <div key={f.title} className="info-card">
-                            <div style={{ fontSize: 36, marginBottom: 12 }}>{f.icon}</div>
+                            <div style={{ marginBottom: 12 }}>{f.icon}</div>
                             <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 8 }}>{f.title}</h3>
                             <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-secondary)" }}>{f.desc}</p>
                         </div>
@@ -64,8 +65,8 @@ export default function AboutPage() {
 
                 {/* Technology Stack */}
                 <div className="info-card" style={{ marginBottom: 24 }}>
-                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "var(--accent)" }}>
-                        🔧 Technology Stack
+                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 8 }}>
+                        <Wrench size={24} color="var(--warning)" /> Technology Stack
                     </h2>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
                         {[
@@ -93,8 +94,8 @@ export default function AboutPage() {
 
                 {/* Data Sources */}
                 <div className="info-card">
-                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, color: "var(--accent)" }}>
-                        📊 Data Sources
+                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 8 }}>
+                        <BarChart2 size={24} color="var(--warning)" /> Data Sources
                     </h2>
                     <ul style={{ fontSize: 14, lineHeight: 2, color: "var(--text-secondary)", paddingLeft: 20 }}>
                         <li>Ministry of New & Renewable Energy (MNRE) — Solar targets and installations data</li>

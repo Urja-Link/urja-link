@@ -90,10 +90,10 @@ export default function LoginPage() {
                         background: "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))",
                         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                     }}>
-                        ⚡ Welcome Back
+                        Welcome Back
                     </h1>
                     <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 8 }}>
-                        Sign in to Urja-Link India
+                        Sign in to Urja-Link
                     </p>
                 </div>
 
@@ -107,7 +107,7 @@ export default function LoginPage() {
                             color: mode === "email" ? "white" : "var(--text-secondary)", fontWeight: 600, fontSize: 13, cursor: "pointer",
                         }}
                     >
-                        📧 Email Login
+                        Email Login
                     </button>
                     <button
                         onClick={() => setMode("otp")}
@@ -117,7 +117,7 @@ export default function LoginPage() {
                             color: mode === "otp" ? "white" : "var(--text-secondary)", fontWeight: 600, fontSize: 13, cursor: "pointer",
                         }}
                     >
-                        📱 OTP Login
+                        OTP Login
                     </button>
                 </div>
 
@@ -144,7 +144,7 @@ export default function LoginPage() {
                                 value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
                         </div>
                         <button className="btn-primary" type="submit" style={{ width: "100%" }} disabled={loading}>
-                            {loading ? "Signing in..." : "🔓 Sign In"}
+                            {loading ? "Signing in..." : "Sign In"}
                         </button>
                     </form>
                 ) : (
@@ -156,7 +156,7 @@ export default function LoginPage() {
                         </div>
                         {!otpForm.otpSent ? (
                             <button className="btn-primary" type="button" onClick={handleSendOTP} style={{ width: "100%" }}>
-                                📩 Send OTP
+                                Send OTP
                             </button>
                         ) : (
                             <>
@@ -166,7 +166,7 @@ export default function LoginPage() {
                                         value={otpForm.otp} onChange={(e) => setOtpForm({ ...otpForm, otp: e.target.value })} />
                                 </div>
                                 <button className="btn-primary" type="submit" style={{ width: "100%" }}>
-                                    ✅ Verify OTP
+                                    Verify OTP
                                 </button>
                             </>
                         )}

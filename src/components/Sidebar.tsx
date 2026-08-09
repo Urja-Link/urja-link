@@ -5,8 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
 import { useLanguage } from "@/context/LanguageContext";
-import LiveOperationsPanel from "./LiveOperationsPanel";
-
 import {
     Map as MapIcon, Zap, PenTool, Landmark, Wrench,
     ShoppingCart, Info, Mail, HelpCircle, FileText,
@@ -104,8 +102,8 @@ export default function Sidebar() {
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     style={{
-                        position: "fixed", top: 16, right: 16, zIndex: 10001,
-                        width: 52, height: 52, borderRadius: "50%",
+                        position: "fixed", top: 24, right: 24, zIndex: 10001,
+                        width: 44, height: 44, borderRadius: "50%",
                         border: "1px solid var(--card-border)", background: "var(--card-bg)",
                         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
                         color: "var(--foreground)", display: "flex", alignItems: "center", justifyContent: "center",
@@ -113,7 +111,7 @@ export default function Sidebar() {
                         boxShadow: "0 8px 24px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.1)"
                     }}
                 >
-                    <span style={{ fontSize: 24, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
+                    <span style={{ fontSize: 20, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>
                         {isOpen ? "✕" : "☰"}
                     </span>
                 </button>
@@ -153,7 +151,15 @@ export default function Sidebar() {
                     overflowX: "hidden",
                 }}
             >
-                <div style={{ padding: "8px 20px 24px", borderBottom: "1px solid var(--card-border)" }}>
+                <div style={{
+                    height: "92px",
+                    flexShrink: 0,
+                    padding: "0 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    borderBottom: "1px solid var(--card-border)",
+                    boxSizing: "border-box"
+                }}>
                     <h2 style={{
                         fontSize: 20, fontWeight: 800, margin: 0,
                         color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6
@@ -214,12 +220,6 @@ export default function Sidebar() {
                     ))}
                 </div>
 
-                {/* Integrated Live Operations Panel */}
-                <div style={{ padding: "0 20px 20px" }}>
-                    <div style={{ transform: "scale(0.85)", transformOrigin: "top left", width: "117%", marginBottom: "-40px" }}>
-                        <LiveOperationsPanel />
-                    </div>
-                </div>
 
                 {/* Footer */}
                 <div style={{

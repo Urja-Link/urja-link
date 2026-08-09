@@ -7,6 +7,8 @@
     "top_nav_contact": "Contact Us",
     "nav_home": "Home / Map",
     "nav_dashbars": "Dashboards",
+    "nav_analytics": "Analytics",
+    "nav_dashboard": "User Dashboard",
     "nav_energy": "Energy Deficit",
     "nav_gov": "Government Data",
     "nav_services": "Services",
@@ -17,6 +19,7 @@
     "nav_about": "Company",
     "nav_faq": "FAQ",
     "nav_contact": "Contact",
+    "nav_legal": "Legal",
     "hero_tagline": "India's Digital Twin for Solar Intelligence",
     "hero_sub": "Analyze rooftop potential, track state energy deficits, and apply for PM Surya Ghar subsidies.",
     "search_placeholder": "Search an address or landmark in India",
@@ -30,5 +33,12 @@
     "report_subsidy": "Est. PM Surya Ghar Subsidy",
     "report_payback": "ROI Payback Period",
     "sidebar_theme": "Theme:",
-    "sidebar_language": "Language:"
+    "sidebar_language": "Language:",
+    "footer_desc": "AI-powered national platform for rooftop solar potential estimation, subsidies, and smart energy planning.",
+    "f_quick_links": "Quick Links",
+    "f_resources": "Resources",
+    "f_contact": "Contact",
+    "f_about": "About Us",
+    "f_privacy": "Privacy Policy",
+    "copy_right": "© Urja-Link 2026. All Rights Reserved."
 }

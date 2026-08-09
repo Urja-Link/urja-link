@@ -8,6 +8,8 @@ interface Message {
     content: string;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 export default function CopilotBot() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
@@ -25,39 +27,39 @@ export default function CopilotBot() {
         setInputData("");
         setIsTyping(true);
 
-        const lowerq = newMsg.content.toLowerCase();
+        try {
+            const response = await fetch(`${API_BASE}/api/predictive/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: inputData })
+            });
 
-        // Simulate streaming RAG Logic
-        setTimeout(() => {
-            let fullResponse = "I'm analyzing the national grid data for you. Please hold...";
+            if (response.ok) {
+                const data = await response.json();
+                const fullResponse = data.reply || "No response generated.";
 
-            if (lowerq.includes("subsidy") || lowerq.includes("mumbai") || lowerq.includes("10kw")) {
-                fullResponse = "Currently, under the PM Surya Ghar Muft Bijli Yojana, a maximum subsidy of ₹78,000 is available for systems up to 3 kW capacity and above. For a 10 kW system in Mumbai (Maharashtra), the Central subsidy remains capped at ₹78,000. However, wait! I also detect you are in tier-1 commercial zone, which offers accelerated depreciation tax benefits. Would you like a precise ROI simulation?";
-            } else if (lowerq.includes("dust") || lowerq.includes("maintenance")) {
-                fullResponse = "Based on our machine learning prognostic models for the North-western grid, dust settlement can drop panel efficiency by 22% within 14 days of no rain. Are your panels connected to our IoT tracking module? If so, I can run a live diagnostic.";
-            } else if (lowerq.includes("trading") || lowerq.includes("market") || lowerq.includes("sell")) {
-                fullResponse = "The Peer-to-Peer Energy Spot Market is live! Currently, the localized demand is extremely high (92% saturation). The Spot Price is soaring near ₹10.20/kWh. This is a very optimal time to export your surplus energy!";
+                // Start appending the actual response chunk by chunk like a real chatbot
+                setIsTyping(false);
+                setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+
+                let i = 0;
+                const streamInterval = setInterval(() => {
+                    setMessages(prev => {
+                        const next = [...prev];
+                        const lastIndex = next.length - 1;
+                        next[lastIndex] = { ...next[lastIndex], content: fullResponse.substring(0, i + 1) };
+                        return next;
+                    });
+                    i++;
+                    if (i >= fullResponse.length) clearInterval(streamInterval);
+                }, 18);
             } else {
-                fullResponse = "I have correlated your query against 14 national datasets. The telemetry looks optimal. Can I fetch a specific state's energy deficit for you?";
+                throw new Error("API Failure");
             }
-
-            // Start appending the actual response chunk by chunk like a real chatbot
+        } catch (error) {
             setIsTyping(false);
-            setMessages(prev => [...prev, { role: "assistant", content: "" }]);
-
-            let i = 0;
-            const streamInterval = setInterval(() => {
-                setMessages(prev => {
-                    const next = [...prev];
-                    const lastIndex = next.length - 1;
-                    next[lastIndex] = { ...next[lastIndex], content: fullResponse.substring(0, i + 1) };
-                    return next;
-                });
-                i++;
-                if (i >= fullResponse.length) clearInterval(streamInterval);
-            }, 18); // 18ms per character simulating rapid human-like generation
-
-        }, 800);
+            setMessages(prev => [...prev, { role: "assistant", content: "Error: Unable to reach the Urja-Link grid systems. Please try again later." }]);
+        }
     };
 
     if (!isOpen) {
@@ -66,17 +68,17 @@ export default function CopilotBot() {
                 onClick={() => setIsOpen(true)}
                 className="glass-card"
                 style={{
-                    position: "fixed", bottom: 24, right: 28, zIndex: 10000,
-                    width: 64, height: 64, borderRadius: "50%",
+                    position: "fixed", bottom: 44, right: 20, zIndex: 10000,
+                    width: 48, height: 48, borderRadius: "50%",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     cursor: "pointer", border: "1px solid var(--card-border)",
-                    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2)",
+                    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2)",
                     background: "rgba(15, 23, 42, 0.6)", color: "var(--foreground)",
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                 }}
             >
-                <MessageSquare size={24} color="#f59e0b" />
-                <div style={{ position: "absolute", top: -2, right: -2, width: 14, height: 14, background: "#ef4444", borderRadius: "50%", border: "2px solid #000" }}></div>
+                <MessageSquare size={20} color="#f59e0b" />
+                <div style={{ position: "absolute", top: -2, right: -2, width: 12, height: 12, background: "#ef4444", borderRadius: "50%", border: "2px solid #000" }}></div>
             </button>
         );
     }

@@ -38,7 +38,13 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
             .then(r => r.json())
             .then(data => setSunPos(data))
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.warn("Sun position API unavailable. Mocking sun position based on hour.");
+                const hour = today.getHours();
+                let elev = -20;
+                if (hour >= 6 && hour <= 18) elev = 60 * Math.sin(((hour - 6) / 12) * Math.PI);
+                setSunPos({ azimuth_deg: (hour * 15), elevation_deg: elev });
+            });
     }, [sliderTime, center, markerPosition]);
 
     const defaultClickHandler = useCallback((e: L.LeafletMouseEvent) => {
@@ -77,15 +83,39 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             }
         );
 
+        // CartoDB Dark layer (Great for enterprise data viz)
+        const darkMap = L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            {
+                attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+                maxZoom: 19,
+                subdomains: 'abcd'
+            }
+        );
+
+        // OpenTopoMap layer for geographical survey
+        const topoMap = L.tileLayer(
+            "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+            {
+                attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+                maxZoom: 17
+            }
+        );
+
         // Layer control
         L.control.layers(
-            { "Street Map": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }), "Satellite": satellite },
+            {
+                "Street Map": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }),
+                "Satellite": satellite,
+                "National Grid (Dark)": darkMap,
+                "Topography Survey": topoMap
+            },
             {},
             { position: "topright" }
         ).addTo(map);
 
-        // Default to satellite view
-        satellite.addTo(map);
+        // Default to dark view for enterprise dashboard feel
+        darkMap.addTo(map);
 
         // Click handler
         map.on("click", defaultClickHandler);
@@ -203,42 +233,37 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         setIsAiLoading(true);
         if (mapRef.current) mapRef.current.off("click");
 
-        // Simulate Computer Vision segmentation API call
-        await new Promise(r => setTimeout(r, 1500));
+        try {
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+            const res = await fetch(`${baseUrl}/api/detect-rooftop?lat=${latlng.lat}&lng=${latlng.lng}`);
+            if (!res.ok) throw new Error("API failed");
+            const data = await res.json();
 
-        // Generate synthetic "roof footprint" bounds around click (approx 8m x 12m)
-        const offsetLat = 0.00008;
-        const offsetLng = 0.00010;
+            const syntheticPoints = data.rooftop_polygon.map((p: any) => L.latLng(p.lat, p.lng));
 
-        // Slightly irregular to look like a real building footprint
-        const syntheticPoints = [
-            L.latLng(latlng.lat + offsetLat, latlng.lng - offsetLng),
-            L.latLng(latlng.lat + offsetLat, latlng.lng + offsetLng),
-            L.latLng(latlng.lat - offsetLat * 0.9, latlng.lng + offsetLng * 1.1),
-            L.latLng(latlng.lat - offsetLat, latlng.lng - offsetLng * 0.8),
-        ];
+            drawPointsRef.current = syntheticPoints;
 
-        drawPointsRef.current = syntheticPoints;
+            if (polygonRef.current) polygonRef.current.remove();
+            polygonRef.current = L.polygon(syntheticPoints, {
+                color: "#f59e0b",
+                fillColor: "#f59e0b",
+                fillOpacity: 0.4,
+                weight: 3,
+                dashArray: "4 4"
+            }).addTo(mapRef.current!);
 
-        if (polygonRef.current) polygonRef.current.remove();
-        polygonRef.current = L.polygon(syntheticPoints, {
-            color: "#f59e0b", // Amber for AI
-            fillColor: "#f59e0b",
-            fillOpacity: 0.4,
-            weight: 3,
-            dashArray: "4 4"
-        }).addTo(mapRef.current!);
+            const area = calculatePolygonArea(syntheticPoints);
+            if (onPolygonArea) onPolygonArea(area);
+            onLocationSelect(latlng.lat, latlng.lng);
 
-        const area = calculatePolygonArea(syntheticPoints);
-        if (onPolygonArea) onPolygonArea(area);
-        onLocationSelect(latlng.lat, latlng.lng);
-
-        setIsAiLoading(false);
-        setIsAiScanning(false);
-
-        // Restore default click
-        if (mapRef.current) {
-            mapRef.current.on("click", defaultClickHandler);
+        } catch (e) {
+            console.error("AI Detect fail", e);
+        } finally {
+            setIsAiLoading(false);
+            setIsAiScanning(false);
+            if (mapRef.current) {
+                mapRef.current.on("click", defaultClickHandler);
+            }
         }
     };
 

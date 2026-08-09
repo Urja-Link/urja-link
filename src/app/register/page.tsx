@@ -79,13 +79,13 @@ export default function RegisterPage() {
                     className="glass-card"
                     style={{ maxWidth: 440, width: "100%", padding: 40, textAlign: "center", zIndex: 1, position: "relative" }}
                 >
-                    <p style={{ fontSize: 48, marginBottom: 16 }}>🎉</p>
+                    <p style={{ fontSize: 48, marginBottom: 16 }}></p>
                     <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Registration Successful!</h2>
                     <p style={{ color: "var(--text-secondary)", marginBottom: 24, fontSize: 14, lineHeight: 1.6 }}>
-                        {tab === "company" ? "Your company registration is under review. We'll verify your documents within 24-48 hours." : "Your account has been created. Welcome to Urja-Link India!"}
+                        {tab === "company" ? "Your company registration is under review. We'll verify your documents within 24-48 hours." : "Your account has been created. Welcome to Urja-Link!"}
                     </p>
                     <Link href="/" className="btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
-                        🗺️ Go to Solar Map
+                        Go to Solar Map
                     </Link>
                 </motion.div>
             </div>
@@ -114,7 +114,7 @@ export default function RegisterPage() {
                         background: "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))",
                         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                     }}>
-                        ⚡ Join Urja-Link
+                        Join Urja-Link
                     </h1>
                     <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 8 }}>
                         Create your account
@@ -129,7 +129,7 @@ export default function RegisterPage() {
                             background: tab === t ? "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))" : "transparent",
                             color: tab === t ? "white" : "var(--text-secondary)", fontWeight: 600, fontSize: 13, cursor: "pointer",
                         }}>
-                            {t === "individual" ? "👤 Individual" : "🏢 Company"}
+                            {t === "individual" ? "Individual" : "Company"}
                         </button>
                     ))}
                 </div>
@@ -176,7 +176,7 @@ export default function RegisterPage() {
                             </div>
                         </div>
                         <button className="btn-primary" type="submit" style={{ width: "100%" }} disabled={loading}>
-                            {loading ? "Creating account..." : "🚀 Create Account"}
+                            {loading ? "Creating account..." : "Create Account"}
                         </button>
                     </form>
                 ) : (
@@ -253,11 +253,11 @@ export default function RegisterPage() {
                             background: "rgba(56,189,248,0.06)", border: "1px solid var(--card-border)",
                             fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6,
                         }}>
-                            📋 After registration, your company will be verified using GST number, business
+                            After registration, your company will be verified using GST number, business
                             registration documents, and contact information. This typically takes 24-48 hours.
                         </div>
                         <button className="btn-primary" type="submit" style={{ width: "100%" }} disabled={loading}>
-                            {loading ? "Registering..." : "🏢 Register Company"}
+                            {loading ? "Registering..." : "Register Company"}
                         </button>
                     </form>
                 )}

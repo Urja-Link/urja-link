@@ -52,55 +52,55 @@ export default function MarketplacePage() {
     }, []);
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "url('/satellite-bg.webp')", backgroundSize: "cover", overflowY: "auto", paddingTop: 100, paddingBottom: 60, paddingInline: "5%" }}>
+        <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "var(--background)", overflowY: "auto", paddingTop: 100, paddingBottom: 60, paddingInline: "5%" }}>
 
             <div className="glass-card" style={{ padding: 40, width: "100%", maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
                         <h1 style={{ fontSize: 32, fontWeight: 800, margin: "0 0 8px 0", color: "var(--foreground)", display: "flex", alignItems: "center", gap: 12 }}>
-                            <ArrowRightLeft size={32} color="#f59e0b" /> P2P Energy Marketplace
+                            <ArrowRightLeft size={32} color="var(--warning)" /> P2P Energy Marketplace
                         </h1>
                         <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: 15 }}>
                             Trade your surplus solar energy to the local grid in real-time.
                         </p>
                     </div>
 
-                    <div style={{ padding: "16px 24px", background: "rgba(0,0,0,0.3)", borderRadius: 16, border: "1px solid var(--card-border)", display: "flex", gap: 24 }}>
+                    <div style={{ padding: "16px 24px", background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", display: "flex", gap: 24 }}>
                         <div>
                             <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Live Spot Price</div>
-                            <div style={{ fontSize: 28, fontWeight: 800, color: "#22c55e", display: "flex", alignItems: "center", gap: 8 }}>
-                                ₹{currentPrice.toFixed(2)} <span style={{ fontSize: 14 }}>/kWh</span>
+                            <div style={{ fontSize: 28, fontWeight: 800, color: "var(--success)", display: "flex", alignItems: "center", gap: 8 }}>
+                                ₹{currentPrice.toFixed(2)} <span style={{ fontSize: 14, color: "var(--text-muted)" }}>/kWh</span>
                             </div>
                         </div>
                         <div style={{ width: 1, background: "var(--card-border)" }}></div>
                         <div>
                             <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Local Grid Demand</div>
-                            <div style={{ fontSize: 28, fontWeight: 800, color: demand > 85 ? "#ef4444" : "#f59e0b", display: "flex", alignItems: "center", gap: 8 }}>
+                            <div style={{ fontSize: 28, fontWeight: 800, color: demand > 85 ? "var(--danger)" : "var(--warning)", display: "flex", alignItems: "center", gap: 8 }}>
                                 <Activity size={24} /> {demand}%
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ width: "100%", height: 350, background: "rgba(0,0,0,0.15)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 24 }}>
+                <div style={{ width: "100%", height: 350, background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 24 }}>
                     <h3 style={{ margin: "0 0 24px 0", fontSize: 16, color: "var(--foreground)" }}>Spot Rate Volatility (Last 30 Ticks)</h3>
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={priceHistory}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--card-border)" />
                             <XAxis dataKey="timeLabel" stroke="var(--text-muted)" fontSize={11} tickMargin={10} />
                             <YAxis domain={['auto', 'auto']} stroke="var(--text-muted)" fontSize={11} tickFormatter={(val) => `₹${val}`} />
-                            <Tooltip contentStyle={{ background: "rgba(9,9,11,0.9)", border: "1px solid var(--card-border)", borderRadius: 8, color: "var(--foreground)" }} />
-                            <Line type="monotone" dataKey="spot_price_inr" stroke="#10b981" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#10b981" }} />
+                            <Tooltip contentStyle={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 8, color: "var(--foreground)" }} />
+                            <Line type="monotone" dataKey="spot_price_inr" stroke="var(--success)" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "var(--success)" }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
 
                 <div style={{ display: "flex", gap: 24 }}>
-                    <button style={{ flex: 1, padding: "20px", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #10b981, #059669)", color: "white", fontSize: 18, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, boxShadow: "0 8px 24px rgba(16, 185, 129, 0.3)" }}>
+                    <button style={{ flex: 1, padding: "20px", borderRadius: 12, border: "1px solid var(--card-border)", background: "var(--foreground)", color: "var(--background)", fontSize: 18, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
                         <Zap size={20} /> Export Energy (SELL)
                     </button>
-                    <button style={{ flex: 1, padding: "20px", borderRadius: 12, border: "1px solid var(--card-border)", background: "rgba(255,255,255,0.05)", color: "var(--foreground)", fontSize: 18, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                    <button style={{ flex: 1, padding: "20px", borderRadius: 12, border: "1px solid var(--card-border)", background: "var(--card-bg)", color: "var(--foreground)", fontSize: 18, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
                         <DollarSign size={20} /> Withdraw Wallet Balance
                     </button>
                 </div>

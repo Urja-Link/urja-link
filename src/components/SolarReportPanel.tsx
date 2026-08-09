@@ -37,7 +37,7 @@ interface SolarData {
     physics_metrics?: {
         daily_peak_sun_hours: number;
         system_performance_ratio: number;
-        ai_shadow_loss_pct: number;
+        astronomical_shadow_loss_pct: number;
         temperature_loss_pct: number;
         soiling_loss_pct: number;
         cloud_loss_pct: number;
@@ -292,7 +292,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginTop: 8, fontSize: 11 }}>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Sun size={10} color="#f59e0b" /> GHI: <b>{data.physics_metrics.daily_peak_sun_hours} <span style={{ fontSize: 9 }}>kWh/m²/day</span></b></span>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={10} /> PR: <b>{(data.physics_metrics.system_performance_ratio * 100).toFixed(1)}%</b></span>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Cloud size={10} /> Shadow: <b>{data.physics_metrics.ai_shadow_loss_pct}%</b></span>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Cloud size={10} /> Shadow: <b>{data.physics_metrics.astronomical_shadow_loss_pct}%</b></span>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Thermometer size={10} /> Temp Loss: <b>{data.physics_metrics.temperature_loss_pct}%</b></span>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Factory size={10} /> Soiling: <b>{data.physics_metrics.soiling_loss_pct}%</b></span>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><RotateCw size={10} /> Orientation: <b>{(data.physics_metrics.orientation_factor * 100).toFixed(1)}%</b></span>
