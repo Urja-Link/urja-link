@@ -5,13 +5,19 @@ import { Cpu, ShieldCheck, AlertTriangle, Zap, Activity, Droplet, ArrowRight, Lo
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 
 import { supabase } from "@/lib/supabase";
+import dynamic from "next/dynamic";
+
+const DigitalTwin3D = dynamic(() => import("@/components/DigitalTwin3D"), { ssr: false });
 
 // Using native Supabase instead of FastAPI for database items
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 export default function UserDashboard() {
     const [isScanning, setIsScanning] = useState(false);
     const [scanResult, setScanResult] = useState<any>(null);
     const [telemetryData, setTelemetryData] = useState<any[]>([]);
+
+    const latestTemp = telemetryData.length > 0 ? telemetryData[telemetryData.length - 1].temp : 25;
 
     useEffect(() => {
         const fetchTelemetry = async () => {
@@ -131,8 +137,13 @@ export default function UserDashboard() {
                     </div>
                 )}
 
-                {/* Telemetry Charts */}
+                {/* Telemetry Charts & 3D Twin */}
                 <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+
+                    {/* Live Digital Twin Visualization */}
+                    <div style={{ flex: 1, minWidth: 400, height: 320, background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 8 }}>
+                        <DigitalTwin3D temperature={latestTemp} />
+                    </div>
 
                     <div style={{ flex: 1, minWidth: 400, height: 320, background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 24 }}>
                         <h3 style={{ margin: "0 0 24px 0", fontSize: 16, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 8 }}>
