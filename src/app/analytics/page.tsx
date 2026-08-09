@@ -7,6 +7,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Activity, Zap, TrendingUp, BarChart3, Database, Server, Cpu, Clock, Cloud, Leaf, BrainCircuit, Wind, ThermometerSun, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { supabase } from "@/lib/supabase";
+
 // Mock Data for Analytics
 const PERFORMANCE_DATA = [
     { time: "00:00", generation: 0, consumption: 420 },
@@ -52,38 +54,42 @@ export default function AnalyticsPage() {
     import("react").then((React) => {
         const { useEffect } = React;
         useEffect(() => {
-            const baseUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
-            const ws = new WebSocket(`${baseUrl}/ws/live-telemetry`);
+            const channel = supabase.channel('national-grid-stats')
+                .on(
+                    'postgres_changes',
+                    { event: 'INSERT', schema: 'public', table: 'iot_telemetry' },
+                    (payload) => {
+                        const newTelemetry = payload.new;
 
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
+                        setLiveData(prev => ({
+                            ...prev,
+                            // Mutate national aggregate based on individual node spike
+                            power: prev.power + (newTelemetry.voltage_mv > 12000 ? 0.01 : -0.01),
+                            temp: newTelemetry.temperature_c,
+                            ai_alert: newTelemetry.temperature_c > 45 ? "CRITICAL HEAT WARNING" : "Normal",
+                            co2: prev.co2 + 0.05
+                        }));
 
-                setLiveData({
-                    power: data.active_power_generation_gw,
-                    cloud: data.average_cloud_cover_pct,
-                    installs: data.installations_today,
-                    co2: data.live_co2_saved_mt,
-                    temp: data.temperature_c || 35.0,
-                    wind: data.wind_speed_kmh || 12.0,
-                    ai_alert: data.ai_alert || "Normal"
-                });
+                        const now = new Date();
+                        const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
 
-                const now = new Date();
-                const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+                        setTelemetryLogs(prev => {
+                            const newLog = {
+                                time: timeStr,
+                                id: `NODE-${newTelemetry.device_id.split('-')[0]}`,
+                                type: "HARDWARE_ACT",
+                                status: newTelemetry.temperature_c > 45 ? "WARN" : "OK",
+                                latency: `${Math.floor(Math.random() * 20 + 5)}ms`
+                            };
+                            return [newLog, ...prev].slice(0, 8);
+                        });
+                    }
+                )
+                .subscribe();
 
-                setTelemetryLogs(prev => {
-                    const newLog = {
-                        time: timeStr,
-                        id: `IN-NODE-${Math.floor(Math.random() * 999)}`,
-                        type: "LIVE_SYNC",
-                        status: "OK",
-                        latency: `${Math.floor(Math.random() * 20 + 5)}ms`
-                    };
-                    return [newLog, ...prev].slice(0, 8);
-                });
+            return () => {
+                supabase.removeChannel(channel);
             };
-
-            return () => ws.close();
         }, []);
     }).catch(() => { });
 

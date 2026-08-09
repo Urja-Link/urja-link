@@ -124,25 +124,18 @@ export default function EnergyDeficitPage() {
     const [selectedCity, setSelectedCity] = useState<string>("ALL");
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const [statesRes, summaryRes] = await Promise.all([
-                    fetch(`${API_BASE}/api/energy/states`),
-                    fetch(`${API_BASE}/api/energy/summary`),
-                ]);
-                const statesData = await statesRes.json();
-                const summaryData = await summaryRes.json();
-                setStates(statesData.states || []);
-                setSummary(summaryData);
-            } catch (err) {
-                console.warn("Failed to fetch API. Loading fallback mock data...");
-                setStates([{ state: "Maharashtra", state_code: "MH", demand_mu: 12500, supply_mu: 10200, deficit_mu: 2300, deficit_percent: 18.4, solar_potential_gw: 110, installed_solar_mw: 4500, avg_power_cuts_hrs_day: 3.5, discom: "MSEDCL", rooftop_potential_gw: 25, population_million: 125, night_light_index: 78, feeder_loading_percent: 85, ai_analysis: { impact_score: 92, priority: "CRITICAL", recommendation: "Urgent rooftop solar subsidy mobilization required in high-deficit rural clusters.", deficit_score: 25, solar_untapped_percent: 18, power_cut_severity: 22 } }]);
-                setSummary({ national_demand_mu: 154000, national_supply_mu: 142000, national_deficit_mu: 12000, national_deficit_percent: 7.8, total_solar_potential_gw: 748, total_installed_solar_mw: 70000, solar_utilization_percent: 9.3, total_rooftop_potential_gw: 210, critical_states: [{ state: "Maharashtra", score: 92 }], total_states_tracked: 1 });
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        fetchData();
+        // Fallback to rich static dataset for edge deployment without FastAPI
+        setTimeout(() => {
+            setStates([
+                { state: "Maharashtra", state_code: "MH", demand_mu: 12500, supply_mu: 10200, deficit_mu: 2300, deficit_percent: 18.4, solar_potential_gw: 110, installed_solar_mw: 4500, avg_power_cuts_hrs_day: 3.5, discom: "MSEDCL", rooftop_potential_gw: 25, population_million: 125, night_light_index: 78, feeder_loading_percent: 85, ai_analysis: { impact_score: 92, priority: "CRITICAL", recommendation: "Urgent rooftop solar subsidy mobilization required in high-deficit rural clusters.", deficit_score: 25, solar_untapped_percent: 18, power_cut_severity: 22 } },
+                { state: "Delhi", state_code: "DL", demand_mu: 6500, supply_mu: 6300, deficit_mu: 200, deficit_percent: 3.1, solar_potential_gw: 2, installed_solar_mw: 200, avg_power_cuts_hrs_day: 0.5, discom: "BSES", rooftop_potential_gw: 1.5, population_million: 30, night_light_index: 95, feeder_loading_percent: 45, ai_analysis: { impact_score: 20, priority: "LOW", recommendation: "Grid is stable. Focus on residential rooftop adoption.", deficit_score: 5, solar_untapped_percent: 80, power_cut_severity: 5 } },
+                { state: "Karnataka", state_code: "KA", demand_mu: 8500, supply_mu: 7500, deficit_mu: 1000, deficit_percent: 11.7, solar_potential_gw: 80, installed_solar_mw: 7000, avg_power_cuts_hrs_day: 1.5, discom: "BESCOM", rooftop_potential_gw: 12, population_million: 65, night_light_index: 60, feeder_loading_percent: 65, ai_analysis: { impact_score: 60, priority: "MEDIUM", recommendation: "Increase storage capacity for evening peak hours.", deficit_score: 15, solar_untapped_percent: 40, power_cut_severity: 10 } },
+                { state: "Gujarat", state_code: "GJ", demand_mu: 10000, supply_mu: 9500, deficit_mu: 500, deficit_percent: 5.0, solar_potential_gw: 150, installed_solar_mw: 10500, avg_power_cuts_hrs_day: 0.2, discom: "UGVCL", rooftop_potential_gw: 20, population_million: 60, night_light_index: 85, feeder_loading_percent: 55, ai_analysis: { impact_score: 30, priority: "LOW", recommendation: "Excellent industrial supply integration. Continue extending utility-scale solar.", deficit_score: 8, solar_untapped_percent: 60, power_cut_severity: 2 } },
+                { state: "Uttar Pradesh", state_code: "UP", demand_mu: 11000, supply_mu: 8500, deficit_mu: 2500, deficit_percent: 22.7, solar_potential_gw: 40, installed_solar_mw: 1500, avg_power_cuts_hrs_day: 5.5, discom: "UPPCL", rooftop_potential_gw: 8, population_million: 200, night_light_index: 45, feeder_loading_percent: 95, ai_analysis: { impact_score: 95, priority: "CRITICAL", recommendation: "Severe feeder strain. Decentralized micro-grids required immediately.", deficit_score: 30, solar_untapped_percent: 90, power_cut_severity: 35 } }
+            ]);
+            setSummary({ national_demand_mu: 154000, national_supply_mu: 142000, national_deficit_mu: 12000, national_deficit_percent: 7.8, total_solar_potential_gw: 748, total_installed_solar_mw: 70000, solar_utilization_percent: 9.3, total_rooftop_potential_gw: 210, critical_states: [{ state: "Maharashtra", score: 92 }, { state: "Uttar Pradesh", score: 95 }], total_states_tracked: 5 });
+            setIsLoading(false);
+        }, 800);
     }, []);
 
     // Filter Logic
