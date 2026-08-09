@@ -4,20 +4,51 @@ import { motion } from "framer-motion";
 import { Package, Truck, CheckCircle, FileText, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const ORDERS = [
-    {
-        id: "ORD-UL-2026-984",
-        date: "August 12, 2026",
-        status: "shipped", // "processing" | "shipped" | "delivered"
-        total: 24400,
-        items: [
-            { name: "Urja-Link Monocrystalline Pro 400W", qty: 1, price: 12500 },
-            { name: "Urja-Link Poly Eco 330W", qty: 1, price: 8900 }
-        ]
-    }
-];
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function OrderHistoryPage() {
+    const [orders, setOrders] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+
+                let query = supabase.from('store_orders').select('*').order('created_at', { ascending: false });
+
+                if (session?.user?.id) {
+                    query = query.eq('user_id', session.user.id);
+                }
+
+                const { data } = await query;
+
+                if (data && data.length > 0) {
+                    setOrders(data);
+                } else {
+                    setOrders([
+                        {
+                            id: "ORD-UL-2026-984",
+                            created_at: "2026-08-12T10:00:00Z",
+                            status: "shipped",
+                            total_amount: 24400,
+                            items: [
+                                { name: "Urja-Link Monocrystalline Pro 400W", qty: 1, price: 12500 },
+                                { name: "Urja-Link Poly Eco 330W", qty: 1, price: 8900 }
+                            ]
+                        }
+                    ]);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOrders();
+    }, []);
     return (
         <div style={{ minHeight: "100vh", background: "var(--background)", paddingTop: 100, paddingBottom: 60, paddingInline: 20 }}>
             <div style={{ maxWidth: 800, margin: "0 auto" }}>
@@ -30,14 +61,14 @@ export default function OrderHistoryPage() {
                     </Link>
                 </div>
 
-                {ORDERS.length === 0 ? (
+                {orders.length === 0 ? (
                     <div className="glass-card" style={{ padding: 40, textAlign: "center", color: "var(--text-secondary)" }}>
                         <Package size={48} style={{ opacity: 0.5, marginBottom: 16 }} />
                         <p>You haven't placed any orders yet.</p>
                     </div>
                 ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                        {ORDERS.map((order, i) => (
+                        {orders.map((order, i) => (
                             <motion.div
                                 key={order.id}
                                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
@@ -46,14 +77,14 @@ export default function OrderHistoryPage() {
                                 <div style={{ background: "rgba(255,255,255,0.03)", padding: "16px 24px", borderBottom: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16, fontSize: 13, color: "var(--text-secondary)" }}>
                                     <div>
                                         <div style={{ fontWeight: 600, color: "var(--foreground)", marginBottom: 4 }}>Order Placed</div>
-                                        <div>{order.date}</div>
+                                        <div>{new Date(order.created_at).toLocaleDateString()}</div>
                                     </div>
                                     <div>
                                         <div style={{ fontWeight: 600, color: "var(--foreground)", marginBottom: 4 }}>Total</div>
-                                        <div>₹{order.total.toLocaleString("en-IN")}</div>
+                                        <div>₹{order.total_amount.toLocaleString("en-IN")}</div>
                                     </div>
                                     <div style={{ flex: 1, textAlign: "right" }}>
-                                        <div style={{ fontWeight: 600, color: "var(--foreground)", marginBottom: 4 }}>Order #{order.id}</div>
+                                        <div style={{ fontWeight: 600, color: "var(--foreground)", marginBottom: 4 }}>Order #{String(order.id).split('-')[0]}</div>
                                         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16 }}>
                                             <a href="#" style={{ color: "var(--accent)", textDecoration: "none" }}>View Invoice</a>
                                         </div>
@@ -68,7 +99,7 @@ export default function OrderHistoryPage() {
                                     </h3>
 
                                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                                        {order.items.map((item, idx) => (
+                                        {order.items.map((item: any, idx: number) => (
                                             <div key={idx} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                                                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                                                     <div style={{ width: 64, height: 64, borderRadius: 8, background: "var(--hover-bg)", border: "1px solid var(--card-border)", display: "flex", alignItems: "center", justifyContent: "center" }}>

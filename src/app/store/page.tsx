@@ -1,24 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart, Star, Search } from "lucide-react";
 import Link from "next/link";
-
-const PRODUCTS = [
-    { id: "monocrystalline-panel-400w", name: "Urja-Link Monocrystalline Pro 400W", type: "Panel", price: 12500, rating: 4.8, image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=600&auto=format&fit=crop" },
-    { id: "polycrystalline-panel-330w", name: "Urja-Link Poly Eco 330W", type: "Panel", price: 8900, rating: 4.5, image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?q=80&w=600&auto=format&fit=crop" },
-    { id: "bifacial-panel-500w", name: "Solaris Bifacial Titan 500W", type: "Panel", price: 16000, rating: 4.9, image: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=600&auto=format&fit=crop" },
-    { id: "hybrid-inverter-5kw", name: "Nexus Hybrid Inverter 5kW", type: "Inverter", price: 45000, rating: 4.9, image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=600&auto=format&fit=crop" },
-    { id: "on-grid-inverter-3kw", name: "Luminous Grid-Tie 3kW", type: "Inverter", price: 28000, rating: 4.6, image: "https://images.unsplash.com/photo-1592833159155-c62df1b65634?q=80&w=600&auto=format&fit=crop" },
-    { id: "lithium-ion-battery-10kwh", name: "Voltaic Powerwall 10kWh", type: "Battery", price: 180000, rating: 5.0, image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop" },
-];
+import { supabase } from "@/lib/supabase";
 
 export default function StorePage() {
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("All");
+    const [products, setProducts] = useState<any[]>([]);
 
-    const filteredProducts = PRODUCTS.filter(p =>
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const { data } = await supabase.from('store_products').select('*');
+            if (data && data.length > 0) {
+                setProducts(data);
+            } else {
+                setProducts([
+                    { id: "1", name: "Urja-Link Monocrystalline Pro 400W", type: "Panel", price: 12500, rating: 4.8, image_url: "https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=600&auto=format&fit=crop" },
+                    { id: "2", name: "Urja-Link Poly Eco 330W", type: "Panel", price: 8900, rating: 4.5, image_url: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?q=80&w=600&auto=format&fit=crop" },
+                    { id: "3", name: "Nexus Hybrid Inverter 5kW", type: "Inverter", price: 45000, rating: 4.9, image_url: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=600&auto=format&fit=crop" },
+                    { id: "4", name: "Voltaic Powerwall 10kWh", type: "Battery", price: 180000, rating: 5.0, image_url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop" },
+                ]);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const filteredProducts = products.filter(p =>
         (filter === "All" || p.type === filter) &&
         p.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -65,7 +75,7 @@ export default function StorePage() {
                             className="glass-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16 }}
                         >
                             <div style={{ width: "100%", height: 200, borderRadius: 12, overflow: "hidden", position: "relative" }}>
-                                <img src={product.image} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
+                                <img src={product.image_url} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s" }} onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
                                 <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "4px 8px", borderRadius: 100, display: "flex", alignItems: "center", gap: 4, color: "#fff", fontSize: 12, fontWeight: 600 }}>
                                     <Star size={12} color="var(--warning)" fill="var(--warning)" /> {product.rating}
                                 </div>

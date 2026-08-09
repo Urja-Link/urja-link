@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, CreditCard, ShoppingBag, ShieldCheck, Truck, Zap } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { supabase } from "@/lib/supabase";
 
 const CART_ITEMS = [
     { id: 1, name: "Solaris Bifacial Titan 500W", qty: 10, price: 16000 },
@@ -14,18 +15,47 @@ export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const formRef = useRef<HTMLFormElement>(null);
 
     const subtotal = CART_ITEMS.reduce((sum, item) => sum + (item.qty * item.price), 0);
     const tax = subtotal * 0.18; // 18% GST typical for some electronics in India
     const total = subtotal + tax;
 
-    const handleCheckout = (e: React.FormEvent) => {
+    const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsProcessing(true);
-        setTimeout(() => {
-            setIsProcessing(false);
+
+        try {
+            const formData = new FormData(formRef.current!);
+            const shipping_details = {
+                name: formData.get("name"),
+                address: formData.get("address"),
+                city: formData.get("city"),
+                state: formData.get("state"),
+                pincode: formData.get("pincode"),
+                phone: formData.get("phone"),
+                payment_method: paymentMethod
+            };
+
+            const { data: { session } } = await supabase.auth.getSession();
+
+            const payload = {
+                user_id: session?.user?.id || null, // Allow anonymous orders if session doesn't exist for prototyping
+                total_amount: total,
+                status: 'processing',
+                shipping_details: shipping_details,
+                items: CART_ITEMS
+            };
+
+            const { error } = await supabase.from('store_orders').insert(payload);
+            if (error) throw error;
+
             setIsSuccess(true);
-        }, 2000);
+        } catch (error: any) {
+            alert(`Checkout Error: ${error.message}`);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     if (isSuccess) {
@@ -54,7 +84,7 @@ export default function CheckoutPage() {
                     <ArrowLeft size={18} /> Back to Store
                 </Link>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 32, alignItems: "start" }}>
+                <form ref={formRef} onSubmit={handleCheckout} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 32, alignItems: "start" }}>
 
                     {/* Left Column: Form */}
                     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
@@ -65,27 +95,27 @@ export default function CheckoutPage() {
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                                 <div className="form-group" style={{ gridColumn: "1 / -1" }}>
                                     <label className="form-label">Full Name</label>
-                                    <input className="form-input" placeholder="Name" defaultValue="Rohan Kapoor" />
+                                    <input name="name" className="form-input" placeholder="Name" defaultValue="Rohan Kapoor" />
                                 </div>
                                 <div className="form-group" style={{ gridColumn: "1 / -1" }}>
                                     <label className="form-label">Address line 1</label>
-                                    <input className="form-input" placeholder="Street address" defaultValue="14 Tech Park Road" />
+                                    <input name="address" className="form-input" placeholder="Street address" defaultValue="14 Tech Park Road" />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">City</label>
-                                    <input className="form-input" placeholder="City" defaultValue="Mumbai" />
+                                    <input name="city" className="form-input" placeholder="City" defaultValue="Mumbai" />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">State</label>
-                                    <input className="form-input" placeholder="State" defaultValue="MH" />
+                                    <input name="state" className="form-input" placeholder="State" defaultValue="MH" />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Pincode</label>
-                                    <input className="form-input" placeholder="6 digits" defaultValue="400001" />
+                                    <input name="pincode" className="form-input" placeholder="6 digits" defaultValue="400001" />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Phone</label>
-                                    <input className="form-input" placeholder="+91..." defaultValue="+91 98765 43210" />
+                                    <input name="phone" className="form-input" placeholder="+91..." defaultValue="+91 98765 43210" />
                                 </div>
                             </div>
                         </div>
@@ -190,8 +220,7 @@ export default function CheckoutPage() {
                             <ShieldCheck size={14} /> Encrypted & Secure Checkout
                         </p>
                     </div>
-
-                </div>
+                </form>
             </div>
         </div>
     );
