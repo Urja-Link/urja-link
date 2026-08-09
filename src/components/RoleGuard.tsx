@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function RoleGuard({ allowedRoles, children }: { allowedRoles: string[], children: React.ReactNode }) {
     const router = useRouter();
@@ -9,18 +10,19 @@ export default function RoleGuard({ allowedRoles, children }: { allowedRoles: st
     const [authorized, setAuthorized] = useState(false);
 
     useEffect(() => {
-        const checkAccess = () => {
-            const userStr = localStorage.getItem("urjalink-user");
-            if (!userStr) {
-                router.push("/login"); // Force login if not authenticated
+        const checkAccess = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                router.push("/login");
                 return;
             }
 
             try {
-                const user = JSON.parse(userStr);
-                // Fallback to user_type alias if role isn't explicitly set yet
-                const role = user.role || (user.user_type === "admin" ? "Admin" :
-                    user.user_type === "company" ? "Company" : "Customer");
+                const userExt = session.user.user_metadata;
+                // Default to Customer if individual, Company if company, etc.
+                const role = userExt.user_type === "admin" ? "Admin" :
+                    userExt.user_type === "company" ? "Company" : "Customer";
 
                 if (allowedRoles.includes("All") || allowedRoles.includes(role) || role === "SuperAdmin") {
                     setAuthorized(true);
@@ -33,9 +35,20 @@ export default function RoleGuard({ allowedRoles, children }: { allowedRoles: st
         };
 
         checkAccess();
+
+        // Listen for logouts to kick users out interactively
+        const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_OUT') {
+                router.push("/login");
+            }
+        });
+
+        return () => {
+            authListener.subscription.unsubscribe();
+        }
     }, [pathname, allowedRoles, router]);
 
-    if (!authorized) return null; // Render completely transparent while resolving
+    if (!authorized) return null; // Render transparent while checking
 
     return <>{children}</>;
 }

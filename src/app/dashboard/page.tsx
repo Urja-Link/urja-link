@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Cpu, ShieldCheck, AlertTriangle, Zap, Activity, Droplet, ArrowRight, Loader2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+import { supabase } from "@/lib/supabase";
 
+// Using native Supabase instead of FastAPI for database items
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 export default function UserDashboard() {
     const [isScanning, setIsScanning] = useState(false);
     const [scanResult, setScanResult] = useState<any>(null);
@@ -14,31 +16,34 @@ export default function UserDashboard() {
     useEffect(() => {
         const fetchTelemetry = async () => {
             try {
-                const res = await fetch(`${API_BASE}/api/iot/panel/UL-H20-9941X`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.length > 0) {
-                        const formatted = data.map((d: any) => {
-                            const date = new Date(d.timestamp);
-                            return {
-                                day: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                                voltage: d.voltage_v,
-                                temp: d.temperature_c
-                            };
-                        });
-                        setTelemetryData(formatted);
-                    } else {
-                        // Fallback mock strictly for design review if DB is empty
-                        setTelemetryData([
-                            { day: 'Mon', voltage: 230, temp: 28 },
-                            { day: 'Tue', voltage: 228, temp: 31 },
-                            { day: 'Wed', voltage: 226, temp: 35 },
-                            { day: 'Thu', voltage: 224, temp: 38 },
-                            { day: 'Fri', voltage: 221, temp: 42 },
-                            { day: 'Sat', voltage: 219, temp: 46 },
-                            { day: 'Sun', voltage: 215, temp: 48 },
-                        ]);
-                    }
+                // Fetch directly from native Supabase DB!
+                const { data, error } = await supabase
+                    .from('iot_telemetry')
+                    .select('*')
+                    .order('timestamp', { ascending: false })
+                    .limit(7);
+
+                if (!error && data && data.length > 0) {
+                    const formatted = data.reverse().map((d: any) => {
+                        const date = new Date(d.timestamp);
+                        return {
+                            day: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            voltage: d.voltage_v,
+                            temp: d.temperature_c
+                        };
+                    });
+                    setTelemetryData(formatted);
+                } else {
+                    // Fallback mock strictly for design review if DB is empty
+                    setTelemetryData([
+                        { day: 'Mon', voltage: 230, temp: 28 },
+                        { day: 'Tue', voltage: 228, temp: 31 },
+                        { day: 'Wed', parseInt: 226, temp: 35 },
+                        { day: 'Thu', voltage: 224, temp: 38 },
+                        { day: 'Fri', voltage: 221, temp: 42 },
+                        { day: 'Sat', voltage: 219, temp: 46 },
+                        { day: 'Sun', voltage: 215, temp: 48 },
+                    ]);
                 }
             } catch (error) {
                 console.error("Failed to fetch IoT telemetry:", error);
@@ -46,7 +51,8 @@ export default function UserDashboard() {
         };
 
         fetchTelemetry();
-        // Poll every 15s to keep dashboard live
+
+        // Supabase Realtime simplifies this! For now, keep the 15s polling to map 1:1 with old behavior
         const interval = setInterval(fetchTelemetry, 15000);
         return () => clearInterval(interval);
     }, []);
