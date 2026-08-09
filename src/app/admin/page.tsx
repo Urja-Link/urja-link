@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import AnalyticsDashboard from "../../components/AnalyticsDashboard";
 import { ShieldAlert, ClipboardList, Users, LineChart, Terminal, CheckCircle, Construction } from "lucide-react";
 
+import { supabase } from "@/lib/supabase";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 interface Company {
@@ -36,15 +38,14 @@ export default function AdminDashboard() {
     const loadPendingCompanies = async () => {
         setIsLoading(true);
         try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${API_BASE}/api/admin/companies/pending`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-            if (!res.ok) throw new Error("Failed to fetch pending companies");
-            const data = await res.json();
-            setPendingCompanies(data.companies || []);
+            const { data, error } = await supabase
+                .from('companies')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setPendingCompanies(data || []);
         } catch (e: any) {
             setError(e.message);
         } finally {
@@ -54,17 +55,12 @@ export default function AdminDashboard() {
 
     const updateCompanyStatus = async (companyId: string, newStatus: string) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${API_BASE}/api/admin/company/${companyId}/status`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
+            const { error } = await supabase
+                .from('companies')
+                .update({ status: newStatus.toLowerCase() })
+                .eq('id', companyId);
 
-            if (!res.ok) throw new Error("Failed to update status");
+            if (error) throw error;
 
             // Remove the company from pending list locally
             setPendingCompanies(prev => prev.filter(c => c.id !== companyId));

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown, Activity, Zap, DollarSign, ArrowRightLeft } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/lib/supabase";
 
 interface MarketTick {
     spot_price_inr: number;
@@ -17,8 +18,22 @@ export default function MarketplacePage() {
     const [currentPrice, setCurrentPrice] = useState(0);
     const [demand, setDemand] = useState(0);
     const [wsError, setWsError] = useState(false);
+    const [installers, setInstallers] = useState<any[]>([]);
 
     useEffect(() => {
+        const fetchInstallers = async () => {
+            const { data, error } = await supabase
+                .from('companies')
+                .select('*')
+                .eq('status', 'approved');
+
+            if (data && !error) {
+                setInstallers(data);
+            }
+        };
+
+        fetchInstallers();
+
         // Hydrate initial mock data
         const initial = Array.from({ length: 30 }).map((_, i) => ({
             spot_price_inr: 4.5 + Math.random() * 0.5,
@@ -96,7 +111,7 @@ export default function MarketplacePage() {
                     </ResponsiveContainer>
                 </div>
 
-                <div style={{ display: "flex", gap: 24 }}>
+                <div style={{ display: "flex", gap: 24, marginBottom: 40 }}>
                     <button style={{ flex: 1, padding: "20px", borderRadius: 12, border: "1px solid var(--card-border)", background: "var(--foreground)", color: "var(--background)", fontSize: 18, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
                         <Zap size={20} /> Export Energy (SELL)
                     </button>
@@ -104,6 +119,36 @@ export default function MarketplacePage() {
                         <DollarSign size={20} /> Withdraw Wallet Balance
                     </button>
                 </div>
+
+                {/* Live Installer Directory */}
+                <div style={{ paddingTop: 32, borderTop: "1px solid var(--card-border)" }}>
+                    <h2 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 8px 0", color: "var(--foreground)" }}>Live Installer Network</h2>
+                    <p style={{ margin: "0 0 24px 0", color: "var(--text-secondary)", fontSize: 15 }}>Connect with Gov-Verified EPC Solar Installers operating in your state.</p>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 24 }}>
+                        {installers.length === 0 ? (
+                            <div style={{ padding: 40, background: "var(--card-bg)", borderRadius: 16, border: "1px dashed var(--card-border)", color: "var(--text-muted)", gridColumn: "1 / -1", textAlign: "center" }}>
+                                No verified installers available in the network yet.
+                            </div>
+                        ) : (
+                            installers.map((company: any) => (
+                                <div key={company.id} style={{ background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 24 }}>
+                                    <h3 style={{ margin: "0 0 4px 0", fontSize: 18, color: "var(--foreground)" }}>{company.company_name}</h3>
+                                    <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>{company.city}, {company.state}</div>
+
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14 }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "var(--text-muted)" }}>Contact:</span> <span style={{ color: "var(--foreground)" }}>{company.contact_person}</span></div>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "var(--text-muted)" }}>Phone:</span> <span style={{ color: "var(--foreground)" }}>{company.phone}</span></div>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "var(--text-muted)" }}>GST:</span> <span style={{ color: "var(--success)", fontFamily: "monospace", fontSize: 12 }}>{company.gst_number}</span></div>
+                                    </div>
+
+                                    <button style={{ marginTop: 24, width: "100%", padding: "12px", background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.2)", borderRadius: 8, color: "var(--accent)", fontWeight: 600, cursor: "pointer", transition: "0.2s" }} onClick={() => alert('Quotation request sent to ' + company.company_name)}>Request Quotation</button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
             </div>
         </div>
     );
