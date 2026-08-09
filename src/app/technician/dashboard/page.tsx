@@ -1,34 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Map, Navigation, CheckCircle, Clock, Wrench } from "lucide-react";
 import RoleGuard from "@/components/RoleGuard";
-
-const MOCK_JOBS = [
-    {
-        id: "JOB-UL-991",
-        customer: "Rajesh Kumar",
-        address: "42 MG Road, Bangalore 560001",
-        task: "New Installation: Monocrystalline Pro 400W x 5",
-        status: "assigned", // assigned, en_route, working, completed
-        time: "10:00 AM Today"
-    },
-    {
-        id: "JOB-UL-882",
-        customer: "Priya Sharma",
-        address: "71 Indiranagar, Bangalore 560038",
-        task: "Maintenance: Nexus Inverter Diagnostics",
-        status: "completed",
-        time: "Yesterday"
-    }
-];
+import { supabase } from "@/lib/supabase";
 
 export default function TechnicianDashboard() {
-    const [jobs, setJobs] = useState(MOCK_JOBS);
+    const [jobs, setJobs] = useState<any[]>([]);
 
-    const updateStatus = (jobId: string, newStatus: string) => {
+    useEffect(() => {
+        const fetchJobs = async () => {
+            const { data } = await supabase
+                .from('maintenance_tickets')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (data && data.length > 0) {
+                setJobs(data);
+            } else {
+                // Mock job for UI prototyping if DB empty
+                setJobs([
+                    {
+                        id: "JOB-UL-991",
+                        customer_name: "Rajesh Kumar",
+                        address: "42 MG Road, Bangalore 560001",
+                        task_description: "New Installation: Monocrystalline Pro 400W x 5",
+                        status: "assigned",
+                        created_at: new Date().toISOString()
+                    }
+                ]);
+            }
+        };
+
+        fetchJobs();
+    }, []);
+
+    const updateStatus = async (jobId: string, newStatus: string) => {
+        // Optimistic UI update
         setJobs(jobs.map(j => j.id === jobId ? { ...j, status: newStatus } : j));
+
+        // Push state to Supabase
+        await supabase
+            .from('maintenance_tickets')
+            .update({ status: newStatus })
+            .eq('id', jobId);
     };
 
     return (
@@ -55,18 +71,20 @@ export default function TechnicianDashboard() {
                                 className="glass-card" style={{ padding: 24, border: "1px solid var(--card-border)", borderRadius: 12, marginBottom: 16 }}
                             >
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                                    <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>{job.time}</div>
+                                    <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>
+                                        {new Date(job.created_at).toLocaleDateString()}
+                                    </div>
                                     <div style={{ fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 8, background: "rgba(255,255,255,0.05)", textTransform: "uppercase" }}>
                                         {job.status.replace("_", " ")}
                                     </div>
                                 </div>
-                                <h3 style={{ fontSize: 20, fontWeight: 700, color: "var(--foreground)", margin: "0 0 4px 0" }}>{job.customer}</h3>
+                                <h3 style={{ fontSize: 20, fontWeight: 700, color: "var(--foreground)", margin: "0 0 4px 0" }}>{job.customer_name}</h3>
                                 <p style={{ color: "var(--text-secondary)", fontSize: 14, margin: "0 0 16px 0", display: "flex", alignItems: "center", gap: 6 }}>
                                     <Map size={16} /> {job.address}
                                 </p>
                                 <div style={{ background: "rgba(56, 189, 248, 0.05)", padding: 16, borderRadius: 12, marginBottom: 20, border: "1px solid var(--card-border)" }}>
                                     <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Work Instructions</div>
-                                    <div style={{ color: "var(--foreground)", fontWeight: 500, fontSize: 14 }}>{job.task}</div>
+                                    <div style={{ color: "var(--foreground)", fontWeight: 500, fontSize: 14 }}>{job.task_description}</div>
                                 </div>
 
                                 {job.status !== "completed" ? (

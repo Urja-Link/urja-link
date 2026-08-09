@@ -63,8 +63,12 @@ export default function UserDashboard() {
         return () => clearInterval(interval);
     }, []);
 
+    const [isDispatching, setIsDispatching] = useState(false);
+    const [dispatched, setDispatched] = useState(false);
+
     const handleRunDiagnostics = async () => {
         setIsScanning(true);
+        setDispatched(false);
         try {
             // Post our latest tensor to the Predictive ML endpoint
             const res = await fetch(`${API_BASE}/api/predictive/degradation`, {
@@ -86,6 +90,24 @@ export default function UserDashboard() {
             console.error(e);
         } finally {
             setIsScanning(false);
+        }
+    };
+
+    const handleDispatchTechnician = async () => {
+        setIsDispatching(true);
+        try {
+            const { error } = await supabase.from('maintenance_tickets').insert({
+                panel_id: "UL-H20-9941X",
+                customer_name: "John Doe (Connected Prosumer)",
+                address: "Simulated Array Address, Bengaluru",
+                task_description: `ML DIAGNOSTIC ALERT: ${scanResult.primary_factor}. Recommended Action: ${scanResult.recommended_action}`
+            });
+            if (error) throw error;
+            setDispatched(true);
+        } catch (e: any) {
+            alert(e.message);
+        } finally {
+            setIsDispatching(false);
         }
     };
 
@@ -111,7 +133,7 @@ export default function UserDashboard() {
 
                     <button
                         onClick={handleRunDiagnostics}
-                        disabled={isScanning}
+                        disabled={isScanning || isDispatching}
                         style={{ padding: "16px 32px", borderRadius: 12, border: "1px solid var(--card-border)", background: isScanning ? "var(--hover-bg)" : "var(--foreground)", color: isScanning ? "var(--text-muted)" : "var(--background)", fontSize: 16, fontWeight: 700, cursor: isScanning ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 12 }}
                     >
                         {isScanning ? <><Loader2 size={20} className="lucide-spin" /> Analyzing Tensors...</> : <><Cpu size={20} /> Run ML Hardware Scan</>}
@@ -132,7 +154,23 @@ export default function UserDashboard() {
                         </div>
                         <div style={{ background: "var(--hover-bg)", padding: "16px 20px", borderRadius: 12, fontSize: 15, color: "var(--foreground)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <span><strong>Primary Factor Detected:</strong> {scanResult.primary_factor}</span>
-                            <span style={{ display: "flex", alignItems: "center", gap: 8, color: scanResult.status_code === 'critical' ? "var(--danger)" : "var(--success)" }}><ArrowRight size={16} /> {scanResult.recommended_action}</span>
+                            <span style={{ display: "flex", alignItems: "center", gap: 8, color: scanResult.status_code === 'critical' ? "var(--danger)" : "var(--success)" }}>
+                                <ArrowRight size={16} /> {scanResult.recommended_action}
+                                {scanResult.status_code === 'critical' && !dispatched && (
+                                    <button
+                                        onClick={handleDispatchTechnician}
+                                        disabled={isDispatching}
+                                        style={{ marginLeft: 16, padding: "6px 16px", borderRadius: 100, border: "none", background: "var(--danger)", color: "#fff", fontWeight: 700, cursor: "pointer" }}
+                                    >
+                                        {isDispatching ? "Dispatching..." : "Dispatch Technician"}
+                                    </button>
+                                )}
+                                {dispatched && (
+                                    <span style={{ marginLeft: 16, padding: "6px 16px", borderRadius: 100, background: "rgba(34,197,94,0.1)", color: "var(--success)", fontWeight: 700, fontSize: 12 }}>
+                                        Ticket Created!
+                                    </span>
+                                )}
+                            </span>
                         </div>
                     </div>
                 )}
