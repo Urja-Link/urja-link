@@ -13,19 +13,22 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+    import { supabase } from "@/lib/supabase";
+
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+            const { data, error: sbError } = await supabase.auth.signInWithPassword({
+                email: form.email,
+                password: form.password
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Login failed");
-            localStorage.setItem("urjalink-token", data.access_token);
+
+            if (sbError) throw new Error(sbError.message);
+            if (!data.user) throw new Error("Login failed");
+
+            // Store user in localstorage for legacy compatibility
             localStorage.setItem("urjalink-user", JSON.stringify(data.user));
             window.location.href = "/";
         } catch (err: any) {
@@ -38,14 +41,14 @@ export default function LoginPage() {
     const handleSendOTP = async () => {
         setError("");
         try {
-            const res = await fetch(`${API_BASE}/api/auth/send-otp`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contact: otpForm.contact, otp_type: otpForm.contact.includes("@") ? "email" : "sms" }),
+            const { error: sbError } = await supabase.auth.signInWithOtp({
+                email: otpForm.contact,
+                options: { shouldCreateUser: false }
             });
-            if (res.ok) setOtpForm({ ...otpForm, otpSent: true });
-        } catch {
-            setError("Failed to send OTP");
+            if (sbError) throw new Error(sbError.message);
+            setOtpForm({ ...otpForm, otpSent: true });
+        } catch (err: any) {
+            setError(err.message || "Failed to send OTP (Enter a valid email)");
         }
     };
 
@@ -53,18 +56,17 @@ export default function LoginPage() {
         e.preventDefault();
         setError("");
         try {
-            const res = await fetch(`${API_BASE}/api/auth/verify-otp`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contact: otpForm.contact, otp: otpForm.otp }),
+            const { data, error: sbError } = await supabase.auth.verifyOtp({
+                email: otpForm.contact,
+                token: otpForm.otp,
+                type: 'email'
             });
-            if (res.ok) {
-                window.location.href = "/";
-            } else {
-                setError("Invalid OTP");
-            }
-        } catch {
-            setError("Verification failed");
+            if (sbError) throw new Error(sbError.message);
+
+            localStorage.setItem("urjalink-user", JSON.stringify(data.user));
+            window.location.href = "/";
+        } catch (err: any) {
+            setError("Invalid OTP or Verification failed");
         }
     };
 
