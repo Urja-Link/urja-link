@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // Standard Edge runtime for ultrafast LLM completion
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
     try {
