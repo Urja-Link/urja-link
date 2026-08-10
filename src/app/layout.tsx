@@ -10,11 +10,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+import { Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: "#023e8a",
+};
+
 export const metadata: Metadata = {
   title: "Urja-Link India | AI-Powered Rooftop Solar Platform",
   description:
     "India's AI-powered national platform for rooftop solar potential estimation, PM Surya Ghar subsidies, and smart energy planning.",
-  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
