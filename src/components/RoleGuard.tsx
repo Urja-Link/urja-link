@@ -21,7 +21,7 @@ export default function RoleGuard({ allowedRoles, children }: { allowedRoles: st
             try {
                 const userExt = session.user.user_metadata;
                 // Default to Customer if individual, Company if company, etc.
-                const role = userExt.user_type === "admin" ? "Admin" :
+                const role: string = userExt.user_type === "admin" ? "Admin" :
                     userExt.user_type === "company" ? "Company" : "Customer";
 
                 if (allowedRoles.includes("All") || allowedRoles.includes(role) || role === "SuperAdmin") {

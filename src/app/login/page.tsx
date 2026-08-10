@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -12,8 +13,6 @@ export default function LoginPage() {
     const [otpForm, setOtpForm] = useState({ contact: "", otp: "", otpSent: false });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-
-    import { supabase } from "@/lib/supabase";
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
