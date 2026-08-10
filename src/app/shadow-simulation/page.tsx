@@ -1,164 +1,198 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { Clock, Navigation, Zap, AlertTriangle, ArrowLeft, Sun } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, Sun } from "lucide-react";
 import * as SunCalc from "suncalc";
+import { Canvas } from "@react-three/fiber";
+import { Sky, OrbitControls, Environment, softShadows } from "@react-three/drei";
+import * as THREE from 'three';
 
-// Jodhpur Coordinates (Default)
-const DEFAULT_LAT = 26.2389;
+// Inject soft shadows into Three.js
+softShadows({
+    frustum: 3.75,
+    size: 0.005,
+    near: 9.5,
+    samples: 17,
+    rings: 11,
+});
+
+const DEFAULT_LAT = 26.2389; // Jodhpur
 const DEFAULT_LON = 73.0243;
-const POLE_HEIGHT_METERS = 2;
+const DATE_TARGET = new Date(); // Today
 
-export default function ShadowSimulationPage() {
-    // Current simulated time within the UI
-    const [simTime, setSimTime] = useState<Date>(new Date());
-    const [timeSlider, setTimeSlider] = useState(12); // Default Noon (0.0 to 24.0)
+// 3D Scene Component
+const ShadowScene = ({ timeSlider }: { timeSlider: number }) => {
+    // 1. Calculate Sun Position based on slider time
+    const sunVector = useMemo(() => {
+        const d = new Date(DATE_TARGET);
+        d.setHours(Math.floor(timeSlider), (timeSlider % 1) * 60, 0);
 
-    const [metrics, setMetrics] = useState({
-        azimuth: 0,
-        altitude: 0,
-        shadowLength: 0,
-        shadowDirection: 0
-    });
+        const pos = SunCalc.getPosition(d, DEFAULT_LAT, DEFAULT_LON);
+        const alt = pos.altitude;
+        const azi = pos.azimuth; // 0 = South, PI/2 = West
 
-    useEffect(() => {
-        // Build a date object based on the slider representing the hour of day
-        const today = new Date();
-        today.setHours(Math.floor(timeSlider), (timeSlider % 1) * 60, 0);
-        setSimTime(today);
+        const radius = 50;
+        // Convert to Cartesian (Y up. -Z = North, +Z = South, +X = East, -X = West)
+        const y = radius * Math.sin(alt);
+        const rGround = radius * Math.cos(alt);
 
-        // SunCalc logic
-        const sunPos = SunCalc.getPosition(today, DEFAULT_LAT, DEFAULT_LON);
+        // azimuth 0 is South (+z). PI/2 (90deg) is West (-x).
+        const z = rGround * Math.cos(azi);
+        const x = rGround * -Math.sin(azi);
 
-        // SunCalc returns altitude and azimuth in radians
-        const altDeg = sunPos.altitude * (180 / Math.PI);
-        let aziDeg = sunPos.azimuth * (180 / Math.PI);
-
-        // Ensure Azimuth is 0-360 degrees where 0 is South, 90 is West. Convert to normal Compass (0=N)
-        aziDeg = (aziDeg + 180) % 360;
-
-        let shadow = 0;
-        if (altDeg > 0) {
-            // Shadow Length = Height / tan(altitude)
-            shadow = POLE_HEIGHT_METERS / Math.tan(sunPos.altitude);
-        } else {
-            shadow = 0; // No shadow at night
-        }
-
-        setMetrics({
-            azimuth: aziDeg,
-            altitude: altDeg,
-            shadowLength: shadow,
-            // Shadow goes opposite of the sun
-            shadowDirection: (aziDeg + 180) % 360
-        });
-
+        return new THREE.Vector3(x, Math.max(y, -5), z); // keep Y slightly below horizon if night
     }, [timeSlider]);
 
-    // CSS variables to map the shadow dynamically
-    // A 1 meter shadow = 20px on screen for scale
-    const shadowScale = metrics.altitude > 0 ? (metrics.shadowLength * 20) : 0;
-
-    // Using CSS filter `drop-shadow` to simulate the darkness
-    // Standard X, Y offsets based on trigonometry of the direction
-    const dx = Math.sin(metrics.shadowDirection * (Math.PI / 180)) * shadowScale;
-    const dy = -Math.cos(metrics.shadowDirection * (Math.PI / 180)) * shadowScale; // negative because screen Y is flipped
+    const isNight = sunVector.y <= 0;
 
     return (
-        <div className="page-container">
-            <div className="content-section" style={{ maxWidth: 1000, margin: "0 auto", paddingBottom: 100 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
-                    <Link href="/" style={{ color: "var(--text-secondary)", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
-                        <ArrowLeft size={16} /> Back
+        <>
+            <ambientLight intensity={isNight ? 0.05 : 0.4} />
+            {!isNight && (
+                <directionalLight
+                    position={[sunVector.x, sunVector.y, sunVector.z]}
+                    intensity={2}
+                    castShadow
+                    shadow-mapSize={[2048, 2048]}
+                    shadow-camera-left={-10}
+                    shadow-camera-right={10}
+                    shadow-camera-top={10}
+                    shadow-camera-bottom={-10}
+                />
+            )}
+
+            <Sky sunPosition={sunVector.toArray()} turbidity={isNight ? 0.1 : 0.8} rayleigh={isNight ? 0.3 : 1.2} />
+
+            {/* A sample building/obstacle block */}
+            <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+                <boxGeometry args={[2, 3, 2]} />
+                <meshStandardMaterial color="#94a3b8" roughness={0.7} />
+            </mesh>
+
+            {/* Solar Panel Example */}
+            <mesh position={[3, 0.5, 0]} rotation={[-Math.PI / 6, Math.PI / 4, 0]} castShadow receiveShadow>
+                <boxGeometry args={[2, 0.1, 3]} />
+                <meshStandardMaterial color="#023e8a" metalness={0.8} />
+            </mesh>
+            {/* Panel pole */}
+            <mesh position={[3, 0.25, 0]} castShadow>
+                <cylinderGeometry args={[0.1, 0.1, 0.5]} />
+                <meshStandardMaterial color="#475569" />
+            </mesh>
+
+            {/* The Ground */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+                <planeGeometry args={[100, 100]} />
+                <meshStandardMaterial color="#1e293b" roughness={1} />
+            </mesh>
+
+            <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2.1} minDistance={5} maxDistance={30} />
+            <Environment preset="night" />
+        </>
+    );
+};
+
+export default function ShadowSimulationPage() {
+    const [timeSlider, setTimeSlider] = useState(12);
+    const [metrics, setMetrics] = useState({ alt: 0, azi: 0 });
+
+    useEffect(() => {
+        const d = new Date(DATE_TARGET);
+        d.setHours(Math.floor(timeSlider), (timeSlider % 1) * 60, 0);
+        const pos = SunCalc.getPosition(d, DEFAULT_LAT, DEFAULT_LON);
+
+        let aziDeg = (pos.azimuth * 180) / Math.PI;
+        aziDeg = (aziDeg + 180) % 360; // standardized compass bearing
+
+        setMetrics({
+            alt: (pos.altitude * 180) / Math.PI,
+            azi: aziDeg
+        });
+    }, [timeSlider]);
+
+    const formatTime = (slider: number) => {
+        const hrs = Math.floor(slider).toString().padStart(2, '0');
+        const mins = (Math.round((slider % 1) * 60)).toString().padStart(2, '0');
+        return `${hrs}:${mins}`;
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
+            <div className="container mx-auto px-4 py-8 flex-grow flex flex-col">
+                <header className="flex items-center gap-6 mb-8">
+                    <Link href="/" className="text-slate-400 hover:text-white transition flex items-center gap-2">
+                        <ArrowLeft size={20} /> Back
                     </Link>
-                    <h1 style={{ margin: 0, fontSize: 32, fontWeight: 700, display: "flex", alignItems: "center", gap: 12 }}>
-                        <Sun color="var(--warning)" size={32} />
-                        Solar Shadow Simulator
+                    <h1 className="text-3xl font-bold flex items-center gap-3">
+                        <Sun className="text-amber-500" size={32} />
+                        Astronomical Shadow Physics
                     </h1>
-                </div>
+                </header>
 
-                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 16, padding: 32, marginBottom: 32 }}>
-                    <p style={{ color: "var(--text-secondary)", marginBottom: 24, fontSize: 16 }}>
-                        Utilizing the astronomical <strong>SunCalc (NOAA Algorithm)</strong> physics engine. Adjust the time of day to instantly calculate true localized solar azimuth, elevation, and structural shadow casting for Jodhpur, Rajasthan (Lat: {DEFAULT_LAT}, Lon: {DEFAULT_LON}).
-                    </p>
+                <div className="grid lg:grid-cols-4 gap-8 flex-grow">
+                    {/* Controls & Metrics */}
+                    <div className="lg:col-span-1 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl flex flex-col gap-6">
+                        <div>
+                            <h2 className="text-xl font-bold mb-2">Simulation Time</h2>
+                            <p className="text-slate-400 text-sm mb-4">Adjust to see structural shadows update in real-time across the day.</p>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 40 }}>
-                        <Clock size={24} color="var(--primary)" />
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                                <span style={{ fontWeight: 600 }}>Simulation Time</span>
-                                <span style={{ fontFamily: "monospace", color: "var(--primary)", fontWeight: "bold" }}>
-                                    {simTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="font-semibold flex items-center gap-2"><Clock size={16} /> Local Time</span>
+                                <span className="text-amber-400 font-mono text-xl">{formatTime(timeSlider)}</span>
                             </div>
                             <input
                                 type="range"
                                 min="0" max="24" step="0.25"
                                 value={timeSlider}
                                 onChange={(e) => setTimeSlider(parseFloat(e.target.value))}
-                                style={{
-                                    width: "100%", accentColor: "var(--primary)", height: 6, borderRadius: 10
-                                }}
+                                className="w-full accent-amber-500 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
                             />
                         </div>
+
+                        <div className="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                            <h3 className="text-xs uppercase text-slate-500 mb-1 flex items-center gap-2">
+                                <MapPin size={12} /> Location
+                            </h3>
+                            <div className="font-semibold">Jodhpur, Rajasthan</div>
+                            <div className="text-sm font-mono text-slate-400 mt-1">Lat: {DEFAULT_LAT} / Lon: {DEFAULT_LON}</div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                                <div className="text-xs uppercase text-slate-500 mb-1">Elevation</div>
+                                <div className={`text-xl font-bold ${metrics.alt < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                                    {metrics.alt.toFixed(1)}°
+                                </div>
+                            </div>
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                                <div className="text-xs uppercase text-slate-500 mb-1">Azimuth</div>
+                                <div className="text-xl font-bold text-sky-400">
+                                    {metrics.azi.toFixed(1)}°
+                                </div>
+                            </div>
+                        </div>
+
+                        {metrics.alt < 0 && (
+                            <div className="bg-red-900/40 border border-red-800 text-red-200 p-4 rounded-xl text-sm">
+                                <strong>Night Phase:</strong> The sun is below the horizon. Shadows disabled.
+                            </div>
+                        )}
+                        {metrics.alt > 0 && metrics.alt < 15 && (
+                            <div className="bg-amber-900/40 border border-amber-800 text-amber-200 p-4 rounded-xl text-sm">
+                                <strong>Golden Hour:</strong> Shadows are highly elongated and may reach adjacent arrays.
+                            </div>
+                        )}
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
-                        {/* Simulation Viewport */}
-                        <div style={{
-                            height: 300,
-                            background: "var(--bg-secondary)",
-                            borderRadius: 16,
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            position: "relative",
-                            overflow: "hidden",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}>
-                            {/* Grid Lines */}
-                            <div style={{ position: "absolute", inset: 0, backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '20px 20px', zIndex: 0 }}></div>
-
-                            {/* The "Object" casting shadow (e.g., a 2x2 meter structural box) */}
-                            {metrics.altitude > 0 && (
-                                <div style={{
-                                    width: 40,
-                                    height: 40,
-                                    background: "var(--accent-blue)",
-                                    borderRadius: 4,
-                                    zIndex: 10,
-                                    position: "relative",
-                                    boxShadow: `${dx}px ${dy}px 5px rgba(0,0,0,0.5)`,
-                                    transition: "box-shadow 0.1s linear"
-                                }}>
-                                    <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", fontSize: 10, fontWeight: "bold" }}>N</div>
-                                </div>
-                            )}
-                            {metrics.altitude <= 0 && (
-                                <div style={{ zIndex: 10, color: "var(--text-secondary)", fontWeight: 600 }}>
-                                    Night Time (No Shadows)
-                                </div>
-                            )}
+                    {/* 3D Viewport */}
+                    <div className="lg:col-span-3 bg-slate-950 rounded-2xl overflow-hidden shadow-2xl relative min-h-[500px] border border-slate-700">
+                        <div className="absolute top-4 left-4 z-10 text-white/50 text-xs font-mono select-none">
+                            Orbit: Click & Drag | Pan: Right-Click | Zoom: Scroll
                         </div>
-
-                        {/* Real-Time Metrics Output */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                            <div className="info-card" style={{ padding: 16 }}>
-                                <div style={{ fontSize: 12, color: "var(--text-secondary)", textTransform: "uppercase" }}>Solar Elevation (Altitude)</div>
-                                <div style={{ fontSize: 24, fontWeight: "bold" }}>{metrics.altitude.toFixed(2)}°</div>
-                                {metrics.altitude < 0 && <span style={{ color: "var(--danger)", fontSize: 13 }}>Below Horizon</span>}
-                            </div>
-                            <div className="info-card" style={{ padding: 16 }}>
-                                <div style={{ fontSize: 12, color: "var(--text-secondary)", textTransform: "uppercase" }}>Solar Azimuth</div>
-                                <div style={{ fontSize: 24, fontWeight: "bold" }}>{metrics.azimuth.toFixed(2)}° <span style={{ fontSize: 14 }}>(Compass)</span></div>
-                            </div>
-                            <div className="info-card" style={{ padding: 16, background: "rgba(245, 158, 11, 0.05)", border: "1px solid var(--warning)" }}>
-                                <div style={{ fontSize: 12, color: "var(--warning)", textTransform: "uppercase" }}>Projected Shadow Length</div>
-                                <div style={{ fontSize: 24, fontWeight: "bold", color: "var(--warning)" }}>{metrics.shadowLength.toFixed(2)} meters</div>
-                                <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>Based on a {POLE_HEIGHT_METERS}m high obstruction</p>
-                            </div>
-                        </div>
+                        <Canvas shadows camera={{ position: [5, 8, 15], fov: 45 }}>
+                            <ShadowScene timeSlider={timeSlider} />
+                        </Canvas>
                     </div>
                 </div>
             </div>
@@ -166,3 +200,4 @@ export default function ShadowSimulationPage() {
         </div>
     );
 }
+

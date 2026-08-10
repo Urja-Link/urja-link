@@ -75,7 +75,10 @@ export default function DigitalTwin3D({ temperature = 25 }: { temperature?: numb
 
                 <SolarPanel temperature={temperature} />
 
-                <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2.1} minDistance={3} maxDistance={12} autoRotate={true} autoRotateSpeed={isCritical ? 2.0 : 0.5} />
+                {/* Add a floor grid for spatial awareness */}
+                <gridHelper args={[20, 20, 0x444444, 0x222222]} position={[0, -0.1, 0]} />
+
+                <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2.1} minDistance={2} maxDistance={15} autoRotate={true} autoRotateSpeed={isCritical ? 2.0 : 0.5} />
                 <Environment preset="city" />
             </Canvas>
         </div>

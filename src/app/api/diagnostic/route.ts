@@ -18,22 +18,30 @@ export async function POST(request: Request) {
             });
         }
 
-        // Construct standard prompt
-        const promptText = `
+        const tier = body.tier || 'free';
+
+        // Advanced prompt for pro users
+        let promptText = `
         You are an expert Solar Energy Maintenance AI for the Urja-Link India platform.
         Analyze the following recent physical IoT telemetry arrays from a residential solar panel (Voltage in mV, Current in mA, Temp in Celsius).
         Provide a very short technical diagnostic paragraph (max 3 sentences) explaining if the panel is healthy, dusty, overheating, or failing.
         Data: ${JSON.stringify(telemetry.slice(0, 5))}
         `;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+        if (tier === 'pro') {
+            promptText += `\n[PRO MODE]: Also provide predictive maintenance recommendations based on subtle voltage fluctuations and temperature gradients. Suggest specific actions for the field technician. Include an estimated time-to-failure if critical.`;
+        }
+
+        const modelVersion = tier === 'pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelVersion}:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: promptText }] }],
                 generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 100,
+                    temperature: tier === 'pro' ? 0.4 : 0.2, // slightly more creative for pro
+                    maxOutputTokens: tier === 'pro' ? 300 : 100, // longer response for pro
                 }
             })
         });
