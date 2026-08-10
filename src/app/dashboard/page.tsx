@@ -70,22 +70,25 @@ export default function UserDashboard() {
         setIsScanning(true);
         setDispatched(false);
         try {
-            // Post our latest tensor to the Predictive ML endpoint
-            const res = await fetch(`${API_BASE}/api/predictive/degradation`, {
+            // Post actual telemetry array natively to Edge AI Next.js route
+            const res = await fetch(`/api/diagnostic`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    panel_id: "UL-H20-9941X",
-                    voltage_drop_pct: ((230 - 215) / 230) * 100, // 6.5% drop
-                    operating_hours: 4850,
-                    avg_temperature_c: 48
-                })
+                body: JSON.stringify({ telemetry: telemetryData })
             });
-            const data = await res.json();
+            const aiData = await res.json();
 
-            // Artificial delay to simulate ML crunhing
-            await new Promise(r => setTimeout(r, 2000));
-            setScanResult(data);
+            let status_code = 'ok';
+            if (aiData.impact_score >= 80) status_code = 'critical';
+            else if (aiData.impact_score >= 40) status_code = 'warning';
+
+            setScanResult({
+                status_code,
+                model_version: 'Gemini-1.5-Flash (Edge AI)',
+                degradation_risk_score: aiData.impact_score / 100,
+                primary_factor: (aiData.impact_score >= 40) ? 'Hardware Degradation / Heat Anomaly' : 'Optimal Operation',
+                recommended_action: aiData.diagnostic || "No diagnostic provided."
+            });
         } catch (e) {
             console.error(e);
         } finally {
