@@ -1,4 +1,4 @@
-const CACHE_NAME = 'urjalink-cache-v2';
+const CACHE_NAME = 'urjalink-cache-v3';
 
 self.addEventListener('install', (event) => {
     console.log('[Service Worker] Installed');
@@ -31,6 +31,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+    // Don't intercept Supabase calls or local API routes
+    if (event.request.url.includes('supabase.co') || event.request.url.includes('/api/')) {
+        return;
+    }
+
     event.respondWith(
         fetch(event.request).catch(() => {
             return caches.match(event.request);
