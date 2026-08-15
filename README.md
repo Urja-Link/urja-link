@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Urja-Link
 
-## Getting Started
+AI-Powered Renewable Energy Intelligence Platform
 
-First, run the development server:
+**Know Your Roof. Know Your Energy. Make Smarter Solar Decisions.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Urja-Link is an intelligent renewable-energy platform designed to simplify the journey from **solar potential discovery to installation, monitoring, and maintenance**.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+It combines **AI, geospatial intelligence, rooftop analysis, environmental data, energy analytics, and verified solar service providers** to help individuals and businesses make informed renewable-energy decisions.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+....................................................................................................................................................
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Why Urja-Link?
 
-## Learn More
+Choosing solar energy is not just about installing panels.
 
-To learn more about Next.js, take a look at the following resources:
+Users need to know:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Is my rooftop suitable for solar?
+- How much solar energy can I generate?
+- How many panels can fit on my roof?
+- How much will installation cost?
+- How much can I save?
+- What system size should I choose?
+- Which solar agency should I contact?
+- How will I monitor my installation?
+- What happens when maintenance is required?
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Urja-Link brings these decisions into one intelligent platform.**
 
-## Deploy on Vercel
+....................................................................................................................................................
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Core Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+AI-Powered Rooftop Analysis
+
+Analyze a rooftop using geospatial and satellite-based data.
+
+- Rooftop area estimation
+- Usable roof area calculation
+- Solar panel placement
+- Roof boundary selection
+- Obstacle-aware analysis
+- Solar potential estimation
+- Energy generation estimation
+
+....................................................................................................................................................
+
+Solar Potential Intelligence
+
+Transform location and environmental data into useful solar insights.
+
+Location
+   ↓
+Solar Irradiance
+   ↓
+Rooftop Analysis
+   ↓
+Panel Capacity
+   ↓
+Energy Generation
+   ↓
+Savings & ROI
