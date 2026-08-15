@@ -5,17 +5,8 @@ import Footer from "@/components/Footer";
 import { ArrowLeft, Clock, MapPin, Sun } from "lucide-react";
 import * as SunCalc from "suncalc";
 import { Canvas } from "@react-three/fiber";
-import { Sky, OrbitControls, Environment, softShadows } from "@react-three/drei";
+import { Sky, OrbitControls, Environment, SoftShadows } from "@react-three/drei";
 import * as THREE from 'three';
-
-// Inject soft shadows into Three.js
-softShadows({
-    frustum: 3.75,
-    size: 0.005,
-    near: 9.5,
-    samples: 17,
-    rings: 11,
-});
 
 const DEFAULT_LAT = 26.2389; // Jodhpur
 const DEFAULT_LON = 73.0243;
@@ -63,6 +54,7 @@ const ShadowScene = ({ timeSlider }: { timeSlider: number }) => {
             )}
 
             <Sky sunPosition={sunVector.toArray()} turbidity={isNight ? 0.1 : 0.8} rayleigh={isNight ? 0.3 : 1.2} />
+            <SoftShadows size={15} samples={10} focus={0.5} />
 
             {/* A sample building/obstacle block */}
             <mesh position={[0, 1.5, 0]} castShadow receiveShadow>

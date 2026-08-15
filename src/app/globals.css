@@ -69,6 +69,7 @@ body {
   color: var(--foreground);
   font-family: "Inter", Arial, Helvetica, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
 /* ========== Glassmorphism Card (Apple Liquid Glass) ========== */
@@ -177,23 +178,27 @@ body {
 /* ========== Search Bar ========== */
 .search-container {
   position: fixed;
-  /* Bypasses NextJS layout DOM stacking limits completely! */
   top: 22px;
-  /* Merged tightly into the center of the 60px Top Navbar which starts at 16px */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10002;
   width: 480px;
-  max-width: 40vw;
+  max-width: calc(100vw - 32px);
   pointer-events: auto;
 }
 
 @media (max-width: 1100px) {
   .search-container {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
     max-width: 60vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-container {
+    top: 86px;
+    /* Moved below the navbar on mobile */
+    max-width: calc(100vw - 32px);
+    width: 100%;
   }
 }
 
@@ -500,7 +505,7 @@ body {
 }
 
 .page-title {
-  font-size: 28px;
+  font-size: clamp(1.5rem, 6vw, 28px);
   font-weight: 800;
   background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   -webkit-background-clip: text;
@@ -575,6 +580,16 @@ body {
 
 .btn-secondary:hover {
   background: var(--hover-bg);
+}
+
+/* ========== Responsive Utilities ========== */
+.responsive-grid-split {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+}
+
+.responsive-flex-stack {
+  display: flex;
 }
 
 /* ========== Form Elements ========== */
@@ -722,7 +737,7 @@ body {
 /* ========== Responsive ========== */
 @media (max-width: 768px) {
   .search-container {
-    width: 70vw;
+    width: calc(100vw - 32px);
   }
 
   .report-panel {
@@ -731,8 +746,25 @@ body {
     right: 0;
     left: 0;
     width: 100%;
-    max-height: 50vh;
+    max-height: 40vh;
     border-radius: 16px 16px 0 0;
+  }
+
+  .responsive-grid-split {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+
+  .responsive-flex-stack {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .live-operations-container {
+    bottom: auto;
+    top: 70px;
+    left: 12px;
+    padding: 8px 12px;
   }
 
   .brand-bar {
@@ -744,7 +776,8 @@ body {
 
   .sun-sim-panel {
     bottom: auto;
-    top: 70px;
+    top: auto;
+    bottom: calc(40vh + 16px);
     right: 12px;
     left: auto;
     width: 220px;

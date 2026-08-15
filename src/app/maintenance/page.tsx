@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bot, Wrench, CloudFog, Zap, TrendingDown, Rocket } from "lucide-react";
+import { formatPercentage, formatPower } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -19,6 +20,11 @@ interface MaintReq {
         estimated_loss_percent: number;
         recommendation: string;
         estimated_cost_inr: number;
+    };
+    systemContext?: {
+        energyLossKw: number;
+        inverterTempC: number;
+        panelEfficiencyPct: number;
     };
     created_at: string;
 }
@@ -44,7 +50,7 @@ export default function MaintenancePage() {
                 setRequests(data.maintenance_requests || []);
             } catch (e) {
                 console.warn("Failed to fetch API. Loading fallback mock data...");
-                setRequests([{ id: "REQ-405", installation_id: "TRK-8812", issue_type: "inverter_fault", description: "Inverter reporting string voltage drop in String B.", priority: "critical", status: "open", assigned_technician: null, ai_diagnosis: { severity: "critical", estimated_loss_percent: 45, recommendation: "Immediate dispatch required. Potential diode failure detected in String B combiner box.", estimated_cost_inr: 8500 }, created_at: "2026-08-07T14:30:00Z" }]);
+                setRequests([{ id: "REQ-405", installation_id: "TRK-8812", issue_type: "inverter_fault", description: "Inverter reporting string voltage drop in String B.", priority: "critical", status: "open", assigned_technician: null, ai_diagnosis: { severity: "critical", estimated_loss_percent: 45, recommendation: "Immediate dispatch required. Potential diode failure detected in String B combiner box.", estimated_cost_inr: 8500 }, systemContext: { energyLossKw: 12.5, inverterTempC: 78, panelEfficiencyPct: 0.82 }, created_at: "2026-08-07T14:30:00Z" }]);
             }
             finally { setIsLoading(false); }
         }
@@ -62,7 +68,7 @@ export default function MaintenancePage() {
             {isLoading ? (
                 <div style={S.center}><p style={{ color: "#94a3b8" }}>Loading maintenance data...</p></div>
             ) : (
-                <div style={S.content}>
+                <div className="responsive-grid-split" style={{ height: "calc(100vh - 100px)" }}>
                     {/* Request List */}
                     <div style={S.list}>
                         {requests.map((r) => (
@@ -104,19 +110,19 @@ export default function MaintenancePage() {
                                 {/* AI Diagnosis */}
                                 <div style={S.aiBox}>
                                     <h3 style={S.aiTitle}><Bot size={20} style={{ marginRight: 8 }} /> AI Diagnosis</h3>
-                                    <div style={S.aiRow}>
-                                        <span style={S.aiLbl}>Severity</span>
-                                        <span style={{ fontWeight: 700, color: priorityColor(selected.ai_diagnosis.severity) }}>
-                                            {selected.ai_diagnosis.severity.toUpperCase()}
-                                        </span>
-                                    </div>
-                                    <div style={S.aiRow}>
-                                        <span style={S.aiLbl}>Estimated Output Loss</span>
-                                        <span style={{ fontWeight: 700, color: "var(--danger)" }}>{selected.ai_diagnosis.estimated_loss_percent}%</span>
-                                    </div>
-                                    <div style={S.aiRow}>
-                                        <span style={S.aiLbl}>Estimated Repair Cost</span>
-                                        <span style={{ fontWeight: 700, color: "var(--warning)" }}>₹{selected.ai_diagnosis.estimated_cost_inr.toLocaleString("en-IN")}</span>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 16, marginTop: 12 }}>
+                                        <div style={{ background: "rgba(15,23,42,0.4)", borderRadius: 8, padding: 12, border: "1px solid var(--card-border)" }}>
+                                            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Est. Energy Loss</span>
+                                            <p style={{ fontSize: 16, fontWeight: 700, color: "var(--warning)", marginTop: 4 }}>{formatPower(selected.systemContext?.energyLossKw || 0)}</p>
+                                        </div>
+                                        <div style={{ background: "rgba(15,23,42,0.4)", borderRadius: 8, padding: 12, border: "1px solid var(--card-border)" }}>
+                                            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Inverter Temp</span>
+                                            <p style={{ fontSize: 16, fontWeight: 700, color: "var(--accent)", marginTop: 4 }}>{selected.systemContext?.inverterTempC || 0}°C</p>
+                                        </div>
+                                        <div style={{ background: "rgba(15,23,42,0.4)", borderRadius: 8, padding: 12, border: "1px solid var(--card-border)" }}>
+                                            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Panel Efficiency</span>
+                                            <p style={{ fontSize: 16, fontWeight: 700, color: "var(--success)", marginTop: 4 }}>{formatPercentage(selected.systemContext?.panelEfficiencyPct || 0)}</p>
+                                        </div>
                                     </div>
                                     <p style={S.aiText}>{selected.ai_diagnosis.recommendation}</p>
                                 </div>
@@ -166,7 +172,6 @@ const S: Record<string, React.CSSProperties> = {
     title: { fontSize: 26, fontWeight: 800, color: "var(--foreground)", display: "flex", alignItems: "center", margin: "4px 0" },
     sub: { color: "var(--text-muted)", fontSize: 14 },
     center: { display: "flex", justifyContent: "center", padding: 60 },
-    content: { display: "grid", gridTemplateColumns: "420px 1fr", height: "calc(100vh - 100px)" },
     list: { overflowY: "auto" as const, padding: "16px 16px 16px 32px", display: "flex", flexDirection: "column", gap: 12 },
     card: { background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: 16, cursor: "pointer", textAlign: "left" as const, width: "100%", color: "var(--foreground)" },
     cardTop: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" },

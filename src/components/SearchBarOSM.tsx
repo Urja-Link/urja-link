@@ -60,6 +60,8 @@ export default function SearchBarOSM({ onSearch }: SearchProps) {
             {/* Suggestions Dropdown */}
             {suggestions.length > 1 && (
                 <div style={{
+                    position: "absolute",
+                    width: "100%",
                     marginTop: 4,
                     borderRadius: 12,
                     overflow: "hidden",

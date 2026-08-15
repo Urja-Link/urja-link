@@ -290,11 +290,11 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
             {/* Map Controls */}
-            <div style={{ position: "absolute", bottom: 44, left: "50%", transform: "translateX(-50%)", zIndex: 1000, display: "flex", gap: 12 }}>
+            <div style={{ position: "absolute", bottom: "max(4vh, 20px)", left: "50%", transform: "translateX(-50%)", zIndex: 1000, display: "flex", gap: 12, paddingBottom: "env(safe-area-inset-bottom)", flexWrap: "wrap", justifyContent: "center", width: "90%", maxWidth: "400px" }}>
                 <button
                     onClick={toggleDrawing}
                     className={`nav-link-item glass-card ${isDrawing ? 'active' : 'inactive'}`}
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", fontSize: 13, background: isDrawing ? "var(--accent)" : "var(--card-bg)", color: isDrawing ? "#000" : "var(--foreground)", border: "none", cursor: "pointer" }}
+                    style={{ flex: "1 1 calc(50% - 12px)", minWidth: "140px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 14px", fontSize: 13, background: isDrawing ? "var(--accent)" : "var(--card-bg)", color: isDrawing ? "#000" : "var(--foreground)", border: "none", cursor: "pointer", touchAction: "manipulation" }}
                 >
                     {isDrawing ? <><CheckCircle size={16} /> Save Area</> : <><Ruler size={16} /> Draw Roof</>}
                 </button>
@@ -303,11 +303,12 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                     disabled={isAiLoading}
                     className={`nav-link-item glass-card ${isAiScanning ? 'active' : 'inactive'}`}
                     style={{
-                        display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
+                        flex: "1 1 calc(50% - 12px)", minWidth: "140px",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 14px",
                         fontSize: 13,
                         background: isAiScanning || isAiLoading ? "#f59e0b" : "var(--card-bg)",
                         color: isAiScanning || isAiLoading ? "#000" : "var(--foreground)",
-                        border: "none", cursor: "pointer"
+                        border: "none", cursor: "pointer", touchAction: "manipulation"
                     }}
                 >
                     {isAiLoading ? <><Loader2 size={16} className="lucide-spin" /> Scanning...</> : isAiScanning ? <><CheckCircle size={16} /> Click Roof on Map</> : <><Cpu size={16} /> AI Auto-Detect</>}

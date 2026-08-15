@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Urja-Link India | AI-Powered Rooftop Solar Platform",
+  title: "Urja-Link",
   description:
     "India's AI-powered national platform for rooftop solar potential estimation, PM Surya Ghar subsidies, and smart energy planning.",
 };

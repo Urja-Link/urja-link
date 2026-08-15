@@ -24,7 +24,7 @@ export default function ContactPage() {
             </header>
 
             <div className="content-section">
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 32 }}>
                     {/* Contact Form */}
                     <div className="info-card">
                         <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20 }}>Send us a Message</h2>
@@ -42,7 +42,7 @@ export default function ContactPage() {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit}>
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
                                     <div className="form-group">
                                         <label className="form-label">Name</label>
                                         <input
@@ -65,7 +65,7 @@ export default function ContactPage() {
                                         />
                                     </div>
                                 </div>
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
                                     <div className="form-group">
                                         <label className="form-label">Phone</label>
                                         <input

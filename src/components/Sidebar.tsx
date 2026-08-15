@@ -57,12 +57,14 @@ export default function Sidebar() {
                 transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s",
                 transform: `translateX(-50%) translateY(${isNavVisible ? "0px" : "-120px"})`,
                 opacity: isNavVisible ? 1 : 0,
-                pointerEvents: "none"
+                pointerEvents: "none",
+                zIndex: 10001, /* Ensure nav is always over everything except search input */
+                maxWidth: "calc(100vw - 24px)" /* Reduce padding on small devices */
             }}>
                 {/* Brand */}
-                <Link href="/" style={{ textDecoration: "none", pointerEvents: "auto" }}>
-                    <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6 }}>
-                        <Zap size={20} color="#f59e0b" fill="#f59e0b" /> Urja-Link
+                <Link href="/" style={{ textDecoration: "none", pointerEvents: "auto", flexShrink: 0 }}>
+                    <h2 style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 800, margin: 0, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6 }}>
+                        <img src="/logo.png" alt="Urja-Link" style={{ width: 24, height: 24, objectFit: "contain", flexShrink: 0 }} /> Urja-Link
                     </h2>
                 </Link>
 
@@ -70,13 +72,13 @@ export default function Sidebar() {
                 <div style={{ flex: 1 }} />
 
                 {/* Nav Right (Buttons & Hamburger) */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12, pointerEvents: "auto" }}>
-                    <div className="nav-links-center" style={{ gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, pointerEvents: "auto" }}>
+                    <div className="nav-links-center" style={{ gap: 8 }}>
                         <button onClick={toggleTheme} style={{ background: "transparent", border: "1px solid var(--card-border)", color: "var(--foreground)", padding: "6px 12px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
-                            {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} {theme === "dark" ? "Light" : "Dark"}
+                            {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} <span>{theme === "dark" ? "Light" : "Dark"}</span>
                         </button>
                         <button onClick={() => setLanguage(language === "en" ? "hi" : "en")} style={{ background: "transparent", border: "1px solid var(--card-border)", color: "var(--foreground)", padding: "6px 12px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
-                            <Globe size={14} /> {language === "en" ? "HI" : "EN"}
+                            <Globe size={14} /> <span>{language === "en" ? "HI" : "EN"}</span>
                         </button>
                     </div>
 
@@ -86,9 +88,9 @@ export default function Sidebar() {
                             onClick={() => setIsOpen(!isOpen)}
                             style={{
                                 width: 36, height: 36, borderRadius: 8,
-                                border: "1px solid var(--card-border)", background: "transparent",
+                                border: "1px solid var(--card-border)", background: "var(--card-bg)",
                                 color: "var(--foreground)", display: "flex", alignItems: "center", justifyContent: "center",
-                                cursor: "pointer", transition: "all 0.2s"
+                                cursor: "pointer", transition: "all 0.2s", flexShrink: 0
                             }}
                         >
                             <span style={{ fontSize: 18 }}>{isOpen ? "✕" : "☰"}</span>

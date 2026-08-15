@@ -76,11 +76,7 @@ interface SolarReportPanelProps {
     coords: { lat: number; lng: number } | null;
 }
 
-function formatINR(num: number): string {
-    return new Intl.NumberFormat("en-IN", {
-        style: "currency", currency: "INR", maximumFractionDigits: 0,
-    }).format(num);
-}
+import { formatNumber, formatCurrency, formatPercentage, formatEnergy } from "@/lib/utils";
 
 export default function SolarReportPanel({ data, isLoading, selectedSystem, onSystemChange, coords }: SolarReportPanelProps) {
     if (!coords) return null;
@@ -130,10 +126,10 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                     {/* Data Source Badge */}
                     {data.environmental_data && (
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "12px 0" }}>
-                            <span className="env-badge"><Satellite size={12} /> {data.environmental_data.data_source}</span>
-                            <span className="env-badge"><Thermometer size={12} /> {data.environmental_data.current_temperature_c}°C</span>
-                            <span className="env-badge"><Cloud size={12} /> {data.environmental_data.current_cloud_cover_pct}%</span>
-                            <span className="env-badge"><Wind size={12} /> PM2.5: {data.environmental_data.air_quality_pm25}</span>
+                            <span className="env-badge"><Satellite size={12} /> {data.environmental_data.data_source || "—"}</span>
+                            <span className="env-badge"><Thermometer size={12} /> {formatNumber(data.environmental_data.current_temperature_c)}°C</span>
+                            <span className="env-badge"><Cloud size={12} /> {formatPercentage(data.environmental_data.current_cloud_cover_pct)}</span>
+                            <span className="env-badge"><Wind size={12} /> PM2.5: {formatNumber(data.environmental_data.air_quality_pm25)}</span>
                         </div>
                     )}
 
@@ -148,24 +144,24 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                         background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.15)",
                     }}>
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-                            <Zap size={16} /> Energy Generation
+                            <Zap size={16} style={{ flexShrink: 0 }} /> Energy Generation
                         </h3>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, textAlign: "center" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: 8, textAlign: "center" }}>
                             <div>
                                 <p style={{ fontSize: 18, fontWeight: 800, color: "var(--accent)" }}>
-                                    {data.generation_breakdown?.daily_avg_kwh ?? (data.annual_generation_kwh / 365).toFixed(1)}
+                                    {formatNumber(data.generation_breakdown?.daily_avg_kwh ?? (data.annual_generation_kwh / 365), 1)}
                                 </p>
                                 <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>kWh / Day</p>
                             </div>
                             <div>
                                 <p style={{ fontSize: 18, fontWeight: 800, color: "var(--accent)" }}>
-                                    {data.generation_breakdown?.monthly_avg_kwh ?? (data.annual_generation_kwh / 12).toFixed(0)}
+                                    {formatNumber(data.generation_breakdown?.monthly_avg_kwh ?? (data.annual_generation_kwh / 12), 0)}
                                 </p>
                                 <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>kWh / Month</p>
                             </div>
                             <div>
                                 <p style={{ fontSize: 18, fontWeight: 800, color: "var(--success)" }}>
-                                    {data.annual_generation_kwh.toLocaleString("en-IN")}
+                                    {formatNumber(data.annual_generation_kwh, 0)}
                                 </p>
                                 <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>kWh / Year</p>
                             </div>
@@ -213,24 +209,24 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)",
                         }}>
                             <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--success)", marginBottom: 10, display: "flex", alignItems: "center", gap: 4 }}>
-                                <IndianRupee size={16} /> Savings
+                                <IndianRupee size={16} style={{ flexShrink: 0 }} /> Savings
                             </h3>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, textAlign: "center" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: 8, textAlign: "center" }}>
                                 <div>
-                                    <p style={{ fontSize: 16, fontWeight: 800, color: "var(--success)" }}>
-                                        {formatINR(data.savings.daily_savings_inr)}
+                                    <p style={{ fontSize: "clamp(12px, 3.5vw, 16px)", fontWeight: 800, color: "var(--success)" }}>
+                                        {formatCurrency(data.savings.daily_savings_inr)}
                                     </p>
                                     <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>Per Day</p>
                                 </div>
                                 <div>
-                                    <p style={{ fontSize: 16, fontWeight: 800, color: "var(--success)" }}>
-                                        {formatINR(data.savings.monthly_savings_inr)}
+                                    <p style={{ fontSize: "clamp(12px, 3.5vw, 16px)", fontWeight: 800, color: "var(--success)" }}>
+                                        {formatCurrency(data.savings.monthly_savings_inr)}
                                     </p>
                                     <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>Per Month</p>
                                 </div>
                                 <div>
-                                    <p style={{ fontSize: 16, fontWeight: 800, color: "var(--success)" }}>
-                                        {formatINR(data.savings.annual_savings_inr)}
+                                    <p style={{ fontSize: "clamp(12px, 3.5vw, 16px)", fontWeight: 800, color: "var(--success)" }}>
+                                        {formatCurrency(data.savings.annual_savings_inr)}
                                     </p>
                                     <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>Per Year</p>
                                 </div>
@@ -241,29 +237,29 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                     {/* Core Metrics */}
                     <div className="metric-row">
                         <span className="metric-label">System Capacity</span>
-                        <span className="metric-value accent">{data.system_capacity_kw} kW</span>
+                        <span className="metric-value accent">{formatNumber(data.system_capacity_kw)} kW</span>
                     </div>
                     <div className="metric-row">
                         <span className="metric-label">Total Installation Cost</span>
-                        <span className="metric-value">{formatINR(data.total_cost_inr)}</span>
+                        <span className="metric-value">{formatCurrency(data.total_cost_inr)}</span>
                     </div>
 
                     {/* Subsidy */}
                     <div className="subsidy-section">
-                        <h3 style={{ display: "flex", alignItems: "center", gap: 6 }}><Landmark size={14} /> PM Surya Ghar Subsidy</h3>
+                        <h3 style={{ display: "flex", alignItems: "center", gap: 6 }}><Landmark size={14} style={{ flexShrink: 0 }} /> PM Surya Ghar Subsidy</h3>
                         <div className="metric-row">
                             <span className="metric-label">Subsidy Amount</span>
-                            <span className="metric-value highlight">{formatINR(data.subsidy_inr)}</span>
+                            <span className="metric-value highlight">{formatCurrency(data.subsidy_inr)}</span>
                         </div>
                         <div className="metric-row">
                             <span className="metric-label">Your Net Cost</span>
-                            <span className="metric-value accent">{formatINR(data.net_cost_inr)}</span>
+                            <span className="metric-value accent">{formatCurrency(data.net_cost_inr)}</span>
                         </div>
                     </div>
 
                     <div className="metric-row">
                         <span className="metric-label">Payback Period</span>
-                        <span className="metric-value warning">{data.payback_period_years} years</span>
+                        <span className="metric-value warning">{formatNumber(data.payback_period_years)} years</span>
                     </div>
 
                     {/* CO2 Impact */}
@@ -288,14 +284,14 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             marginTop: 12, padding: 12, borderRadius: 10,
                             background: "rgba(15,23,42,0.3)", border: "1px dashed var(--card-border)",
                         }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={14} /> Physics Parameters</span>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginTop: 8, fontSize: 11 }}>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Sun size={10} color="#f59e0b" /> GHI: <b>{data.physics_metrics.daily_peak_sun_hours} <span style={{ fontSize: 9 }}>kWh/m²/day</span></b></span>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={10} /> PR: <b>{(data.physics_metrics.system_performance_ratio * 100).toFixed(1)}%</b></span>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Cloud size={10} /> Shadow: <b>{data.physics_metrics.astronomical_shadow_loss_pct}%</b></span>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Thermometer size={10} /> Temp Loss: <b>{data.physics_metrics.temperature_loss_pct}%</b></span>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Factory size={10} /> Soiling: <b>{data.physics_metrics.soiling_loss_pct}%</b></span>
-                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><RotateCw size={10} /> Orientation: <b>{(data.physics_metrics.orientation_factor * 100).toFixed(1)}%</b></span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={14} style={{ flexShrink: 0 }} /> Physics Parameters</span>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8, fontSize: 11 }}>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Sun size={10} color="#f59e0b" style={{ flexShrink: 0 }} /> GHI: <b>{formatNumber(data.physics_metrics.daily_peak_sun_hours)} <span style={{ fontSize: 9 }}>kWh/m²/day</span></b></span>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={10} style={{ flexShrink: 0 }} /> PR: <b>{formatPercentage(data.physics_metrics.system_performance_ratio * 100)}</b></span>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Cloud size={10} style={{ flexShrink: 0 }} /> Shadow: <b>{formatPercentage(data.physics_metrics.astronomical_shadow_loss_pct)}</b></span>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Thermometer size={10} style={{ flexShrink: 0 }} /> Temp Loss: <b>{formatPercentage(data.physics_metrics.temperature_loss_pct)}</b></span>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Factory size={10} style={{ flexShrink: 0 }} /> Soiling: <b>{formatPercentage(data.physics_metrics.soiling_loss_pct)}</b></span>
+                                <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><RotateCw size={10} style={{ flexShrink: 0 }} /> Orientation: <b>{formatPercentage(data.physics_metrics.orientation_factor * 100)}</b></span>
                             </div>
                         </div>
                     )}

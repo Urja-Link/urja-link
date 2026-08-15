@@ -111,7 +111,7 @@ export default function MarketplacePage() {
                     </ResponsiveContainer>
                 </div>
 
-                <div style={{ display: "flex", gap: 24, marginBottom: 40 }}>
+                <div className="responsive-flex-stack" style={{ display: "flex", gap: 24, margin: "24px 0" }}>
                     <button style={{ flex: 1, padding: "20px", borderRadius: 12, border: "1px solid var(--card-border)", background: "var(--foreground)", color: "var(--background)", fontSize: 18, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
                         <Zap size={20} /> Export Energy (SELL)
                     </button>
@@ -125,7 +125,7 @@ export default function MarketplacePage() {
                     <h2 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 8px 0", color: "var(--foreground)" }}>Live Installer Network</h2>
                     <p style={{ margin: "0 0 24px 0", color: "var(--text-secondary)", fontSize: 15 }}>Connect with Gov-Verified EPC Solar Installers operating in your state.</p>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 24 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, margin: "24px 0" }}>
                         {installers.length === 0 ? (
                             <div style={{ padding: 40, background: "var(--card-bg)", borderRadius: 16, border: "1px dashed var(--card-border)", color: "var(--text-muted)", gridColumn: "1 / -1", textAlign: "center" }}>
                                 No verified installers available in the network yet.
