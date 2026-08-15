@@ -64,7 +64,7 @@ export default function Sidebar() {
                 {/* Brand */}
                 <Link href="/" style={{ textDecoration: "none", pointerEvents: "auto", flexShrink: 0 }}>
                     <h2 style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 800, margin: 0, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6 }}>
-                        <img src="/logo.png" alt="Urja-Link" style={{ width: 24, height: 24, objectFit: "contain", flexShrink: 0 }} /> Urja-Link
+                        <img src="/logo.png" alt="Urja-Link" style={{ width: "1.4em", height: "1.4em", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
                     </h2>
                 </Link>
 
