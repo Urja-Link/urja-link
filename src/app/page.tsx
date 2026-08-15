@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import SearchBarOSM from "@/components/SearchBarOSM";
 import SolarReportPanel from "@/components/SolarReportPanel";
 import CopilotBot from "@/components/CopilotBot";
@@ -10,7 +10,6 @@ import { Zap, Ruler } from "lucide-react";
 
 // Leaflet must be imported client-side only (no SSR)
 const MapLeaflet = dynamic(() => import("@/components/MapLeaflet"), { ssr: false });
-const DigitalTwin3D = dynamic(() => import("@/components/DigitalTwin3D"), { ssr: false });
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -185,16 +184,6 @@ export default function Home() {
 
       {/* Copilot Chat Assistant */}
       <CopilotBot />
-
-      {/* 3D Digital Twin Overlay */}
-      {markerPos && (
-        <div style={{
-          position: "absolute", bottom: 60, left: 20, zIndex: 800,
-          width: "380px", height: "260px", pointerEvents: "auto"
-        }}>
-          <DigitalTwin3D />
-        </div>
-      )}
 
       {/* Polygon Area Indicator */}
       {polygonArea && (
