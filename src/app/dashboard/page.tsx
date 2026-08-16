@@ -115,13 +115,13 @@ export default function UserDashboard() {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "var(--background)", overflowY: "auto", paddingTop: 100, paddingBottom: 60, paddingInline: "5%" }}>
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "var(--background)", overflowY: "auto", paddingTop: 100, paddingBottom: 60, paddingInline: "clamp(16px, 5vw, 40px)" }}>
 
-            <div className="glass-card" style={{ padding: 40, width: "100%", maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
+            <div className="glass-card" style={{ padding: "clamp(16px, 4vw, 40px)", width: "100%", maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32, boxSizing: "border-box" }}>
 
                 {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: "1px solid var(--card-border)", paddingBottom: 24 }}>
-                    <div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "space-between", alignItems: "flex-end", borderBottom: "1px solid var(--card-border)", paddingBottom: 24 }}>
+                    <div style={{ flex: "1 1 min-content", minWidth: 260 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
                             <div style={{ padding: "6px 12px", background: "var(--card-bg)", color: "var(--success)", border: "1px solid var(--success)", borderRadius: 100, fontSize: 12, fontWeight: 700 }}>VERIFIED PROSUMER</div>
                             <div style={{ padding: "6px 12px", background: "var(--card-bg)", color: "var(--accent)", border: "1px solid var(--accent)", borderRadius: 100, fontSize: 12, fontWeight: 700 }}>IOT CONNECTED</div>
@@ -137,28 +137,28 @@ export default function UserDashboard() {
                     <button
                         onClick={handleRunDiagnostics}
                         disabled={isScanning || isDispatching}
-                        style={{ padding: "16px 32px", borderRadius: 12, border: "1px solid var(--card-border)", background: isScanning ? "var(--hover-bg)" : "var(--foreground)", color: isScanning ? "var(--text-muted)" : "var(--background)", fontSize: 16, fontWeight: 700, cursor: isScanning ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 12 }}
+                        style={{ padding: "16px 32px", borderRadius: 12, border: "1px solid var(--card-border)", background: isScanning ? "var(--hover-bg)" : "var(--foreground)", color: isScanning ? "var(--text-muted)" : "var(--background)", fontSize: 16, fontWeight: 700, cursor: isScanning ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 12, flexShrink: 0, width: "100%", maxWidth: 300, justifyContent: "center" }}
                     >
-                        {isScanning ? <><Loader2 size={20} className="lucide-spin" /> Analyzing Tensors...</> : <><Cpu size={20} /> Run ML Hardware Scan</>}
+                        {isScanning ? <><Loader2 size={20} className="lucide-spin" /> Analyzing...</> : <><Cpu size={20} /> ML Hardware Scan</>}
                     </button>
                 </div>
 
                 {/* ML Result Box */}
                 {scanResult && (
                     <div style={{ padding: 24, borderRadius: 16, background: "var(--card-bg)", border: `1px solid ${scanResult.status_code === 'critical' ? 'var(--danger)' : scanResult.status_code === 'warning' ? 'var(--warning)' : 'var(--success)'}` }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-                            {scanResult.status_code === 'critical' ? <AlertTriangle size={36} color="var(--danger)" /> : <ShieldCheck size={36} color="var(--success)" />}
-                            <div>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+                            {scanResult.status_code === 'critical' ? <AlertTriangle size={36} color="var(--danger)" style={{ flexShrink: 0 }} /> : <ShieldCheck size={36} color="var(--success)" style={{ flexShrink: 0 }} />}
+                            <div style={{ flex: 1, minWidth: 200 }}>
                                 <h3 style={{ margin: 0, fontSize: 20, color: "var(--foreground)" }}>Diagnostics Complete ({scanResult.model_version})</h3>
                                 <div style={{ color: scanResult.status_code === 'critical' ? "var(--danger)" : "var(--text-muted)", fontSize: 14 }}>
                                     Probability of Imminent Failure: {(scanResult.degradation_risk_score * 100).toFixed(1)}%
                                 </div>
                             </div>
                         </div>
-                        <div style={{ background: "var(--hover-bg)", padding: "16px 20px", borderRadius: 12, fontSize: 15, color: "var(--foreground)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ background: "var(--hover-bg)", padding: "16px 20px", borderRadius: 12, fontSize: 15, color: "var(--foreground)", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                             <span><strong>Primary Factor Detected:</strong> {scanResult.primary_factor}</span>
-                            <span style={{ display: "flex", alignItems: "center", gap: 8, color: scanResult.status_code === 'critical' ? "var(--danger)" : "var(--success)" }}>
-                                <ArrowRight size={16} /> {scanResult.recommended_action}
+                            <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, color: scanResult.status_code === 'critical' ? "var(--danger)" : "var(--success)" }}>
+                                <ArrowRight size={16} style={{ flexShrink: 0 }} /> {scanResult.recommended_action}
                                 {scanResult.status_code === 'critical' && !dispatched && (
                                     <button
                                         onClick={handleDispatchTechnician}
@@ -179,14 +179,14 @@ export default function UserDashboard() {
                 )}
 
                 {/* Telemetry Charts & 3D Twin */}
-                <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 24 }}>
 
                     {/* Live Digital Twin Visualization */}
-                    <div style={{ flex: 1, minWidth: 400, height: 320, background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 8 }}>
+                    <div style={{ background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 8, height: 320, width: "100%", boxSizing: "border-box", overflow: "hidden" }}>
                         <DigitalTwin3D temperature={latestTemp} />
                     </div>
 
-                    <div style={{ flex: 1, minWidth: 400, height: 320, background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 24 }}>
+                    <div style={{ background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: "clamp(12px, 3vw, 24px)", height: 320, width: "100%", boxSizing: "border-box" }}>
                         <h3 style={{ margin: "0 0 24px 0", fontSize: 16, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 8 }}>
                             <Zap size={18} color="var(--accent)" /> Array Voltage Log (7 Days)
                         </h3>
@@ -206,7 +206,7 @@ export default function UserDashboard() {
                         </ResponsiveContainer>
                     </div>
 
-                    <div style={{ flex: 1, minWidth: 400, height: 320, background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: 24 }}>
+                    <div style={{ background: "var(--card-bg)", borderRadius: 16, border: "1px solid var(--card-border)", padding: "clamp(12px, 3vw, 24px)", height: 320, width: "100%", boxSizing: "border-box" }}>
                         <h3 style={{ margin: "0 0 24px 0", fontSize: 16, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 8 }}>
                             <Activity size={18} color="var(--danger)" /> Panel Heat Stress (Deg C)
                         </h3>

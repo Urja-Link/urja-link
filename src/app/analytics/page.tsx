@@ -95,8 +95,8 @@ export default function AnalyticsPage() {
 
     return (
         <div className="page-container">
-            <header className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-                <div>
+            <header className="page-header" style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <div style={{ flex: "1 1 min-content", minWidth: 280 }}>
                     <h1 className="page-title"><Activity size={32} style={{ marginRight: 10 }} /> Telemetry & Analytics</h1>
                     <p className="page-subtitle">Real-time system performance and node metrics</p>
                 </div>
@@ -121,7 +121,7 @@ export default function AnalyticsPage() {
 
             <div className="content-section" style={{ maxWidth: 1200 }}>
                 {/* KPIs */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 32 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 20, marginBottom: 32 }}>
                     {[
                         { icon: <Zap size={24} color="var(--warning)" />, label: "Grid Power Output", value: `${liveData.power.toFixed(2)} GW`, trend: "+12.5%" },
                         { icon: <AlertTriangle size={24} color={liveData.ai_alert === "Normal" ? "var(--success)" : "var(--danger)"} />, label: "AI Safety Alert", value: liveData.ai_alert, trend: "Live Model" },
@@ -163,17 +163,17 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Charts Area */}
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 32 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: 20, marginBottom: 32 }}>
                     {/* Main Chart */}
-                    <div className="info-card" style={{ padding: 24, minHeight: 400 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                    <div className="info-card" style={{ padding: 24, minHeight: 400, flex: 2 }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                             <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
                                 {isPredictive ? <BrainCircuit size={18} color="var(--accent)" /> : <TrendingUp size={18} color="var(--warning)" />}
                                 {isPredictive ? "7-Day AI Power Forecast (GW)" : "Grid Power Dynamics (MW)"}
                             </h3>
                             <button
                                 onClick={() => setIsPredictive(!isPredictive)}
-                                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid var(--card-border)", background: isPredictive ? "var(--foreground)" : "var(--card-bg)", color: isPredictive ? "var(--background)" : "var(--foreground)", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+                                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid var(--card-border)", background: isPredictive ? "var(--foreground)" : "var(--card-bg)", color: isPredictive ? "var(--background)" : "var(--foreground)", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}
                             >
                                 <BrainCircuit size={14} /> {isPredictive ? "View Live Telemetry" : "Enable AI Forecast"}
                             </button>
@@ -245,11 +245,11 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Advanced Telemetry Logs Table */}
-                <div className="info-card" style={{ padding: "24px 0" }}>
+                <div className="info-card" style={{ padding: "24px 0", boxSizing: "border-box", overflow: "hidden" }}>
                     <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 24px 24px", display: "flex", alignItems: "center", gap: 8 }}>
                         <Clock size={18} color="var(--warning)" /> Real-Time Telemetry Stream
                     </h3>
-                    <div style={{ overflowX: "auto", padding: "0 24px" }}>
+                    <div style={{ overflowX: "auto", padding: "0 24px", width: "100%", boxSizing: "border-box" }}>
                         <table style={{ width: "100%", minWidth: 600, borderCollapse: "collapse", fontSize: 14, textAlign: "left" }}>
                             <thead>
                                 <tr style={{ borderBottom: "1px solid var(--card-border)", color: "var(--text-secondary)" }}>

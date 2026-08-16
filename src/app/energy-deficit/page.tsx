@@ -510,13 +510,15 @@ const styles: Record<string, React.CSSProperties> = {
         animation: "spin 1s linear infinite",
     },
     header: {
-        padding: "100px 32px 20px 32px",
+        padding: "100px clamp(16px, 4vw, 32px) 20px clamp(16px, 4vw, 32px)",
         borderBottom: "1px solid var(--card-border)",
         display: "flex",
+        flexWrap: "wrap",
+        gap: 16,
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-end",
     },
-    headerLeft: {},
+    headerLeft: { flex: "1 1 min-content", minWidth: 260 },
     backLink: {
         color: "#38bdf8",
         textDecoration: "none",
@@ -545,9 +547,9 @@ const styles: Record<string, React.CSSProperties> = {
     // Summary
     summaryGrid: {
         display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))",
         gap: 16,
-        padding: "20px 32px",
+        padding: "20px clamp(16px, 4vw, 32px)",
     },
     summaryCard: {
         background: "var(--card-bg)",
@@ -580,10 +582,11 @@ const styles: Record<string, React.CSSProperties> = {
 
     // Advanced Filters (State/District)
     advancedFilterBlock: {
-        padding: "0 32px 16px",
+        padding: "0 clamp(16px, 4vw, 32px) 16px",
     },
     filterRow: {
         display: "flex",
+        flexWrap: "wrap",
         gap: 12,
         alignItems: "center",
         background: "var(--card-bg)",
@@ -612,9 +615,10 @@ const styles: Record<string, React.CSSProperties> = {
     // Filter
     filterBar: {
         display: "flex",
+        flexWrap: "wrap",
         alignItems: "center",
         gap: 10,
-        padding: "0 32px 16px",
+        padding: "0 clamp(16px, 4vw, 32px) 16px",
     },
     filterLabel: {
         fontSize: 13,
@@ -638,14 +642,14 @@ const styles: Record<string, React.CSSProperties> = {
     // Content
     contentArea: {
         display: "grid",
-        gridTemplateColumns: "420px 1fr",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))",
         gap: 0,
         flex: 1,
         overflow: "hidden",
     },
     stateList: {
         overflowY: "auto" as const,
-        padding: "0 16px 20px 32px",
+        padding: "0 clamp(16px, 4vw, 32px) 20px",
         display: "flex",
         flexDirection: "column",
         gap: 10,
@@ -720,7 +724,7 @@ const styles: Record<string, React.CSSProperties> = {
         maxHeight: "calc(100vh - 260px)",
     },
     detailContent: {
-        padding: "24px 32px",
+        padding: "24px clamp(16px, 4vw, 32px)",
     },
     detailTitle: {
         fontSize: 28,
@@ -758,7 +762,7 @@ const styles: Record<string, React.CSSProperties> = {
     },
     detailGrid: {
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
         gap: 12,
         marginBottom: 24,
     },

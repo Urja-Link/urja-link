@@ -106,12 +106,12 @@ export default function GovernmentDashboard() {
     return (
         <div style={S.page}>
             <header style={S.header}>
-                <div>
+                <div style={{ flex: "1 1 min-content", minWidth: 260 }}>
                     <Link href="/" style={S.back}>← Map</Link>
-                    <h1 style={S.title}><Building2 size={24} color="var(--warning)" /> Government Data</h1>
+                    <h1 style={S.title}><Building2 size={24} color="var(--warning)" style={{ flexShrink: 0 }} /> Government Data</h1>
                     <p style={S.sub}>National rooftop solar progress • PM Surya Ghar Yojana • State-level analytics</p>
                 </div>
-                <div style={{ display: "flex", gap: 10 }}>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     <button onClick={exportExcel} style={S.btnExportExcel}><Table2 size={16} /> Export Excel</button>
                     <button onClick={exportPDF} style={S.btnExportPdf}><Download size={16} /> Export PDF</button>
                 </div>
@@ -251,23 +251,23 @@ export default function GovernmentDashboard() {
 const S: Record<string, React.CSSProperties> = {
     page: { minHeight: "100vh", background: "var(--background)", color: "var(--foreground)", fontFamily: "var(--font-geist-sans), Arial, sans-serif" },
     loading: { display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "var(--background)" },
-    header: { padding: "100px 32px 20px 32px", borderBottom: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", alignItems: "center" },
+    header: { padding: "100px clamp(16px, 4vw, 32px) 20px clamp(16px, 4vw, 32px)", borderBottom: "1px solid var(--card-border)", display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "space-between", alignItems: "flex-end" },
     back: { color: "var(--accent)", textDecoration: "none", fontSize: 13, fontWeight: 600 },
     title: { fontSize: 26, fontWeight: 700, margin: "4px 0", color: "var(--foreground)", display: "flex", alignItems: "center", gap: 10, letterSpacing: "-0.02em" },
     sub: { color: "var(--text-muted)", fontSize: 14, marginTop: 4 },
-    btnExportExcel: { padding: "8px 16px", borderRadius: 8, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", cursor: "pointer", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, transition: "background 0.2s" },
-    btnExportPdf: { padding: "8px 16px", borderRadius: 8, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", cursor: "pointer", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, transition: "background 0.2s" },
-    kpiGrid: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, padding: "20px 32px" },
-    kpiCard: { background: "var(--card-bg)", borderRadius: 12, padding: "24px", border: "1px solid var(--card-border)", display: "flex", flexDirection: "column", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" },
+    btnExportExcel: { padding: "8px 16px", borderRadius: 8, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", cursor: "pointer", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, transition: "background 0.2s", flexShrink: 0 },
+    btnExportPdf: { padding: "8px 16px", borderRadius: 8, background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", cursor: "pointer", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, transition: "background 0.2s", flexShrink: 0 },
+    kpiGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 16, padding: "20px clamp(16px, 4vw, 32px)" },
+    kpiCard: { background: "var(--card-bg)", borderRadius: 12, padding: "24px", border: "1px solid var(--card-border)", display: "flex", flexDirection: "column", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", minWidth: 0 },
     kpiLabel: { fontSize: 11, color: "var(--text-muted)", letterSpacing: 0.5, marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 600 },
     kpiValue: { fontSize: 32, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" },
     kpiMeta: { fontSize: 12, color: "var(--text-muted)", marginTop: 8 },
     progressBg: { height: 4, borderRadius: 2, background: "var(--card-border)", overflow: "hidden", marginTop: 12 },
     progressFill: { height: "100%", borderRadius: 2, background: "var(--warning)", transition: "width 0.8s ease" },
-    chartsWrap: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, padding: "0 32px 20px" },
-    chartBox: { background: "var(--card-bg)", borderRadius: 12, padding: "20px", border: "1px solid var(--card-border)" },
+    chartsWrap: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: 20, padding: "0 clamp(16px, 4vw, 32px) 20px", boxSizing: "border-box" },
+    chartBox: { background: "var(--card-bg)", borderRadius: 12, padding: "clamp(12px, 3vw, 20px)", border: "1px solid var(--card-border)", minWidth: 0, boxSizing: "border-box" },
     chartTitle: { fontSize: 15, fontWeight: 700, color: "var(--foreground)", marginBottom: 16 },
-    tableWrap: { padding: "8px 32px 32px" },
+    tableWrap: { padding: "8px clamp(16px, 4vw, 32px) 32px", boxSizing: "border-box" },
     tableTitle: { fontSize: 18, fontWeight: 700, color: "var(--foreground)", marginBottom: 14 },
     table: { width: "100%", borderCollapse: "collapse" as const, fontSize: 13 },
     th: { textAlign: "left" as const, padding: "14px 16px", borderBottom: "1px solid var(--card-border)", color: "var(--text-secondary)", fontSize: 11, letterSpacing: 0.5, textTransform: "uppercase" as const },
