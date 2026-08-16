@@ -142,7 +142,7 @@ export default function Sidebar() {
                     right: isOpen ? 0 : -320,
                     width: 300,
                     height: "100vh",
-                    zIndex: 10000,
+                    zIndex: 10002,
                     background: "var(--sidebar-bg)",
                     borderLeft: "1px solid var(--card-border)",
                     display: "flex",
@@ -159,6 +159,7 @@ export default function Sidebar() {
                     padding: "0 20px",
                     display: "flex",
                     alignItems: "center",
+                    justifyContent: "space-between",
                     borderBottom: "1px solid var(--card-border)",
                     boxSizing: "border-box"
                 }}>
@@ -168,6 +169,9 @@ export default function Sidebar() {
                     }}>
                         <img src="/circular-logo.png" alt="Urja-Link" style={{ width: "1.4em", height: "1.4em", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
                     </h2>
+                    <button onClick={() => setIsOpen(false)} style={{ background: "transparent", border: "none", color: "var(--foreground)", fontSize: 24, cursor: "pointer", padding: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        ✕
+                    </button>
                 </div>
 
                 {/* Auth Buttons */}
