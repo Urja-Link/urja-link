@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 const DigitalTwin3D = dynamic(() => import("@/components/DigitalTwin3D"), { ssr: false });
 
 // Using native Supabase instead of FastAPI for database items
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 export default function UserDashboard() {
     const [isScanning, setIsScanning] = useState(false);

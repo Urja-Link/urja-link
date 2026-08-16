@@ -64,7 +64,7 @@ export default function Sidebar() {
                 {/* Brand */}
                 <Link href="/" style={{ textDecoration: "none", pointerEvents: "auto", flexShrink: 0 }}>
                     <h2 style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 800, margin: 0, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6 }}>
-                        <img src="/logo.png" alt="Urja-Link" style={{ width: "1.4em", height: "1.4em", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
+                        <img src="/circular-logo.png" alt="Urja-Link" style={{ width: "1.4em", height: "1.4em", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
                     </h2>
                 </Link>
 
@@ -166,7 +166,7 @@ export default function Sidebar() {
                         fontSize: 20, fontWeight: 800, margin: 0,
                         color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6
                     }}>
-                        <Zap size={20} color="#f59e0b" fill="#f59e0b" /> Urja-Link
+                        <img src="/circular-logo.png" alt="Urja-Link" style={{ width: "1.4em", height: "1.4em", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
                     </h2>
                 </div>
 

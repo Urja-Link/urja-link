@@ -5,6 +5,7 @@ import { TrendingUp, TrendingDown, Activity, Zap, DollarSign, ArrowRightLeft } f
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useLanguage } from "@/context/LanguageContext";
 import { supabase } from "@/lib/supabase";
+import { formatNumber } from "@/lib/utils";
 
 interface MarketTick {
     spot_price_inr: number;
@@ -42,7 +43,7 @@ export default function MarketplacePage() {
         }));
         setPriceHistory(initial);
 
-        const baseUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
+        const baseUrl = process.env.NEXT_PUBLIC_WS_URL || "wss://urja-link-api.onrender.com";
         const ws = new WebSocket(`${baseUrl}/ws/market`);
 
         ws.onmessage = (event) => {
@@ -71,7 +72,7 @@ export default function MarketplacePage() {
 
             <div className="glass-card" style={{ padding: 40, width: "100%", maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 24 }}>
                     <div>
                         <h1 style={{ fontSize: 32, fontWeight: 800, margin: "0 0 8px 0", color: "var(--foreground)", display: "flex", alignItems: "center", gap: 12 }}>
                             <ArrowRightLeft size={32} color="var(--warning)" /> P2P Energy Marketplace
@@ -85,7 +86,7 @@ export default function MarketplacePage() {
                         <div>
                             <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Live Spot Price</div>
                             <div style={{ fontSize: 28, fontWeight: 800, color: "var(--success)", display: "flex", alignItems: "center", gap: 8 }}>
-                                ₹{currentPrice.toFixed(2)} <span style={{ fontSize: 14, color: "var(--text-muted)" }}>/kWh</span>
+                                ₹{formatNumber(currentPrice, 2)} <span style={{ fontSize: 14, color: "var(--text-muted)" }}>/kWh</span>
                             </div>
                         </div>
                         <div style={{ width: 1, background: "var(--card-border)" }}></div>
@@ -125,7 +126,7 @@ export default function MarketplacePage() {
                     <h2 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 8px 0", color: "var(--foreground)" }}>Live Installer Network</h2>
                     <p style={{ margin: "0 0 24px 0", color: "var(--text-secondary)", fontSize: 15 }}>Connect with Gov-Verified EPC Solar Installers operating in your state.</p>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, margin: "24px 0" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 16, margin: "24px 0" }}>
                         {installers.length === 0 ? (
                             <div style={{ padding: 40, background: "var(--card-bg)", borderRadius: 16, border: "1px dashed var(--card-border)", color: "var(--text-muted)", gridColumn: "1 / -1", textAlign: "center" }}>
                                 No verified installers available in the network yet.

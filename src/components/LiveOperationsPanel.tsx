@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { AreaChart, Area, ResponsiveContainer, YAxis } from "recharts";
+import { formatNumber } from "@/lib/utils";
 
 interface TelemetryData {
     live_irradiance_w_m2: number;
@@ -19,7 +20,7 @@ export default function LiveOperationsPanel() {
 
     useEffect(() => {
         // Connect to FastAPI WebSocket
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+        const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
         const wsUrl = API_BASE.replace("http", "ws") + "/ws/live-telemetry";
 
         ws.current = new WebSocket(wsUrl);
@@ -53,10 +54,10 @@ export default function LiveOperationsPanel() {
     };
 
     return (
-        <div className="glass-card" style={{ padding: "24px", position: "relative", overflow: "hidden" }}>
+        <div className="glass-card" style={{ padding: "clamp(16px, 4vw, 24px)", position: "relative", overflow: "hidden" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                 <h2 style={{ display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-                    ⚡ Live Operations
+                    ⚡ Telemetry Monitor
                     <span style={{
                         width: 8, height: 8, borderRadius: '50%',
                         background: isConnected ? '#10b981' : '#ef4444',
@@ -66,26 +67,26 @@ export default function LiveOperationsPanel() {
                 <div style={{ fontSize: 12, color: "#94a3b8" }}>National Grid Telemetry</div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(125px, 100%), 1fr))", gap: 16 }}>
                 <div>
                     <div style={{ fontSize: 11, color: "#cbd5e1" }}>Active Power (GW)</div>
-                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#38bdf8" }}>{displayCurrent.active_power_generation_gw.toFixed(2)}</div>
+                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#38bdf8" }}>{formatNumber(displayCurrent.active_power_generation_gw, 2)}</div>
                 </div>
                 <div>
                     <div style={{ fontSize: 11, color: "#cbd5e1" }}>Avg Irradiance</div>
-                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#fcd34d" }}>{displayCurrent.live_irradiance_w_m2.toFixed(1)} <span style={{ fontSize: 10 }}>W/m²</span></div>
+                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#fcd34d" }}>{formatNumber(displayCurrent.live_irradiance_w_m2, 1)} <span style={{ fontSize: 10 }}>W/m²</span></div>
                 </div>
                 <div>
                     <div style={{ fontSize: 11, color: "#cbd5e1" }}>Cloud Cover</div>
-                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#94a3b8" }}>{Math.round(displayCurrent.average_cloud_cover_pct)}%</div>
+                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#94a3b8" }}>{Math.round(Number(displayCurrent.average_cloud_cover_pct) || 0)}%</div>
                 </div>
                 <div>
-                    <div style={{ fontSize: 11, color: "#cbd5e1" }}>Live CO2 Saved (MT)</div>
-                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#10b981" }}>{displayCurrent.live_co2_saved_mt.toFixed(2)}</div>
+                    <div style={{ fontSize: 11, color: "#cbd5e1" }}>CO2 Saved (MT)</div>
+                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#10b981" }}>{formatNumber(displayCurrent.live_co2_saved_mt, 2)}</div>
                 </div>
                 <div>
                     <div style={{ fontSize: 11, color: "#cbd5e1" }}>Installations Today</div>
-                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#f43f5e" }}>{displayCurrent.installations_today}</div>
+                    <div style={{ fontSize: 24, fontWeight: "bold", color: "#f43f5e" }}>{Number(displayCurrent.installations_today) || 0}</div>
                 </div>
             </div>
 

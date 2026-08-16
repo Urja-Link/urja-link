@@ -13,7 +13,11 @@ export async function POST(request: Request) {
     try {
         // Simple API Key authentication for hardware
         const authHeader = request.headers.get("authorization");
-        const hardwareApiKey = process.env.IOT_HARDWARE_API_KEY || "urja-link-iot-secret123";
+        const hardwareApiKey = process.env.IOT_HARDWARE_API_KEY;
+
+        if (!hardwareApiKey) {
+            return NextResponse.json({ error: "Server misconfiguration: IOT_HARDWARE_API_KEY missing" }, { status: 500 });
+        }
 
         if (!authHeader || authHeader !== `Bearer ${hardwareApiKey}`) {
             return NextResponse.json({ error: "Unauthorized hardware." }, { status: 401 });

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Bot, Wrench, CloudFog, Zap, TrendingDown, Rocket } from "lucide-react";
 import { formatPercentage, formatPower } from "@/lib/utils";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 interface MaintReq {
     id: string;
@@ -167,26 +167,26 @@ export default function MaintenancePage() {
 
 const S: Record<string, React.CSSProperties> = {
     page: { minHeight: "100vh", background: "var(--background)", color: "var(--foreground)", fontFamily: "var(--font-geist-sans), Arial, sans-serif" },
-    header: { padding: "100px 32px 20px 32px", borderBottom: "1px solid var(--card-border)" },
+    header: { padding: "100px clamp(16px, 4vw, 32px) 20px clamp(16px, 4vw, 32px)", borderBottom: "1px solid var(--card-border)" },
     back: { color: "var(--foreground)", textDecoration: "none", fontSize: 13, fontWeight: 600 },
-    title: { fontSize: 26, fontWeight: 800, color: "var(--foreground)", display: "flex", alignItems: "center", margin: "4px 0" },
+    title: { fontSize: "clamp(1.2rem, 5vw, 26px)", fontWeight: 800, color: "var(--foreground)", display: "flex", alignItems: "center", margin: "4px 0", flexWrap: "wrap" },
     sub: { color: "var(--text-muted)", fontSize: 14 },
-    center: { display: "flex", justifyContent: "center", padding: 60 },
-    list: { overflowY: "auto" as const, padding: "16px 16px 16px 32px", display: "flex", flexDirection: "column", gap: 12 },
+    center: { display: "flex", justifyContent: "center", padding: "clamp(20px, 8vw, 60px)" },
+    list: { overflowY: "auto" as const, padding: "16px clamp(16px, 4vw, 32px)", display: "flex", flexDirection: "column", gap: 12 },
     card: { background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: 16, cursor: "pointer", textAlign: "left" as const, width: "100%", color: "var(--foreground)" },
     cardTop: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" },
     cardTitle: { fontSize: 15, fontWeight: 700, margin: 0 },
     cardSub: { fontSize: 11, color: "var(--text-muted)" },
     badge: { padding: "4px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, letterSpacing: 0.5 },
     badgeLg: { display: "inline-block", padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 700, marginBottom: 20 },
-    detail: { borderLeft: "1px solid var(--card-border)", padding: 32, overflowY: "auto" as const },
-    detailTitle: { fontSize: 24, fontWeight: 800, margin: "0 0 12px", display: "flex", alignItems: "center" },
-    aiBox: { background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: 18, marginBottom: 24 },
-    aiTitle: { fontSize: 15, fontWeight: 700, color: "var(--foreground)", display: "flex", alignItems: "center", margin: "0 0 12px" },
-    aiRow: { display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--card-border)", fontSize: 13 },
+    detail: { borderLeft: "1px solid var(--card-border)", padding: "clamp(16px, 5vw, 32px)", overflowY: "auto" as const },
+    detailTitle: { fontSize: "clamp(1.2rem, 5vw, 24px)", fontWeight: 800, margin: "0 0 12px", display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 },
+    aiBox: { background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: "clamp(12px, 3vw, 18px)", marginBottom: 24 },
+    aiTitle: { fontSize: 15, fontWeight: 700, color: "var(--foreground)", display: "flex", alignItems: "center", margin: "0 0 12px", flexWrap: "wrap" },
+    aiRow: { display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--card-border)", fontSize: 13, flexWrap: "wrap" },
     aiLbl: { color: "var(--text-secondary)" },
     aiText: { fontSize: 14, color: "var(--text-muted)", lineHeight: 1.6, margin: "12px 0 0" },
-    metaGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 },
+    metaGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, marginBottom: 24 },
     metaCard: { padding: "12px 14px", background: "var(--card-bg)", borderRadius: 8, border: "1px solid var(--card-border)", display: "flex", flexDirection: "column" },
     metaLbl: { fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase" as const, letterSpacing: 0.5, marginBottom: 4 },
     metaVal: { fontSize: 14, fontWeight: 600, color: "var(--foreground)" },

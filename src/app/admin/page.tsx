@@ -8,7 +8,7 @@ import { ShieldAlert, ClipboardList, Users, LineChart, Terminal, CheckCircle, Co
 
 import { supabase } from "@/lib/supabase";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 interface Company {
     id: string;

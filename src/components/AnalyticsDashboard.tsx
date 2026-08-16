@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 interface AdminStats {
     active_companies: number;
@@ -37,7 +37,7 @@ export default function AnalyticsDashboard() {
 
     return (
         <div style={{ marginTop: 24 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, marginBottom: 30 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: 20, marginBottom: 30 }}>
                 <div style={{ background: "rgba(15,23,42,0.6)", padding: "20px", borderRadius: 12, border: "1px solid rgba(56,189,248,0.2)" }}>
                     <div style={{ fontSize: 13, color: "#94a3b8", textTransform: "uppercase" }}>Registered Agencies</div>
                     <div style={{ fontSize: 32, fontWeight: "bold", color: "#e8ecf1", marginTop: 8 }}>{stats.active_companies}</div>

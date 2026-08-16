@@ -6,12 +6,12 @@ import SearchBarOSM from "@/components/SearchBarOSM";
 import SolarReportPanel from "@/components/SolarReportPanel";
 import CopilotBot from "@/components/CopilotBot";
 import { useLanguage } from "@/context/LanguageContext";
-import { Zap, Ruler } from "lucide-react";
+import { Zap, Ruler, Save } from "lucide-react";
 
 // Leaflet must be imported client-side only (no SSR)
 const MapLeaflet = dynamic(() => import("@/components/MapLeaflet"), { ssr: false });
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 const INDIA_CENTER = { lat: 20.5937, lng: 78.9629 };
 
@@ -152,11 +152,15 @@ export default function Home() {
   );
 
   const handlePolygonArea = useCallback(
-    (areaSqm: number) => {
+    (areaSqm: number | null) => {
       setPolygonArea(areaSqm);
     },
     []
   );
+
+  const handleSaveProperty = () => {
+    alert("Property Saved Successfully to Urja-Link Dashboard!");
+  };
 
   return (
     <main style={{ position: "relative", height: "100vh", width: "100vw", overflow: "hidden" }}>
@@ -185,18 +189,31 @@ export default function Home() {
       {/* Copilot Chat Assistant */}
       <CopilotBot />
 
-      {/* Polygon Area Indicator */}
+      {/* Polygon Area Indicator & Save Button */}
       {polygonArea && (
         <div style={{
           position: "absolute", bottom: 80, left: "50%", transform: "translateX(-50%)",
-          zIndex: 1000, padding: "8px 18px", borderRadius: 10,
-          background: "var(--card-bg)", backdropFilter: "blur(16px)",
-          border: "1px solid var(--card-border)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-          fontSize: 13, fontWeight: 600,
-          display: "flex", alignItems: "center", gap: 6,
+          zIndex: 1000, display: "flex", gap: 12, alignItems: "center", width: "max-content", maxWidth: "calc(100% - 32px)"
         }}>
-          <Ruler size={16} color="var(--accent)" /> Selected Area: {polygonArea.toFixed(1)} m² ({(polygonArea / 10).toFixed(1)} kW potential)
+          <div style={{
+            padding: "8px 18px", borderRadius: 10,
+            background: "var(--card-bg)", backdropFilter: "blur(16px)",
+            border: "1px solid var(--card-border)",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            fontSize: 13, fontWeight: 600,
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <Ruler size={16} color="var(--accent)" /> Area: {polygonArea.toFixed(1)} m² ({(polygonArea / 10).toFixed(1)} kW)
+          </div>
+
+          <button onClick={handleSaveProperty} className="action-bar-btn glass-card" style={{
+            padding: "8px 16px", borderRadius: 10,
+            background: "var(--accent)", color: "#000",
+            border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+            fontSize: 13, fontWeight: "bold"
+          }}>
+            <Save size={16} /> Save Property
+          </button>
         </div>
       )}
       {/* Universal Footer Overlay */}

@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
-import { Ruler, CheckCircle, Sun, Cpu, Loader2 } from "lucide-react";
+import { Ruler, CheckCircle, Sun, Cpu, Loader2, Trash2, LocateFixed } from "lucide-react";
 
 interface MapLeafletProps {
     center: { lat: number; lng: number };
     markerPosition: { lat: number; lng: number } | null;
     onLocationSelect: (lat: number, lng: number) => void;
-    onPolygonArea?: (areaSqm: number) => void;
+    onPolygonArea?: (areaSqm: number | null) => void;
 }
 
 export default function MapLeaflet({ center, markerPosition, onLocationSelect, onPolygonArea }: MapLeafletProps) {
@@ -18,9 +18,11 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
     const drawnMarkersRef = useRef<L.CircleMarker[]>([]);
     const drawPointsRef = useRef<L.LatLng[]>([]);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [hasPolygon, setHasPolygon] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const [sliderTime, setSliderTime] = useState<number>(12);
     const [sunPos, setSunPos] = useState<any>(null);
+    const [isSimOpen, setIsSimOpen] = useState(false);
 
     const [isAiScanning, setIsAiScanning] = useState(false);
     const [isAiLoading, setIsAiLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         const effectiveLng = markerPosition?.lng || center.lng;
 
         // Fetch Astronomical calculations
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+        const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
         fetch(`${baseUrl}/api/sun-position?lat=${effectiveLat}&lng=${effectiveLng}&date_iso=${iso}`)
             .then(r => r.json())
             .then(data => setSunPos(data))
@@ -52,10 +54,39 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         if (polygonRef.current) {
             polygonRef.current.remove();
             polygonRef.current = null;
+            setHasPolygon(false);
         }
         drawPointsRef.current = [];
         onLocationSelect(lat, lng);
     }, [onLocationSelect]);
+
+    const handleLocateMe = () => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    onLocationSelect(lat, lng);
+                    if (mapRef.current) mapRef.current.setView([lat, lng], 18, { animate: true });
+                },
+                (err) => alert("Could not access location. Please enable browser permissions.")
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    };
+
+    const handleClearBoundary = () => {
+        if (polygonRef.current) {
+            polygonRef.current.remove();
+            polygonRef.current = null;
+        }
+        drawPointsRef.current = [];
+        drawnMarkersRef.current.forEach(m => m.remove());
+        drawnMarkersRef.current = [];
+        setHasPolygon(false);
+        if (onPolygonArea) onPolygonArea(null);
+    };
 
     // Initialize map
     useEffect(() => {
@@ -182,6 +213,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                 // Calculate area using Gauss's formula (approximate in sq meters)
                 const area = calculatePolygonArea(drawPointsRef.current);
                 if (onPolygonArea) onPolygonArea(area);
+                setHasPolygon(true);
 
                 // Get centroid
                 const avgLat = drawPointsRef.current.reduce((s, p) => s + p.lat, 0) / drawPointsRef.current.length;
@@ -234,7 +266,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         if (mapRef.current) mapRef.current.off("click");
 
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+            const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
             const res = await fetch(`${baseUrl}/api/detect-rooftop?lat=${latlng.lat}&lng=${latlng.lng}`);
             if (!res.ok) throw new Error("API failed");
             const data = await res.json();
@@ -254,6 +286,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
 
             const area = calculatePolygonArea(syntheticPoints);
             if (onPolygonArea) onPolygonArea(area);
+            setHasPolygon(true);
             onLocationSelect(latlng.lat, latlng.lng);
 
         } catch (e) {
@@ -290,60 +323,106 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
             {/* Map Controls */}
-            <div style={{ position: "absolute", bottom: "max(4vh, 20px)", left: "50%", transform: "translateX(-50%)", zIndex: 1000, display: "flex", gap: 12, paddingBottom: "env(safe-area-inset-bottom)", flexWrap: "wrap", justifyContent: "center", width: "90%", maxWidth: "400px" }}>
-                <button
-                    onClick={toggleDrawing}
-                    className={`nav-link-item glass-card ${isDrawing ? 'active' : 'inactive'}`}
-                    style={{ flex: "1 1 calc(50% - 12px)", minWidth: "140px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 14px", fontSize: 13, background: isDrawing ? "var(--accent)" : "var(--card-bg)", color: isDrawing ? "#000" : "var(--foreground)", border: "none", cursor: "pointer", touchAction: "manipulation" }}
-                >
-                    {isDrawing ? <><CheckCircle size={16} /> Save Area</> : <><Ruler size={16} /> Draw Roof</>}
-                </button>
+            <div className="bottom-action-bar">
+                {hasPolygon && !isDrawing ? (
+                    <button
+                        onClick={handleClearBoundary}
+                        className="nav-link-item glass-card action-bar-btn active"
+                        style={{ flex: "1 1", minWidth: "140px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 14px", fontSize: 13, background: "#ef4444", color: "#fff", border: "none", cursor: "pointer", touchAction: "manipulation", height: "48px" }}
+                    >
+                        <Trash2 size={16} /> Clear Boundary
+                    </button>
+                ) : (
+                    <button
+                        onClick={toggleDrawing}
+                        className={`nav-link-item glass-card action-bar-btn ${isDrawing ? 'active' : 'inactive'}`}
+                        style={{ flex: "1 1", minWidth: "140px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 14px", fontSize: 13, background: isDrawing ? "var(--accent)" : "var(--card-bg)", color: isDrawing ? "#000" : "var(--foreground)", border: "none", cursor: "pointer", touchAction: "manipulation", height: "48px" }}
+                    >
+                        {isDrawing ? <><CheckCircle size={16} /> Save Area</> : <><Ruler size={16} /> Draw Roof</>}
+                    </button>
+                )}
                 <button
                     onClick={toggleAiScanMode}
                     disabled={isAiLoading}
-                    className={`nav-link-item glass-card ${isAiScanning ? 'active' : 'inactive'}`}
+                    className={`nav-link-item glass-card action-bar-btn ${isAiScanning ? 'active' : 'inactive'}`}
                     style={{
-                        flex: "1 1 calc(50% - 12px)", minWidth: "140px",
+                        flex: "1 1", minWidth: "140px",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 14px",
                         fontSize: 13,
                         background: isAiScanning || isAiLoading ? "#f59e0b" : "var(--card-bg)",
                         color: isAiScanning || isAiLoading ? "#000" : "var(--foreground)",
-                        border: "none", cursor: "pointer", touchAction: "manipulation"
+                        border: "none", cursor: "pointer", touchAction: "manipulation",
+                        height: "48px"
                     }}
                 >
                     {isAiLoading ? <><Loader2 size={16} className="lucide-spin" /> Scanning...</> : isAiScanning ? <><CheckCircle size={16} /> Click Roof on Map</> : <><Cpu size={16} /> AI Auto-Detect</>}
                 </button>
             </div>
 
-            {/* Sun Simulation Panel */}
-            <div className="sun-sim-panel">
-                <h4 style={{ margin: "0 0 12px 0", fontSize: 13, color: "var(--accent)", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}>
-                    <Sun size={14} /> Solar Shadow Simulation
-                </h4>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 8, color: "#94a3b8" }}>
-                    <span>06:00</span>
-                    <span style={{ color: "#e8ecf1", fontWeight: "bold" }}>{sliderTime}:00</span>
-                    <span>18:00</span>
-                </div>
-                <input
-                    type="range" min="6" max="18" step="1"
-                    value={sliderTime}
-                    onChange={e => setSliderTime(parseInt(e.target.value))}
-                    style={{ width: "100%", cursor: "pointer", accentColor: "#f59e0b" }}
-                />
+            {/* Locate Me FAB */}
+            <button
+                onClick={handleLocateMe}
+                className="glass-card shadow-lg"
+                style={{
+                    position: "absolute",
+                    bottom: 110,
+                    right: 20,
+                    zIndex: 1000,
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid var(--card-border)",
+                    background: "var(--card-bg)",
+                    color: "var(--foreground)",
+                    cursor: "pointer",
+                }}
+            >
+                <LocateFixed size={20} />
+            </button>
 
-                {sunPos && (
-                    <div style={{ marginTop: 12, display: "flex", gap: 12, fontSize: 12 }}>
-                        <div style={{ flex: 1, background: "rgba(0,0,0,0.3)", padding: "6px 8px", borderRadius: 6 }}>
-                            <div style={{ color: "#94a3b8" }}>Azimuth</div>
-                            <div style={{ fontWeight: "bold" }}>{sunPos.azimuth_deg?.toFixed(1)}°</div>
+            {/* Sun Simulation Panel */}
+            <div className={`sun-sim-panel ${isSimOpen ? 'expanded' : 'compact'}`}>
+                <div
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+                    onClick={() => setIsSimOpen(!isSimOpen)}
+                >
+                    <h4 style={{ margin: 0, fontSize: 13, color: "var(--accent)", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}>
+                        <Sun size={14} /> <span className="sim-title-text">Solar Shadow Simulation</span>
+                    </h4>
+                    <span style={{ fontSize: 14 }}>{isSimOpen ? "−" : "+"}</span>
+                </div>
+
+                {isSimOpen && (
+                    <div style={{ marginTop: 12 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 8, color: "#94a3b8" }}>
+                            <span>06:00</span>
+                            <span style={{ color: "#e8ecf1", fontWeight: "bold" }}>{sliderTime}:00</span>
+                            <span>18:00</span>
                         </div>
-                        <div style={{ flex: 1, background: "rgba(0,0,0,0.3)", padding: "6px 8px", borderRadius: 6 }}>
-                            <div style={{ color: "#94a3b8" }}>Elevation</div>
-                            <div style={{ fontWeight: "bold", color: sunPos.elevation_deg > 0 ? "#22c55e" : "#ef4444" }}>
-                                {sunPos.elevation_deg > 0 ? `${sunPos.elevation_deg?.toFixed(1)}°` : "NIGHT"}
+                        <input
+                            type="range" min="6" max="18" step="1"
+                            value={sliderTime}
+                            onChange={e => setSliderTime(parseInt(e.target.value))}
+                            style={{ width: "100%", cursor: "pointer", accentColor: "#f59e0b", height: 24 }}
+                        />
+
+                        {sunPos && (
+                            <div style={{ marginTop: 12, display: "flex", gap: 12, fontSize: 12 }}>
+                                <div style={{ flex: 1, background: "rgba(0,0,0,0.3)", padding: "6px 8px", borderRadius: 6 }}>
+                                    <div style={{ color: "#94a3b8" }}>Azimuth</div>
+                                    <div style={{ fontWeight: "bold" }}>{sunPos.azimuth_deg?.toFixed(1)}°</div>
+                                </div>
+                                <div style={{ flex: 1, background: "rgba(0,0,0,0.3)", padding: "6px 8px", borderRadius: 6 }}>
+                                    <div style={{ color: "#94a3b8" }}>Elevation</div>
+                                    <div style={{ fontWeight: "bold", color: sunPos.elevation_deg > 0 ? "#22c55e" : "#ef4444" }}>
+                                        {sunPos.elevation_deg > 0 ? `${sunPos.elevation_deg?.toFixed(1)}°` : "NIGHT"}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
             </div>

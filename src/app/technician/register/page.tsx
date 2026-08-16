@@ -6,7 +6,7 @@ import { Wrench, ArrowRight, ShieldCheck, HardHat } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 export default function TechnicianRegistrationPage() {
     const router = useRouter();

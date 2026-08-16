@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Zap, Map, Bot, Download, Table2, AlertTriangle, MapPin } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
 // --- MOCK HIERARCHY DATA FOR FILTER OPTIONS ---
 const GEO_DATA: Record<string, Record<string, string[]>> = {

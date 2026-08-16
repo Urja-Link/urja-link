@@ -25,6 +25,7 @@ interface SolarData {
     co2_reduction_kg_year: number;
     environmental_data?: {
         data_source: string;
+        is_live_production?: boolean;
         current_temperature_c: number;
         current_cloud_cover_pct: number;
         current_humidity_pct: number;
@@ -127,6 +128,12 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                     {data.environmental_data && (
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "12px 0" }}>
                             <span className="env-badge"><Satellite size={12} /> {data.environmental_data.data_source || "—"}</span>
+                            {data.environmental_data.is_live_production && (
+                                <span className="env-badge" style={{ background: "rgba(34,197,94,0.15)", color: "var(--success)" }}>
+                                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", display: "inline-block", marginRight: 4, animation: "pulse 2s infinite" }} />
+                                    LIVE CORE
+                                </span>
+                            )}
                             <span className="env-badge"><Thermometer size={12} /> {formatNumber(data.environmental_data.current_temperature_c)}°C</span>
                             <span className="env-badge"><Cloud size={12} /> {formatPercentage(data.environmental_data.current_cloud_cover_pct)}</span>
                             <span className="env-badge"><Wind size={12} /> PM2.5: {formatNumber(data.environmental_data.air_quality_pm25)}</span>
