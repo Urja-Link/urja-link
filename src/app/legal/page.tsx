@@ -50,7 +50,7 @@ export default function LegalPage() {
                         <h3 style={{ color: "var(--foreground)", margin: "16px 0 8px", fontWeight: 600 }}>5. Your Rights</h3>
                         <p>
                             You have the right to access, modify, or delete your personal data at any time.
-                            Contact us at support@urjalink.in to exercise these rights.
+                            Contact us at team.urjalink@gmail.com to exercise these rights.
                         </p>
                     </div>
                 </div>
@@ -90,7 +90,7 @@ export default function LegalPage() {
 
                         <h3 style={{ color: "var(--foreground)", margin: "16px 0 8px", fontWeight: 600 }}>5. Contact</h3>
                         <p>
-                            For any questions about these terms, contact us at support@urjalink.in or visit
+                            For any questions about these terms, contact us at team.urjalink@gmail.com or visit
                             our <Link href="/contact" style={{ color: "var(--foreground)" }}>Contact page</Link>.
                         </p>
                     </div>

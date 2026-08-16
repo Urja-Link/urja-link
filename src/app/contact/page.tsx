@@ -118,7 +118,7 @@ export default function ContactPage() {
                         <div className="info-card" style={{ marginBottom: 20 }}>
                             <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px 0", display: "flex", alignItems: "center", gap: 8 }}><Phone size={20} color="var(--warning)" /> Contact Info</h3>
                             <div style={{ display: "flex", flexDirection: "column", gap: 12, color: "var(--text-secondary)" }}>
-                                <p style={{ display: "flex", alignItems: "center", gap: 8, margin: 0 }}><Mail size={16} /> support@urjalink.in</p>
+                                <p style={{ display: "flex", alignItems: "center", gap: 8, margin: 0 }}><Mail size={16} /> team.urjalink@gmail.com</p>
                                 <p style={{ display: "flex", alignItems: "center", gap: 8, margin: 0 }}><Phone size={16} /> +91-XXXXX-XXXXX</p>
                                 <p style={{ display: "flex", alignItems: "center", gap: 8, margin: 0 }}><Clock size={16} /> Mon–Sat: 9:00 AM – 6:00 PM IST</p>
                             </div>

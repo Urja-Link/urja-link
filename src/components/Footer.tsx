@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Footer() {
@@ -34,9 +35,13 @@ export default function Footer() {
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
                             margin: "0 0 8px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px"
                         }}
                     >
-                        ⚡ Urja-Link
+                        <Image src="/circular-logo.png" alt="Logo" width={24} height={24} style={{ borderRadius: "50%" }} />
+                        Urja-Link
                     </h3>
                     <p style={{ lineHeight: 1.6 }}>
                         {t("footer_desc")}
@@ -95,7 +100,7 @@ export default function Footer() {
                 {/* Contact */}
                 <div>
                     <h4 style={{ color: "var(--foreground)", marginBottom: 12, fontWeight: 700 }}>{t("f_contact")}</h4>
-                    <p style={{ marginBottom: 4 }}>📧 support@urjalink.in</p>
+                    <p style={{ marginBottom: 4 }}>📧 team.urjalink@gmail.com</p>
                     <p style={{ marginBottom: 4 }}>📞 +91-6350130369</p>
                     <p>📍 India</p>
                 </div>

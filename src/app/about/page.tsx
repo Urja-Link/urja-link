@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { Info, Target, Bot, Satellite, Sun, CloudRain, Coins, Landmark, Wrench, BarChart2 } from "lucide-react";
+import { Info, Target, BrainCircuit, Telescope, Database, CloudLightning, LineChart, Building2, Wrench, BarChart2 } from "lucide-react";
 
 export default function AboutPage() {
     return (
@@ -31,27 +31,27 @@ export default function AboutPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 24 }}>
                     {[
                         {
-                            icon: <Bot size={36} color="var(--warning)" />, title: "AI Rooftop Detection",
+                            icon: <BrainCircuit size={36} color="var(--warning)" />, title: "AI Rooftop Detection",
                             desc: "Custom-trained models detect rooftops, obstacles, and shadows from satellite imagery for accurate usable area calculation.",
                         },
                         {
-                            icon: <Satellite size={36} color="var(--warning)" />, title: "Real Satellite Data",
+                            icon: <Telescope size={36} color="var(--warning)" />, title: "Real Satellite Data",
                             desc: "Integration with Sentinel-2 and Google Earth Engine for high-resolution multispectral analysis of rooftop surfaces.",
                         },
                         {
-                            icon: <Sun size={36} color="var(--warning)" />, title: "NASA POWER Integration",
+                            icon: <Database size={36} color="var(--warning)" />, title: "NASA POWER Integration",
                             desc: "Real solar irradiance data from NASA's POWER database — monthly climatology and peak sun hours for any location in India.",
                         },
                         {
-                            icon: <CloudRain size={36} color="var(--warning)" />, title: "Live Weather Data",
+                            icon: <CloudLightning size={36} color="var(--warning)" />, title: "Live Weather Data",
                             desc: "Open-Meteo provides real-time temperature, cloud cover, humidity, wind speed, and air quality for accurate loss calculations.",
                         },
                         {
-                            icon: <Coins size={36} color="var(--warning)" />, title: "Financial Analysis",
+                            icon: <LineChart size={36} color="var(--warning)" />, title: "Financial Analysis",
                             desc: "25-year ROI projection with PM Surya Ghar subsidy, net metering, degradation modeling, and inflation-adjusted tariffs.",
                         },
                         {
-                            icon: <Landmark size={36} color="var(--warning)" />, title: "Government Dashboard",
+                            icon: <Building2 size={36} color="var(--warning)" />, title: "Government Dashboard",
                             desc: "National solar progress tracking, state-wise analytics, PM Surya Ghar Yojana monitoring, and energy deficit intelligence.",
                         },
                     ].map((f) => (
