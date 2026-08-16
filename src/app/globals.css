@@ -193,6 +193,18 @@ body {
   .nav-links-center {
     display: none;
   }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .show-on-mobile-flex {
+    display: flex !important;
+  }
+}
+
+.show-on-mobile-flex {
+  display: none;
 }
 
 /* ========== Search Bar ========== */

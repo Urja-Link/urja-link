@@ -73,11 +73,11 @@ export default function Sidebar() {
 
                 {/* Nav Right (Buttons & Hamburger) */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8, pointerEvents: "auto" }}>
-                    <div className="nav-links-center" style={{ gap: 8 }}>
-                        <button onClick={toggleTheme} style={{ background: "transparent", border: "1px solid var(--card-border)", color: "var(--foreground)", padding: "6px 12px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
+                    <div className="nav-links-center hide-on-mobile" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <button onClick={toggleTheme} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s shadow" }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)"} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}>
                             {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} <span>{theme === "dark" ? "Light" : "Dark"}</span>
                         </button>
-                        <button onClick={() => setLanguage(language === "en" ? "hi" : "en")} style={{ background: "transparent", border: "1px solid var(--card-border)", color: "var(--foreground)", padding: "6px 12px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
+                        <button onClick={() => setLanguage(language === "en" ? "hi" : "en")} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s shadow" }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)"} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}>
                             <Globe size={14} /> <span>{language === "en" ? "HI" : "EN"}</span>
                         </button>
                     </div>
@@ -196,6 +196,16 @@ export default function Sidebar() {
                     >
                         Sign Up
                     </Link>
+                </div>
+
+                {/* Mobile Toggles */}
+                <div className="show-on-mobile-flex" style={{ padding: "0 20px 12px", gap: 8 }}>
+                    <button onClick={toggleTheme} style={{ flex: 1, padding: "8px", borderRadius: 8, border: "1px solid var(--card-border)", background: "var(--card-bg)", color: "var(--foreground)", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--hover-bg)"} onMouseLeave={(e) => e.currentTarget.style.background = "var(--card-bg)"}>
+                        {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} {theme === "dark" ? "Light" : "Dark"}
+                    </button>
+                    <button onClick={() => setLanguage(language === "en" ? "hi" : "en")} style={{ flex: 1, padding: "8px", borderRadius: 8, border: "1px solid var(--card-border)", background: "var(--card-bg)", color: "var(--foreground)", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--hover-bg)"} onMouseLeave={(e) => e.currentTarget.style.background = "var(--card-bg)"}>
+                        <Globe size={14} /> {language === "en" ? "HI" : "EN"}
+                    </button>
                 </div>
 
                 {/* Navigation */}
