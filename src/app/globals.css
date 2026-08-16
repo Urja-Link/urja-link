@@ -189,6 +189,12 @@ body {
   text-decoration: none;
 }
 
+.nav-links-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 @media (max-width: 1024px) {
   .nav-links-center {
     display: none;

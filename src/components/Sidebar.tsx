@@ -73,7 +73,7 @@ export default function Sidebar() {
 
                 {/* Nav Right (Buttons & Hamburger) */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8, pointerEvents: "auto" }}>
-                    <div className="nav-links-center hide-on-mobile" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div className="nav-links-center hide-on-mobile">
                         <button onClick={toggleTheme} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s shadow" }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)"} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}>
                             {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} <span>{theme === "dark" ? "Light" : "Dark"}</span>
                         </button>
