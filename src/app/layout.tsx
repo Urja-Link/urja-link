@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeProvider from "@/components/ThemeProvider";
 import Sidebar from "@/components/Sidebar";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
           <ThemeProvider>
             <Sidebar />
             {children}
+            <SpeedInsights />
           </ThemeProvider>
         </LanguageProvider>
         <script
