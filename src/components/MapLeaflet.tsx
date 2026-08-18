@@ -15,6 +15,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
     const mapRef = useRef<L.Map | null>(null);
     const markerRef = useRef<L.Marker | null>(null);
     const polygonRef = useRef<L.Polygon | null>(null);
+    const panelsGroupRef = useRef<L.LayerGroup | null>(null);
     const drawnMarkersRef = useRef<L.CircleMarker[]>([]);
     const drawPointsRef = useRef<L.LatLng[]>([]);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -23,6 +24,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
     const [sliderTime, setSliderTime] = useState<number>(12);
     const [sunPos, setSunPos] = useState<any>(null);
     const [isSimOpen, setIsSimOpen] = useState(false);
+    const [telemetry, setTelemetry] = useState<{ total: number; usable: number; capacityKw: number } | null>(null);
 
     const [isAiScanning, setIsAiScanning] = useState(false);
     const [isAiLoading, setIsAiLoading] = useState(false);
@@ -56,6 +58,9 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             polygonRef.current = null;
             setHasPolygon(false);
         }
+        if (panelsGroupRef.current) {
+            panelsGroupRef.current.clearLayers();
+        }
         drawPointsRef.current = [];
         onLocationSelect(lat, lng);
     }, [onLocationSelect]);
@@ -85,6 +90,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         drawnMarkersRef.current.forEach(m => m.remove());
         drawnMarkersRef.current = [];
         setHasPolygon(false);
+        setTelemetry(null);
         if (onPolygonArea) onPolygonArea(null);
     };
 
@@ -152,8 +158,13 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         map.on("click", defaultClickHandler);
 
         mapRef.current = map;
+        panelsGroupRef.current = L.layerGroup().addTo(map);
 
         return () => {
+            if (panelsGroupRef.current) {
+                panelsGroupRef.current.clearLayers();
+                panelsGroupRef.current.remove();
+            }
             map.remove();
             mapRef.current = null;
         };
@@ -197,11 +208,72 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
     }, [center]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Drawing mode
+    const renderSimulatedPanels = (points: L.LatLng[]) => {
+        if (!panelsGroupRef.current) return;
+
+        let minLat = Infinity, maxLat = -Infinity;
+        let minLng = Infinity, maxLng = -Infinity;
+
+        points.forEach(p => {
+            if (p.lat < minLat) minLat = p.lat;
+            if (p.lat > maxLat) maxLat = p.lat;
+            if (p.lng < minLng) minLng = p.lng;
+            if (p.lng > maxLng) maxLng = p.lng;
+        });
+
+        // Approx 2x1 meter panels (0.000018 lat/lng degrees)
+        const stepLat = 0.000018;
+        const stepLng = 0.000010;
+
+        let totalPanels = 0;
+        let usablePanels = 0;
+
+        for (let lat = minLat; lat < maxLat; lat += stepLat * 1.5) {
+            for (let lng = minLng; lng < maxLng; lng += stepLng * 1.5) {
+                // Calculate centroid of the grid box
+                let centerLat = lat + (stepLat / 2);
+                let centerLng = lng + (stepLng / 2);
+
+                if (pointInPolygon(L.latLng(centerLat, centerLng), points)) {
+                    totalPanels++;
+                    // Random probability: 20% Red (pre-installed/obstacle), 80% Blue (ready to install)
+                    const isRed = Math.random() < 0.20;
+                    if (!isRed) usablePanels++;
+
+                    const bounds: L.LatLngBoundsExpression = [
+                        [lat, lng],
+                        [lat + stepLat, lng + stepLng]
+                    ];
+
+                    L.rectangle(bounds, {
+                        color: isRed ? "#dc2626" : "#2563eb", // Tailwind red-600 / blue-600
+                        fillColor: isRed ? "#ef4444" : "#3b82f6", // Tailwind red-500 / blue-500
+                        fillOpacity: 0.9,
+                        weight: 1
+                    }).addTo(panelsGroupRef.current);
+                }
+            }
+        }
+
+        setTelemetry({
+            total: totalPanels,
+            usable: usablePanels,
+            capacityKw: (usablePanels * 400) / 1000
+        });
+
+        setTelemetry({
+            total: totalPanels,
+            usable: usablePanels,
+            capacityKw: (usablePanels * 400) / 1000
+        });
+    };
+
     const toggleDrawing = () => {
         if (isDrawing) {
             // Complete polygon
             if (drawPointsRef.current.length >= 3 && mapRef.current) {
                 if (polygonRef.current) polygonRef.current.remove();
+                if (panelsGroupRef.current) panelsGroupRef.current.clearLayers();
 
                 polygonRef.current = L.polygon(drawPointsRef.current, {
                     color: "#0ea5e9",
@@ -214,6 +286,8 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                 const area = calculatePolygonArea(drawPointsRef.current);
                 if (onPolygonArea) onPolygonArea(area);
                 setHasPolygon(true);
+
+                renderSimulatedPanels(drawPointsRef.current);
 
                 // Get centroid
                 const avgLat = drawPointsRef.current.reduce((s, p) => s + p.lat, 0) / drawPointsRef.current.length;
@@ -276,6 +350,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             drawPointsRef.current = syntheticPoints;
 
             if (polygonRef.current) polygonRef.current.remove();
+            if (panelsGroupRef.current) panelsGroupRef.current.clearLayers();
             polygonRef.current = L.polygon(syntheticPoints, {
                 color: "#f59e0b",
                 fillColor: "#f59e0b",
@@ -287,6 +362,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             const area = calculatePolygonArea(syntheticPoints);
             if (onPolygonArea) onPolygonArea(area);
             setHasPolygon(true);
+            renderSimulatedPanels(syntheticPoints);
             onLocationSelect(latlng.lat, latlng.lng);
 
         } catch (e) {
@@ -383,6 +459,53 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                 <LocateFixed size={20} />
             </button>
 
+            {/* AI Telemetry Panel */}
+            {telemetry && (
+                <div className="glass-card shadow-lg" style={{
+                    position: "absolute",
+                    top: 20,
+                    right: 20,
+                    zIndex: 1000,
+                    padding: 16,
+                    minWidth: 260,
+                    border: "1px solid var(--accent)",
+                    background: "rgba(10, 15, 26, 0.85)",
+                    backdropFilter: "blur(12px)",
+                    borderRadius: 12
+                }}>
+                    <h4 style={{ margin: "0 0 12px 0", fontSize: 13, color: "var(--accent)", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}>
+                        <Cpu size={14} /> <span>Phase 6: Panel Placement</span>
+                    </h4>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ color: "var(--text-secondary)" }}>Total Scanned Area:</span>
+                            <span style={{ fontWeight: 600 }}>{telemetry.total} Units</span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ color: "var(--text-secondary)" }}>Available (Blue Panels):</span>
+                            <span style={{ fontWeight: 600, color: "#3b82f6" }}>{telemetry.usable} Panels</span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ color: "var(--text-secondary)" }}>Preinstalled / Obstacle:</span>
+                            <span style={{ fontWeight: 600, color: "#ef4444" }}>{telemetry.total - telemetry.usable} Units</span>
+                        </div>
+                        <hr style={{ borderColor: "rgba(255,255,255,0.1)", margin: "4px 0" }} />
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ color: "var(--text-secondary)" }}>Usable Roof Percentage:</span>
+                            <span style={{ fontWeight: 600, color: "var(--success)" }}>{Math.round((telemetry.usable / (telemetry.total || 1)) * 100)}%</span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ color: "var(--text-secondary)" }}>Panel Capacity:</span>
+                            <span style={{ fontWeight: 600 }}>400 W</span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span style={{ color: "var(--text-secondary)" }}>Total System Capacity:</span>
+                            <span style={{ fontWeight: 700, color: "var(--warning)" }}>{telemetry.capacityKw.toFixed(2)} kW</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Sun Simulation Panel */}
             <div className={`sun-sim-panel ${isSimOpen ? 'expanded' : 'compact'}`}>
                 <div
@@ -450,4 +573,17 @@ function calculatePolygonArea(points: L.LatLng[]): number {
     }
 
     return Math.abs((total * R * R) / 2);
+}
+
+// Ray-casting algorithm to determine if a point is inside a polygon
+function pointInPolygon(point: L.LatLng, vs: L.LatLng[]) {
+    let x = point.lng, y = point.lat;
+    let inside = false;
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        let xi = vs[i].lng, yi = vs[i].lat;
+        let xj = vs[j].lng, yj = vs[j].lat;
+        let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
 }
