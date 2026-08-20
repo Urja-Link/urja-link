@@ -64,13 +64,26 @@
   padding: 0;
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Inter", Arial, Helvetica, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
-  max-width: 100%;
 }
 
 /* ========== Global Utilities ========== */
@@ -78,9 +91,28 @@ body {
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
-.text-clamp-heading {
-  font-size: clamp(1.5rem, 6vw, 2.5rem);
+.text-clamp-heading,
+h1.page-title {
+  font-size: clamp(2rem, 4vw, 4rem);
   line-height: 1.2;
+}
+
+h2.section-title {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.body-text,
+p {
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+}
+
+/* ========== Container System ========== */
+.container-fluid {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
 }
 
 .w-full-safe {
@@ -104,26 +136,52 @@ body {
 }
 
 /* ========== Top Floating Navbar ========== */
-.top-navbar-container {
+.global-header {
   position: fixed;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 1200px;
-  height: 60px;
-  background: var(--card-bg);
-  backdrop-filter: blur(36px) saturate(180%);
-  -webkit-backdrop-filter: blur(36px) saturate(180%);
-  border: 1px solid var(--card-border);
-  border-radius: 100px;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+.header-inner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px 0 24px;
-  z-index: 10000;
+  gap: 16px;
+  background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--card-border);
+  border-radius: 100px;
+  padding: 8px 16px 8px 24px;
+  min-height: 60px;
+  pointer-events: auto;
   box-shadow: var(--glass-shadow);
   transition: background 0.3s, border-color 0.3s;
+}
+
+.navbar-brand {
+  min-width: max-content;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: max-content;
+}
+
+.search-portal-slot {
+  flex: 1;
+  max-width: 480px;
+  display: flex;
+  justify-content: center;
 }
 
 .nav-links-center,
@@ -165,36 +223,6 @@ body {
   color: var(--foreground);
 }
 
-.btn-nav-login {
-  background: var(--text-secondary);
-  color: var(--background);
-  padding: 8px 20px;
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.btn-nav-contact {
-  background: transparent;
-  color: var(--foreground);
-  padding: 8px 20px;
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1px solid var(--card-border);
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.nav-links-center {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 @media (max-width: 1024px) {
   .nav-links-center {
     display: none;
@@ -207,6 +235,22 @@ body {
   .show-on-mobile-flex {
     display: flex !important;
   }
+
+  .global-header {
+    padding: 12px;
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .search-portal-slot {
+    order: 3;
+    min-width: 100%;
+    margin-top: 8px;
+  }
 }
 
 .show-on-mobile-flex {
@@ -214,30 +258,8 @@ body {
 }
 
 /* ========== Search Bar ========== */
-.search-container {
-  position: fixed;
-  top: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10002;
-  width: 480px;
-  max-width: calc(100% - 32px);
-  pointer-events: auto;
-}
-
-@media (max-width: 1100px) {
-  .search-container {
-    max-width: 60vw;
-  }
-}
-
-@media (max-width: 1024px) {
-  .search-container {
-    top: 86px;
-    /* Moved below the navbar on tablet/mobile */
-    max-width: calc(100% - 32px);
-    width: 100%;
-  }
+.search-container-inner {
+  width: 100%;
 }
 
 .live-operations-container {
@@ -310,14 +332,15 @@ body {
 .report-panel {
   position: absolute;
   top: 80px;
-  right: 70px;
-  z-index: 900;
-  width: 400px;
-  max-width: 90vw;
-  max-height: calc(100vh - 100px);
+  right: 24px;
+  z-index: 1000;
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 120px);
   overflow-y: auto;
   padding: 24px;
   animation: slideIn 0.4s ease-out;
+  border-radius: 16px;
 }
 
 @keyframes slideIn {
@@ -758,11 +781,10 @@ body {
 
 .sun-sim-panel {
   position: absolute;
-  bottom: 44px;
-  /* Lifted to clear Universal Footer */
+  bottom: 100px;
   left: 24px;
   z-index: 1000;
-  width: 300px;
+  width: 320px;
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   padding: 16px;
@@ -770,6 +792,27 @@ body {
   border: 1px solid var(--card-border);
   color: var(--foreground);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.bottom-action-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 16px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.bottom-action-bar .action-bar-btn {
+  pointer-events: auto;
+  border-radius: 100px !important;
 }
 
 /* ========== Responsive ========== */
@@ -780,12 +823,18 @@ body {
 
   .report-panel {
     top: auto;
-    bottom: calc(72px + env(safe-area-inset-bottom));
+    bottom: 0;
     right: 0;
     left: 0;
     width: 100%;
-    max-height: calc(100vh - 160px - env(safe-area-inset-bottom));
-    border-radius: 16px 16px 0 0;
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 20px 20px 0 0;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .bottom-action-bar {
+    bottom: calc(24px + env(safe-area-inset-bottom));
   }
 
   .responsive-grid-split {
@@ -813,11 +862,11 @@ body {
   }
 
   .sun-sim-panel {
-    bottom: calc(76px + env(safe-area-inset-bottom));
+    bottom: calc(100px + env(safe-area-inset-bottom));
     top: auto;
-    right: 12px;
-    left: auto;
-    width: 220px;
+    left: 16px;
+    right: auto;
+    width: 260px;
     padding: 12px;
     transition: all 0.3s ease;
   }

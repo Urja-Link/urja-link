@@ -51,53 +51,69 @@ export default function Sidebar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+            document.body.style.paddingRight = "var(--scrollbar-compensation, 0px)";
+        } else {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        };
+    }, [isOpen]);
+
     return (
         <>
-            <nav className="top-navbar-container" style={{
+            <header className="global-header" style={{
                 transition: "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s",
-                transform: `translateX(-50%) translateY(${isNavVisible ? "0px" : "-120px"})`,
+                transform: `translateY(${isNavVisible ? "0px" : "-120px"})`,
                 opacity: isNavVisible ? 1 : 0,
-                pointerEvents: "none",
-                zIndex: 10001, /* Ensure nav is always over everything except search input */
-                maxWidth: "calc(100vw - 24px)" /* Reduce padding on small devices */
             }}>
-                {/* Brand */}
-                <Link href="/" style={{ textDecoration: "none", pointerEvents: "auto", flexShrink: 0 }}>
-                    <h2 style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 800, margin: 0, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6 }}>
-                        <img src="/circular-logo.png" alt="Urja-Link" style={{ width: "1.4em", height: "1.4em", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
-                    </h2>
-                </Link>
-
-                {/* Nav Links Removed as requested by user -> Moved to Hamburger */}
-                <div style={{ flex: 1 }} />
-
-                {/* Nav Right (Buttons & Hamburger) */}
-                <div style={{ display: "flex", alignItems: "center", gap: 8, pointerEvents: "auto" }}>
-                    <div className="nav-links-center hide-on-mobile">
-                        <button onClick={toggleTheme} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s shadow" }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)"} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}>
-                            {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} <span>{theme === "dark" ? "Light" : "Dark"}</span>
-                        </button>
-                        <button onClick={() => setLanguage(language === "en" ? "hi" : "en")} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s shadow" }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)"} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}>
-                            <Globe size={14} /> <span>{language === "en" ? "HI" : "EN"}</span>
-                        </button>
+                <div className="header-inner">
+                    {/* Brand */}
+                    <div className="navbar-brand">
+                        <Link href="/" style={{ textDecoration: "none", pointerEvents: "auto", display: "flex", alignItems: "center" }}>
+                            <h2 style={{ fontSize: "clamp(15px, 4vw, 18px)", fontWeight: 800, margin: 0, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 6 }}>
+                                <img src="/circular-logo.png" alt="Urja-Link" style={{ width: "24px", height: "24px", objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} /> Urja-Link
+                            </h2>
+                        </Link>
                     </div>
 
-                    {/* Hamburger Toggle - In Nav Pill (Only on Home/Map) */}
-                    {isMainPage && (
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            style={{
-                                width: 36, height: 36, borderRadius: 8,
-                                border: "1px solid var(--card-border)", background: "var(--card-bg)",
-                                color: "var(--foreground)", display: "flex", alignItems: "center", justifyContent: "center",
-                                cursor: "pointer", transition: "all 0.2s", flexShrink: 0
-                            }}
-                        >
-                            <span style={{ fontSize: 18 }}>{isOpen ? "✕" : "☰"}</span>
-                        </button>
-                    )}
+                    {/* Empty Slot for SearchBar Portal */}
+                    <div id="search-portal-slot" className="search-portal-slot" />
+
+                    {/* Nav Right (Buttons & Hamburger) */}
+                    <div className="navbar-actions">
+                        <div className="nav-links-center hide-on-mobile">
+                            <button onClick={toggleTheme} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s" }}>
+                                {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />} <span>{theme === "dark" ? "Light" : "Dark"}</span>
+                            </button>
+                            <button onClick={() => setLanguage(language === "en" ? "hi" : "en")} style={{ background: "var(--card-bg)", color: "var(--foreground)", border: "1px solid var(--card-border)", padding: "8px 16px", borderRadius: 100, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s" }}>
+                                <Globe size={14} /> <span>{language === "en" ? "HI" : "EN"}</span>
+                            </button>
+                        </div>
+
+                        {/* Hamburger Toggle */}
+                        {isMainPage && (
+                            <button
+                                aria-label="Open navigation"
+                                onClick={() => setIsOpen(!isOpen)}
+                                style={{
+                                    width: 44, height: 44, borderRadius: 12,
+                                    border: "1px solid var(--card-border)", background: "var(--card-bg)",
+                                    color: "var(--foreground)", display: "flex", alignItems: "center", justifyContent: "center",
+                                    cursor: "pointer", transition: "all 0.2s", flexShrink: 0
+                                }}
+                            >
+                                <span style={{ fontSize: 20 }}>{isOpen ? "✕" : "☰"}</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
-            </nav>
+            </header>
 
             {/* Global Sticky Hamburger (For inner pages, positioned top-right permanently) */}
             {!isMainPage && (
