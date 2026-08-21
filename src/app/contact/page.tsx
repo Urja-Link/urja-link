@@ -29,80 +29,82 @@ export default function ContactPage() {
                     <div className="info-card">
                         <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20 }}>Send us a Message</h2>
 
-                        {submitted ? (
-                            <div style={{
-                                padding: 24, borderRadius: 12, textAlign: "center",
-                                background: "var(--card-bg)", border: "1px solid var(--success)",
-                            }}>
-                                <p style={{ fontSize: 36, display: "flex", justifyContent: "center", margin: 0, paddingBottom: 16 }}><CheckCircle size={48} color="var(--success)" /></p>
-                                <h3 style={{ color: "var(--success)", marginBottom: 8 }}>Message Sent!</h3>
-                                <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
-                                    We&apos;ll get back to you within 24 hours.
-                                </p>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 16 }}>
+                        <div style={{ minHeight: 380, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                            {submitted ? (
+                                <div style={{
+                                    padding: 24, borderRadius: 12, textAlign: "center",
+                                    background: "var(--card-bg)", border: "1px solid var(--success)",
+                                }}>
+                                    <p style={{ fontSize: 36, display: "flex", justifyContent: "center", margin: 0, paddingBottom: 16 }}><CheckCircle size={48} color="var(--success)" /></p>
+                                    <h3 style={{ color: "var(--success)", marginBottom: 8 }}>Message Sent!</h3>
+                                    <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
+                                        We&apos;ll get back to you within 24 hours.
+                                    </p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 16 }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Name</label>
+                                            <input
+                                                className="form-input"
+                                                placeholder="Your name"
+                                                value={form.name}
+                                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Email</label>
+                                            <input
+                                                className="form-input"
+                                                type="email"
+                                                placeholder="your@email.com"
+                                                value={form.email}
+                                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 16 }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Phone</label>
+                                            <input
+                                                className="form-input"
+                                                placeholder="+91 XXXXX XXXXX"
+                                                value={form.phone}
+                                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Subject</label>
+                                            <input
+                                                className="form-input"
+                                                placeholder="Subject"
+                                                value={form.subject}
+                                                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
                                     <div className="form-group">
-                                        <label className="form-label">Name</label>
-                                        <input
+                                        <label className="form-label">Message</label>
+                                        <textarea
                                             className="form-input"
-                                            placeholder="Your name"
-                                            value={form.name}
-                                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                            placeholder="How can we help you?"
+                                            rows={5}
+                                            style={{ resize: "vertical" }}
+                                            value={form.message}
+                                            onChange={(e) => setForm({ ...form, message: e.target.value })}
                                             required
                                         />
                                     </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Email</label>
-                                        <input
-                                            className="form-input"
-                                            type="email"
-                                            placeholder="your@email.com"
-                                            value={form.email}
-                                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 16 }}>
-                                    <div className="form-group">
-                                        <label className="form-label">Phone</label>
-                                        <input
-                                            className="form-input"
-                                            placeholder="+91 XXXXX XXXXX"
-                                            value={form.phone}
-                                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Subject</label>
-                                        <input
-                                            className="form-input"
-                                            placeholder="Subject"
-                                            value={form.subject}
-                                            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Message</label>
-                                    <textarea
-                                        className="form-input"
-                                        placeholder="How can we help you?"
-                                        rows={5}
-                                        style={{ resize: "vertical" }}
-                                        value={form.message}
-                                        onChange={(e) => setForm({ ...form, message: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <button type="submit" className="btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                                    <Send size={18} /> Send Message
-                                </button>
-                            </form>
-                        )}
+                                    <button type="submit" className="btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                                        <Send size={18} /> Send Message
+                                    </button>
+                                </form>
+                            )}
+                        </div>
                     </div>
 
                     {/* Contact Info */}

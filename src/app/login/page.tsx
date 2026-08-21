@@ -122,57 +122,61 @@ export default function LoginPage() {
                     </button>
                 </div>
 
-                {error && (
-                    <div style={{
-                        padding: "10px 14px", borderRadius: 8, marginBottom: 16,
-                        background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
-                        color: "#ef4444", fontSize: 13,
-                    }}>
-                        {error}
-                    </div>
-                )}
+                <div style={{ minHeight: 48, marginBottom: error ? 0 : -8, transition: "min-height 0.2s ease" }}>
+                    {error && (
+                        <div style={{
+                            padding: "10px 14px", borderRadius: 8, marginBottom: 16,
+                            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+                            color: "#ef4444", fontSize: 13,
+                        }}>
+                            {error}
+                        </div>
+                    )}
+                </div>
 
-                {mode === "email" ? (
-                    <form onSubmit={handleEmailLogin}>
-                        <div className="form-group">
-                            <label className="form-label">Email</label>
-                            <input className="form-input" type="email" placeholder="your@email.com" required
-                                value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Password</label>
-                            <input className="form-input" type="password" placeholder="••••••••" required
-                                value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-                        </div>
-                        <button className="btn-primary" type="submit" style={{ width: "100%" }} disabled={loading}>
-                            {loading ? "Signing in..." : "Sign In"}
-                        </button>
-                    </form>
-                ) : (
-                    <form onSubmit={handleVerifyOTP}>
-                        <div className="form-group">
-                            <label className="form-label">Email or Phone</label>
-                            <input className="form-input" placeholder="+91 XXXXX XXXXX or email" required
-                                value={otpForm.contact} onChange={(e) => setOtpForm({ ...otpForm, contact: e.target.value })} />
-                        </div>
-                        {!otpForm.otpSent ? (
-                            <button className="btn-primary" type="button" onClick={handleSendOTP} style={{ width: "100%" }}>
-                                Send OTP
+                <div style={{ minHeight: 220 }}>
+                    {mode === "email" ? (
+                        <form onSubmit={handleEmailLogin}>
+                            <div className="form-group">
+                                <label className="form-label">Email</label>
+                                <input className="form-input" type="email" placeholder="your@email.com" required
+                                    value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Password</label>
+                                <input className="form-input" type="password" placeholder="••••••••" required
+                                    value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                            </div>
+                            <button className="btn-primary" type="submit" style={{ width: "100%" }} disabled={loading}>
+                                {loading ? "Signing in..." : "Sign In"}
                             </button>
-                        ) : (
-                            <>
-                                <div className="form-group">
-                                    <label className="form-label">Enter OTP</label>
-                                    <input className="form-input" placeholder="6-digit OTP" maxLength={6} required
-                                        value={otpForm.otp} onChange={(e) => setOtpForm({ ...otpForm, otp: e.target.value })} />
-                                </div>
-                                <button className="btn-primary" type="submit" style={{ width: "100%" }}>
-                                    Verify OTP
+                        </form>
+                    ) : (
+                        <form onSubmit={handleVerifyOTP}>
+                            <div className="form-group">
+                                <label className="form-label">Email or Phone</label>
+                                <input className="form-input" placeholder="+91 XXXXX XXXXX or email" required
+                                    value={otpForm.contact} onChange={(e) => setOtpForm({ ...otpForm, contact: e.target.value })} />
+                            </div>
+                            {!otpForm.otpSent ? (
+                                <button className="btn-primary" type="button" onClick={handleSendOTP} style={{ width: "100%" }}>
+                                    Send OTP
                                 </button>
-                            </>
-                        )}
-                    </form>
-                )}
+                            ) : (
+                                <>
+                                    <div className="form-group">
+                                        <label className="form-label">Enter OTP</label>
+                                        <input className="form-input" placeholder="6-digit OTP" maxLength={6} required
+                                            value={otpForm.otp} onChange={(e) => setOtpForm({ ...otpForm, otp: e.target.value })} />
+                                    </div>
+                                    <button className="btn-primary" type="submit" style={{ width: "100%" }}>
+                                        Verify OTP
+                                    </button>
+                                </>
+                            )}
+                        </form>
+                    )}
+                </div>
 
                 <div style={{ textAlign: "center", marginTop: 24, color: "var(--text-muted)", fontSize: 14 }}>
                     Don&apos;t have an account?{" "}
