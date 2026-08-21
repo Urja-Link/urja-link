@@ -5,14 +5,39 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 import { Mail, CheckCircle, Send, MapPin, Phone, Clock, Link2, HelpCircle, Info, ScrollText } from "lucide-react";
 
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
+
 export default function ContactPage() {
     const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
     const [submitted, setSubmitted] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        setSending(true);
+        setError("");
+
+        try {
+            const res = await fetch(`${API_BASE}/api/contact/submit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form)
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.detail || "Failed to send message.");
+            }
+
+            setSubmitted(true);
+            setTimeout(() => setSubmitted(false), 5000); // 5 sec success toast
+            setForm({ name: "", email: "", phone: "", subject: "", message: "" }); // Clear form
+        } catch (err: any) {
+            setError(err.message || "An unexpected error occurred. Please try again.");
+        } finally {
+            setSending(false);
+        }
     };
 
     return (
@@ -43,6 +68,15 @@ export default function ContactPage() {
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit}>
+                                    {error && (
+                                        <div style={{
+                                            padding: "10px 14px", borderRadius: 8, marginBottom: 16,
+                                            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+                                            color: "#ef4444", fontSize: 13,
+                                        }}>
+                                            {error}
+                                        </div>
+                                    )}
                                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: 16 }}>
                                         <div className="form-group">
                                             <label className="form-label">Name</label>
@@ -99,8 +133,8 @@ export default function ContactPage() {
                                             required
                                         />
                                     </div>
-                                    <button type="submit" className="btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                                        <Send size={18} /> Send Message
+                                    <button type="submit" className="btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }} disabled={sending}>
+                                        <Send size={18} /> {sending ? "Dispatching..." : "Send Message"}
                                     </button>
                                 </form>
                             )}
