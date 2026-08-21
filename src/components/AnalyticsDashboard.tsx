@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import SolarForecastWidget from "./SolarForecastWidget";
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
@@ -52,7 +53,7 @@ export default function AnalyticsDashboard() {
                 </div>
             </div>
 
-            <div style={{ background: "rgba(15,23,42,0.6)", borderRadius: 12, padding: "24px", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ background: "rgba(15,23,42,0.6)", borderRadius: 12, padding: "24px", border: "1px solid rgba(255,255,255,0.05)", marginBottom: 24 }}>
                 <h3 style={{ margin: 0, marginBottom: 20, fontSize: 16, color: "#e8ecf1" }}>📈 Platform Growth Trend (2026)</h3>
                 <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={trendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -70,6 +71,8 @@ export default function AnalyticsDashboard() {
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
+
+            <SolarForecastWidget />
         </div>
     );
 }

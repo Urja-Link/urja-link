@@ -1,22 +1,16 @@
 {
-    "name": "Urja-Link Digital Twin",
-    "short_name": "UrjaLink",
-    "description": "AI-powered national platform for rooftop solar potential estimation, subsidies, and smart energy planning.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#09090e",
-    "theme_color": "#f59e0b",
-    "orientation": "portrait-primary",
-    "icons": [
-        {
-            "src": "/logo-192.png",
-            "type": "image/png",
-            "sizes": "192x192"
-        },
-        {
-            "src": "/logo-512.png",
-            "type": "image/png",
-            "sizes": "512x512"
-        }
-    ]
+  "name": "Urja-Link India",
+  "short_name": "Urja-Link",
+  "description": "National Digital Twin for Rooftop Solar",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#38bdf8",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
 }
