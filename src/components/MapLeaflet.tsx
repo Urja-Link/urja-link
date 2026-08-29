@@ -120,13 +120,13 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             }
         );
 
-        // CartoDB Dark layer (Great for enterprise data viz)
+        // Esri Dark Gray Base layer (Great for enterprise data viz)
         const darkMap = L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
             {
-                attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-                maxZoom: 19,
-                subdomains: 'abcd'
+                attribution: '&copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+                maxZoom: 20,
+                maxNativeZoom: 16
             }
         );
 
