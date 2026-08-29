@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import SolarForecastWidget from "./SolarForecastWidget";
+import RoofAnalysisWidget from "./RoofAnalysisWidget";
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
@@ -52,6 +53,8 @@ export default function AnalyticsDashboard() {
                     <div style={{ fontSize: 32, fontWeight: "bold", color: "#22c55e", marginTop: 8 }}>{stats.platform_capacity_gw} GW</div>
                 </div>
             </div>
+
+            <RoofAnalysisWidget />
 
             <div style={{ background: "rgba(15,23,42,0.6)", borderRadius: 12, padding: "24px", border: "1px solid rgba(255,255,255,0.05)", marginBottom: 24 }}>
                 <h3 style={{ margin: 0, marginBottom: 20, fontSize: 16, color: "#e8ecf1" }}>📈 Platform Growth Trend (2026)</h3>
