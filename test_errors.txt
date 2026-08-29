@@ -1,0 +1,31 @@
+
+> frontend_v2@0.1.0 test:ci
+> vitest run
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mC:/Users/acer/urja-link/urja-link-india/frontend_v2[39m
+
+ [33mΓ¥»[39m tests/unit/AnalyticsDashboard.test.tsx [2m ([22m[2m0 test[22m[2m)[22m
+ [33mΓ¥»[39m tests/e2e/main_flow.spec.ts [2m ([22m[2m0 test[22m[2m)[22m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Suites 2 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/e2e/main_flow.spec.ts [ tests/e2e/main_flow.spec.ts ]
+ FAIL  tests/unit/AnalyticsDashboard.test.tsx [ tests/unit/AnalyticsDashboard.test.tsx ]
+ReferenceError: expect is not defined
+ Γ¥» node_modules/@testing-library/jest-dom/dist/index.mjs:9:1
+      7| import 'css.escape';
+      8| 
+      9| expect.extend(extensions);
+       | ^
+     10| 
+ Γ¥» tests/setup.ts:1:1
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/2]ΓÄ»
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 18:53:36
+[2m   Duration [22m 1.42s[2m (transform 46ms, setup 0ms, collect 0ms, tests 0ms, environment 1.46s, prepare 440ms)[22m
+

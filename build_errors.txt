@@ -1,0 +1,23 @@
+
+> frontend_v2@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.3.0 (Turbopack)
+- Environments: .env.local
+ΓÜá Warning: Next.js ignored package-lock.json in C:\Users\acer because it is outside the current Git repository (C:\Users\acer\urja-link\urja-link-india\frontend_v2).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+Γ£ô Running next.config.ts took 3.1s
+- Experiments (use with caution):
+  ┬╖ clientTraceMetadata
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 8.1s
+  Running next.config.js provided runAfterProductionCompile ...
+Γ£ô Completed runAfterProductionCompile in 34.9s
+  Running TypeScript ...
+playwright.config.ts(1,1): error TS2578: Unused '@ts-expect-error' directive.
+vitest.config.ts(1,1): error TS2578: Unused '@ts-expect-error' directive.
+vitest.config.ts(3,1): error TS2578: Unused '@ts-expect-error' directive.
+Failed to type check.
+
