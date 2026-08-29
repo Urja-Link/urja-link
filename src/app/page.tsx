@@ -8,8 +8,20 @@ import CopilotBot from "@/components/CopilotBot";
 import { useLanguage } from "@/context/LanguageContext";
 import { Zap, Ruler, Save } from "lucide-react";
 
-// Leaflet must be imported client-side only (no SSR)
-const MapLeaflet = dynamic(() => import("@/components/MapLeaflet"), { ssr: false });
+// Leaflet must be imported client-side only (no SSR) with an instant loading skeleton for FCP Optimization
+const MapLeaflet = dynamic(() => import("@/components/MapLeaflet"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--card-bg)" }}>
+      <div style={{ display: "flex", gap: "8px" }}>
+        <span className="loading-dot" />
+        <span className="loading-dot" />
+        <span className="loading-dot" />
+      </div>
+      <p style={{ marginTop: "16px", color: "var(--accent)", fontSize: "14px", fontWeight: "bold" }}>Acquiring Geographic Telemetry...</p>
+    </div>
+  )
+});
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
