@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import SolarForecastWidget from "./SolarForecastWidget";
 import RoofAnalysisWidget from "./RoofAnalysisWidget";
+import SolarSimulationWidget from "./SolarSimulationWidget";
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
 
@@ -76,6 +77,10 @@ export default function AnalyticsDashboard() {
             </div>
 
             <SolarForecastWidget />
+
+            <div style={{ marginTop: 24, paddingBottom: 40 }}>
+                <SolarSimulationWidget />
+            </div>
         </div>
     );
 }

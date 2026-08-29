@@ -1,0 +1,5 @@
+tests/e2e/main_flow.spec.ts(5,68): error TS7031: Binding element 'page' implicitly has an 'any' type.
+tests/setup.ts(2,25): error TS2307: Cannot find module '@testing-library/react' or its corresponding type declarations.
+tests/setup.ts(3,27): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+tests/unit/AnalyticsDashboard.test.tsx(1,32): error TS2307: Cannot find module '@testing-library/react' or its corresponding type declarations.
+tests/unit/AnalyticsDashboard.test.tsx(2,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.

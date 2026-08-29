@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UploadCloud, Sun, Zap, Target } from "lucide-react";
+import UrjaScoreCard from "./UrjaScoreCard";
 
 export default function RoofAnalysisWidget() {
     const [file, setFile] = useState<File | null>(null);
@@ -21,7 +22,7 @@ export default function RoofAnalysisWidget() {
     const handleAnalyze = async () => {
         if (!file) return;
         setAnalyzing(true);
-        
+
         const formData = new FormData();
         formData.append("file", file);
 
@@ -39,10 +40,11 @@ export default function RoofAnalysisWidget() {
             // Fallback for demo if backend is offline/unreachable
             setResults({
                 status: "demo",
-                usable_area_sqm: 48.5,
-                pv_potential_kwh: 7100.0,
-                detected_superstructures: ["Water Tank", "AC Unit"],
-                simulated_usable_area_reduction: "18%"
+                usable_area_sqm: 120.5,
+                physics: { system_capacity_kw: 24.1, annual_generation_kwh: 43900 },
+                financials: { annual_savings_inr: 263400, payback_years: 4.5, co2_offset_tonnes: 36.0, installation_cost_est_inr: 1205000 },
+                urja_score_total: 84,
+                urja_score_breakdown: { roof_area: 24, orientation: 20, solar_resource: 20, obstructions: 12, shading: 8 }
             });
         } finally {
             setAnalyzing(false);
@@ -54,7 +56,7 @@ export default function RoofAnalysisWidget() {
             <h3 style={{ margin: "0 0 20px 0", fontSize: 18, color: "#e8ecf1", display: "flex", alignItems: "center", gap: 8 }}>
                 <Target size={20} color="#38bdf8" /> AI Roof Analysis
             </h3>
-            
+
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
                 {/* Upload Section */}
                 <div style={{ border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -71,9 +73,9 @@ export default function RoofAnalysisWidget() {
                             <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
                         </label>
                     )}
-                    
-                    <button 
-                        onClick={handleAnalyze} 
+
+                    <button
+                        onClick={handleAnalyze}
                         disabled={!file || analyzing}
                         style={{ width: "100%", marginTop: 16, padding: "12px", background: !file || analyzing ? "rgba(255,255,255,0.1)" : "#38bdf8", color: !file || analyzing ? "#64748b" : "#0f172a", border: "none", borderRadius: 8, fontWeight: 700, cursor: !file || analyzing ? "not-allowed" : "pointer", transition: "all 0.2s" }}
                     >
@@ -88,7 +90,7 @@ export default function RoofAnalysisWidget() {
                             Upload an image to see potential
                         </div>
                     )}
-                    
+
                     {analyzing && (
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, border: "1px solid rgba(56,189,248,0.2)", borderRadius: 12, background: "rgba(56,189,248,0.05)", minHeight: 200 }}>
                             <div className="spin-slow"><Sun size={32} color="#38bdf8" /></div>
@@ -97,30 +99,16 @@ export default function RoofAnalysisWidget() {
                     )}
 
                     {results && !analyzing && (
-                        <>
-                            <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 12, padding: 16 }}>
-                                <div style={{ fontSize: 12, textTransform: "uppercase", color: "#4ade80", fontWeight: 600 }}>Net Usable Roof Area</div>
-                                <div style={{ fontSize: 32, fontWeight: 800, color: "#fff", display: "flex", alignItems: "baseline", gap: 4 }}>
-                                    {results.usable_area_sqm || "45.2"} <span style={{ fontSize: 16, color: "#94a3b8", fontWeight: 500 }}>m²</span>
-                                </div>
-                                <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>After {results.simulated_usable_area_reduction || "15%"} reduction from structures</div>
-                            </div>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12, padding: 16 }}>
-                                    <div style={{ fontSize: 12, textTransform: "uppercase", color: "#94a3b8" }}>Solar Potential</div>
-                                    <div style={{ fontSize: 24, fontWeight: 700, color: "#f59e0b", marginTop: 4, display: "flex", alignItems: "center", gap: 8 }}>
-                                        <Zap size={20} /> {results.pv_potential_kwh || "6,500"} kWh
-                                    </div>
-                                </div>
-                                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12, padding: 16 }}>
-                                    <div style={{ fontSize: 12, textTransform: "uppercase", color: "#94a3b8" }}>Detected Obstacles</div>
-                                    <div style={{ fontSize: 24, fontWeight: 600, color: "#e8ecf1", marginTop: 4 }}>
-                                        {(results.detected_superstructures?.length || 2)} Objects
-                                    </div>
-                                </div>
-                            </div>
-                        </>
+                        <div style={{ width: "100%", marginTop: 8 }}>
+                            <UrjaScoreCard
+                                scoreData={{
+                                    total: results.urja_score_total || 80,
+                                    breakdown: results.urja_score_breakdown || { roof_area: 24, orientation: 20, solar_resource: 15, obstructions: 12, shading: 9 }
+                                }}
+                                financials={results.financials || { annual_savings_inr: 0, payback_years: 0, co2_offset_tonnes: 0, installation_cost_est_inr: 0 }}
+                                physics={results.physics || { system_capacity_kw: 0, annual_generation_kwh: 0 }}
+                            />
+                        </div>
                     )}
                 </div>
             </div>
