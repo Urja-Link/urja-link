@@ -151,8 +151,8 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             { position: "topright" }
         ).addTo(map);
 
-        // Default to dark view for enterprise dashboard feel
-        darkMap.addTo(map);
+        // Default to satellite view
+        satellite.addTo(map);
 
         // Click handler
         map.on("click", defaultClickHandler);
