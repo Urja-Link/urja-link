@@ -17,6 +17,8 @@ const SolarPanel = ({ temperature = 25 }: { temperature: number }) => {
         return new THREE.Color().lerpColors(base, hot, lerpFactor);
     }, [temperature]);
 
+    const hot = useMemo(() => new THREE.Color("#ef4444"), []);
+
     useFrame((state, delta) => {
         if (meshRef.current) {
             meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
@@ -31,8 +33,6 @@ const SolarPanel = ({ temperature = 25 }: { temperature: number }) => {
             }
         }
     });
-
-    const hot = useMemo(() => new THREE.Color("#ef4444"), []);
 
     return (
         <group position={[0, 0, 0]}>

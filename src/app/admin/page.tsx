@@ -35,7 +35,7 @@ export default function AdminDashboard() {
         loadPendingCompanies();
     }, []);
 
-    const loadPendingCompanies = async () => {
+    async function loadPendingCompanies() {
         setIsLoading(true);
         try {
             const { data, error } = await supabase
