@@ -1,4 +1,3 @@
-// @ts-expect-error playwright types might not be found properly in some setups
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
