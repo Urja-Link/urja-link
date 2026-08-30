@@ -208,7 +208,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
     }, [center]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Drawing mode
-    const renderSimulatedPanels = (points: L.LatLng[]) => {
+    const renderSimulatedPanels = (points: L.LatLng[], obstacles: L.LatLng[][] = []) => {
         if (!panelsGroupRef.current) return;
 
         let minLat = Infinity, maxLat = -Infinity;
@@ -236,8 +236,15 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
 
                 if (pointInPolygon(L.latLng(centerLat, centerLng), points)) {
                     totalPanels++;
-                    // Random probability: 20% Red (pre-installed/obstacle), 80% Blue (ready to install)
-                    const isRed = Math.random() < 0.20;
+                    // Map obstacle logic
+                    let isRed = false;
+                    const panelCenter = L.latLng(centerLat, centerLng);
+                    for (const obs of obstacles) {
+                        if (pointInPolygon(panelCenter, obs)) {
+                            isRed = true;
+                            break;
+                        }
+                    }
                     if (!isRed) usablePanels++;
 
                     const bounds: L.LatLngBoundsExpression = [
@@ -287,7 +294,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                 if (onPolygonArea) onPolygonArea(area);
                 setHasPolygon(true);
 
-                renderSimulatedPanels(drawPointsRef.current);
+                renderSimulatedPanels(drawPointsRef.current, []);
 
                 // Get centroid
                 const avgLat = drawPointsRef.current.reduce((s, p) => s + p.lat, 0) / drawPointsRef.current.length;
@@ -347,6 +354,11 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
 
             const syntheticPoints = data.rooftop_polygon.map((p: any) => L.latLng(p.lat, p.lng));
 
+            let obstaclesList: L.LatLng[][] = [];
+            if (data.obstacles && Array.isArray(data.obstacles)) {
+                obstaclesList = data.obstacles.map((obs: any[]) => obs.map((p: any) => L.latLng(p.lat, p.lng)));
+            }
+
             drawPointsRef.current = syntheticPoints;
 
             if (polygonRef.current) polygonRef.current.remove();
@@ -362,7 +374,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             const area = calculatePolygonArea(syntheticPoints);
             if (onPolygonArea) onPolygonArea(area);
             setHasPolygon(true);
-            renderSimulatedPanels(syntheticPoints);
+            renderSimulatedPanels(syntheticPoints, obstaclesList);
             onLocationSelect(latlng.lat, latlng.lng);
 
         } catch (e) {
