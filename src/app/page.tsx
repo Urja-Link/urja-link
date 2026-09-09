@@ -7,6 +7,7 @@ import SolarReportPanel from "@/components/SolarReportPanel";
 import CopilotBot from "@/components/CopilotBot";
 import { useLanguage } from "@/context/LanguageContext";
 import { Zap, Ruler, Save } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 // Leaflet must be imported client-side only (no SSR) with an instant loading skeleton for FCP Optimization
 const MapLeaflet = dynamic(() => import("@/components/MapLeaflet"), {
@@ -52,9 +53,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSystem, setSelectedSystem] = useState(5);
   const [polygonArea, setPolygonArea] = useState<number | null>(null);
+  const [polygonGeoJSON, setPolygonGeoJSON] = useState<any | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchSolarData = useCallback(
-    async (systemKw: number, lat?: number, lng?: number, polyArea?: number | null) => {
+    async (systemKw: number, lat?: number, lng?: number, polyArea?: number | null, tilt?: number, azimuth?: number) => {
       setIsLoading(true);
       setSolarData(null);
 
@@ -64,7 +67,7 @@ export default function Home() {
       try {
         const usableArea = polyArea ?? systemKw * 10;
 
-        const res = await fetch(`/api/calculate`, {
+        const res = await fetch(`/api/calculate-job`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -73,27 +76,60 @@ export default function Home() {
             lat: effectiveLat,
             lng: effectiveLng,
             polygon_area_sqm: polyArea ?? null,
+            roof_tilt_deg: tilt,
+            roof_azimuth_deg: azimuth,
+            geojson: polygonGeoJSON,
           }),
         });
 
-        if (!res.ok) throw new Error("API error");
-        const data = await res.json();
-        setSolarData(data);
-      } catch (error) {
+        if (!res.ok) throw new Error("API error on job creation");
+        const initData = await res.json();
+        const jobId = initData.job_id;
+
+        // Polling loop
+        let isDone = false;
+        let attempts = 0;
+        const maxAttempts = 30; // 60 seconds max
+
+        while (!isDone && attempts < maxAttempts) {
+          attempts++;
+          const pollRes = await fetch(`/api/job/${jobId}`);
+          if (pollRes.ok) {
+            const jobData = await pollRes.json();
+            if (jobData.status === "COMPLETED") {
+              setSolarData(jobData.result_data);
+              isDone = true;
+            } else if (jobData.status === "FAILED") {
+              throw new Error("Analysis job failed on backend.");
+            } else {
+              // Wait 2 seconds before checking again
+              await new Promise(r => setTimeout(r, 2000));
+            }
+          }
+        }
+
+        if (!isDone) {
+          throw new Error("Job timed out");
+        }
+      } catch (error: any) {
         console.error("Failed to fetch calculation API", error);
-        // Removed hardcoded fallback data as per user request finally {
+        setErrorMsg("Failed to connect to Physics Calculation Engine (500 Error).");
+        setTimeout(() => setErrorMsg(null), 5000);
+      } finally {
         setIsLoading(false);
       }
     },
-    [markerPos]
+    [markerPos, polygonGeoJSON]
   );
 
   const handleLocationSelect = useCallback(
-    (lat: number, lng: number) => {
+    (lat: number, lng: number, area?: number) => {
       setMarkerPos({ lat, lng });
       setMapCenter({ lat, lng });
-      setPolygonArea(null);
-      fetchSolarData(selectedSystem, lat, lng);
+      if (area === undefined) {
+        setPolygonArea(null);
+      }
+      fetchSolarData(selectedSystem, lat, lng, area !== undefined ? area : undefined);
     },
     [selectedSystem, fetchSolarData]
   );
@@ -116,73 +152,122 @@ export default function Home() {
     [selectedSystem, fetchSolarData]
   );
 
-  const handlePolygonArea = useCallback(
-    (areaSqm: number | null) => {
-      setPolygonArea(areaSqm);
-    },
-    []
-  );
+  const handlePolygonArea = (area: number | null, geojson?: any) => {
+    setPolygonArea(area);
+    if (geojson) {
+      setPolygonGeoJSON(geojson);
+    } else {
+      setPolygonGeoJSON(null);
+    }
+  };
 
-  const handleSaveProperty = () => {
-    alert("Property Saved Successfully to Urja-Link Dashboard!");
+  const handleSaveProperty = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setErrorMsg("You must be logged in to save properties.");
+        setTimeout(() => setErrorMsg(null), 5000);
+        return;
+      }
+      if (!solarData || !markerPos) {
+        setErrorMsg("No solar data or location to save.");
+        setTimeout(() => setErrorMsg(null), 5000);
+        return;
+      }
+
+      const { error } = await supabase.from('saved_reports').insert({
+        user_id: session.user.id,
+        lat: markerPos.lat,
+        lng: markerPos.lng,
+        capacity_kw: solarData.system_capacity_kw,
+        annual_generation_kwh: solarData.annual_generation_kwh,
+        net_cost_inr: solarData.net_cost_inr,
+        roi_years: solarData.payback_period_years,
+        payload: solarData
+      });
+
+      if (error) throw error;
+      alert("Property Saved Successfully to Urja-Link Dashboard!");
+    } catch (e: any) {
+      console.error("Save property error", e);
+      setErrorMsg("Failed to save property. Please try again.");
+      setTimeout(() => setErrorMsg(null), 5000);
+    }
   };
 
   return (
-    <main style={{ position: "relative", height: "100vh", width: "100vw", overflow: "hidden" }}>
-      {/* Full-screen Leaflet + OSM Map */}
-      <MapLeaflet
-        center={mapCenter}
-        onLocationSelect={handleLocationSelect}
-        markerPosition={markerPos}
-        onPolygonArea={handlePolygonArea}
-      />
-
-      {/* Address Search (OSM Nominatim) */}
-      <SearchBarOSM onSearch={handleSearch} />
-
-      {/* Solar Report Panel */}
-      <SolarReportPanel
-        data={solarData}
-        isLoading={isLoading}
-        selectedSystem={selectedSystem}
-        onSystemChange={handleSystemChange}
-        coords={markerPos}
-      />
-
-
-
-      {/* Copilot Chat Assistant */}
-      <CopilotBot />
-
-      {/* Polygon Area Indicator & Save Button */}
-      {polygonArea && (
+    <main className="app-main-layout">
+      {errorMsg && (
         <div style={{
-          position: "absolute", bottom: 80, left: "50%", transform: "translateX(-50%)",
-          zIndex: 1000, display: "flex", gap: 12, alignItems: "center", width: "max-content", maxWidth: "calc(100% - 32px)"
+          position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)",
+          background: "rgba(239, 68, 68, 0.9)", color: "#fff", padding: "10px 20px",
+          borderRadius: 8, zIndex: 9999, fontWeight: "bold", backdropFilter: "blur(4px)",
+          boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)"
         }}>
-          <div style={{
-            padding: "8px 18px", borderRadius: 10,
-            background: "var(--card-bg)", backdropFilter: "blur(16px)",
-            border: "1px solid var(--card-border)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            fontSize: 13, fontWeight: 600,
-            display: "flex", alignItems: "center", gap: 6,
-          }}>
-            <Ruler size={16} color="var(--accent)" /> Area: {polygonArea.toFixed(1)} m² ({(polygonArea / 10).toFixed(1)} kW)
-          </div>
-
-          <button onClick={handleSaveProperty} className="action-bar-btn glass-card" style={{
-            padding: "8px 16px", borderRadius: 10,
-            background: "var(--accent)", color: "#000",
-            border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-            fontSize: 13, fontWeight: "bold"
-          }}>
-            <Save size={16} /> Save Property
-          </button>
+          {errorMsg}
         </div>
       )}
+
+      {/* Full-screen Leaflet + OSM Map */}
+      <div className="map-layer">
+        <MapLeaflet
+          center={mapCenter}
+          onLocationSelect={handleLocationSelect}
+          markerPosition={markerPos}
+          onPolygonArea={handlePolygonArea}
+          solarData={solarData}
+        />
+      </div>
+
+      <div className="ui-interaction-layer">
+        <div className="ui-header-spacer"></div>
+        <div className="ui-content-area">
+          {/* Address Search (OSM Nominatim) - Falls back if Portal isn't ready */}
+          <SearchBarOSM onSearch={handleSearch} />
+
+          {/* Solar Report Panel */}
+          {!polygonArea && (
+            <SolarReportPanel
+              data={solarData}
+              isLoading={isLoading}
+              selectedSystem={selectedSystem}
+              onSystemChange={handleSystemChange}
+              coords={markerPos}
+            />
+          )}
+
+          {/* Copilot Chat Assistant */}
+          <CopilotBot />
+
+          {/* Bottom Controls / Action Bar */}
+          {polygonArea && (
+            <div className="ui-bottom-controls">
+              <div style={{
+                padding: "8px 18px", borderRadius: 10,
+                background: "var(--card-bg)", backdropFilter: "blur(16px)",
+                border: "1px solid var(--card-border)",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                fontSize: 13, fontWeight: 600,
+                display: "flex", alignItems: "center", gap: 6,
+              }}>
+                <Ruler size={16} color="var(--accent)" /> Area: {polygonArea.toFixed(1)} m² ({(polygonArea / 10).toFixed(1)} kW)
+              </div>
+
+              <button onClick={handleSaveProperty} style={{
+                padding: "8px 16px", borderRadius: 10,
+                background: "var(--accent)", color: "#000",
+                border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                fontSize: 13, fontWeight: "bold"
+              }}>
+                <Save size={16} /> Save Property
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Universal Footer Overlay */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 16px", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(4px)", color: "rgba(255,255,255,0.6)", fontSize: 11, textAlign: "center", zIndex: 999, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 16px", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(4px)", color: "rgba(255,255,255,0.6)", fontSize: 10, textAlign: "center", zIndex: 999, pointerEvents: "none" }}>
         © Urja-Link India 2026. All Rights Reserved.
       </div>
     </main>

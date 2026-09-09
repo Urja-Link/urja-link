@@ -6,12 +6,13 @@ import { Ruler, CheckCircle, Sun, Cpu, Loader2, Trash2, LocateFixed } from "luci
 
 interface MapLeafletProps {
     center: { lat: number; lng: number };
+    onLocationSelect: (lat: number, lng: number, area?: number) => void;
     markerPosition: { lat: number; lng: number } | null;
-    onLocationSelect: (lat: number, lng: number) => void;
-    onPolygonArea?: (areaSqm: number | null) => void;
+    onPolygonArea?: (area: number | null, geojson?: any) => void;
+    solarData?: any;
 }
 
-export default function MapLeaflet({ center, markerPosition, onLocationSelect, onPolygonArea }: MapLeafletProps) {
+export default function MapLeaflet({ center, markerPosition, onLocationSelect, onPolygonArea, solarData }: MapLeafletProps) {
     const mapRef = useRef<L.Map | null>(null);
     const markerRef = useRef<L.Marker | null>(null);
     const polygonRef = useRef<L.Polygon | null>(null);
@@ -28,6 +29,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
 
     const [isAiScanning, setIsAiScanning] = useState(false);
     const [isAiLoading, setIsAiLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // Dynamic Sun tracking
     useEffect(() => {
@@ -265,13 +267,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         setTelemetry({
             total: totalPanels,
             usable: usablePanels,
-            capacityKw: (usablePanels * 400) / 1000
-        });
-
-        setTelemetry({
-            total: totalPanels,
-            usable: usablePanels,
-            capacityKw: (usablePanels * 400) / 1000
+            capacityKw: solarData?.system_capacity_kw || null
         });
     };
 
@@ -291,15 +287,18 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
 
                 // Calculate area using Gauss's formula (approximate in sq meters)
                 const area = calculatePolygonArea(drawPointsRef.current);
-                if (onPolygonArea) onPolygonArea(area);
+                if (onPolygonArea) {
+                    const geojson = polygonRef.current.toGeoJSON();
+                    onPolygonArea(area, geojson.geometry);
+                }
                 setHasPolygon(true);
 
                 renderSimulatedPanels(drawPointsRef.current, []);
 
-                // Get centroid
+                // Get centroid and trigger calculation
                 const avgLat = drawPointsRef.current.reduce((s, p) => s + p.lat, 0) / drawPointsRef.current.length;
                 const avgLng = drawPointsRef.current.reduce((s, p) => s + p.lng, 0) / drawPointsRef.current.length;
-                onLocationSelect(avgLat, avgLng);
+                onLocationSelect(avgLat, avgLng, area);
             }
             drawPointsRef.current = [];
             drawnMarkersRef.current.forEach(m => m.remove());
@@ -372,13 +371,18 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             }).addTo(mapRef.current!);
 
             const area = calculatePolygonArea(syntheticPoints);
-            if (onPolygonArea) onPolygonArea(area);
+            if (onPolygonArea) {
+                const geojson = polygonRef.current.toGeoJSON();
+                onPolygonArea(area, geojson.geometry);
+            }
             setHasPolygon(true);
             renderSimulatedPanels(syntheticPoints, obstaclesList);
             onLocationSelect(latlng.lat, latlng.lng);
 
-        } catch (e) {
+        } catch (e: any) {
             console.error("AI Detect fail", e);
+            setErrorMsg("AI Model currently unavailable or overloaded (500 Error).");
+            setTimeout(() => setErrorMsg(null), 5000);
         } finally {
             setIsAiLoading(false);
             setIsAiScanning(false);
@@ -408,10 +412,34 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
 
     return (
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            {errorMsg && (
+                <div style={{
+                    position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)",
+                    background: "rgba(239, 68, 68, 0.9)", color: "#fff", padding: "10px 20px",
+                    borderRadius: 8, zIndex: 9999, fontWeight: "bold", backdropFilter: "blur(4px)",
+                    boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)"
+                }}>
+                    {errorMsg}
+                </div>
+            )}
             <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
             {/* Map Controls */}
-            <div className="bottom-action-bar">
+            <div className="bottom-action-bar" style={{
+                position: "absolute",
+                bottom: 24,
+                left: "50%",
+                transform: "translateX(-50%)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 12,
+                width: "100%",
+                maxWidth: 480,
+                padding: "0 16px",
+                zIndex: 1000,
+                pointerEvents: "none"
+            }}>
                 {hasPolygon && !isDrawing ? (
                     <button
                         onClick={handleClearBoundary}
@@ -475,7 +503,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             {telemetry && (
                 <div className="glass-card shadow-lg" style={{
                     position: "absolute",
-                    top: 20,
+                    top: 80, // Moved from 20 to 80 to avoid overlapping navbar
                     right: 20,
                     zIndex: 1000,
                     padding: 16,
@@ -508,18 +536,85 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <span style={{ color: "var(--text-secondary)" }}>Panel Capacity:</span>
-                            <span style={{ fontWeight: 600 }}>400 W</span>
+                            <span className="text-white font-mono">{telemetry.usable} panels</span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between" }}>
-                            <span style={{ color: "var(--text-secondary)" }}>Total System Capacity:</span>
-                            <span style={{ fontWeight: 700, color: "var(--warning)" }}>{telemetry.capacityKw.toFixed(2)} kW</span>
-                        </div>
+                        {solarData?.system_capacity_kw && (
+                            <div className="text-xs flex items-center justify-between">
+                                <span className="text-white/50 font-medium">True AI Capacity:</span>
+                                <span className="text-[#00E5FF] font-mono font-bold text-shadow">{solarData.system_capacity_kw.toFixed(2)} kW</span>
+                            </div>
+                        )}
+                        {solarData && (
+                            <>
+                                <hr style={{ borderColor: "rgba(255,255,255,0.1)", margin: "4px 0" }} />
+                                {solarData.financial_projections && (
+                                    <>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <span style={{ color: "var(--text-secondary)" }}>ROI:</span>
+                                            <span style={{ fontWeight: 600, color: "var(--success)" }}>{solarData.financial_projections.lifetime_roi_percentage}%</span>
+                                        </div>
+                                    </>
+                                )}
+                                {solarData.savings && (
+                                    <>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <span style={{ color: "var(--text-secondary)" }}>CO2 Saved:</span>
+                                            <span style={{ fontWeight: 600 }}>{solarData.savings.co2_reduction_tonnes_lifetime} Tonnes</span>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <span style={{ color: "var(--text-secondary)" }}>Savings:</span>
+                                            <span style={{ fontWeight: 600, color: "var(--success)" }}>₹{solarData.savings.annual_savings_inr?.toLocaleString()}/yr</span>
+                                        </div>
+                                    </>
+                                )}
+                                {solarData.subsidy_inr !== undefined && (
+                                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <span style={{ color: "var(--text-secondary)" }}>PM Surya Ghar Subsidy:</span>
+                                        <span style={{ fontWeight: 600, color: "#f59e0b" }}>₹{solarData.subsidy_inr?.toLocaleString()}</span>
+                                    </div>
+                                )}
+                                {solarData.annual_generation_kwh !== undefined && (
+                                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <span style={{ color: "var(--text-secondary)" }}>Energy Generation:</span>
+                                        <span style={{ fontWeight: 600, color: "#38bdf8" }}>{solarData.annual_generation_kwh?.toLocaleString()} kWh</span>
+                                    </div>
+                                )}
+                                {solarData.physics_metrics && (
+                                    <>
+                                        <hr style={{ borderColor: "rgba(255,255,255,0.1)", margin: "4px 0" }} />
+                                        <span style={{ color: "var(--text-muted)", fontSize: 11, fontWeight: "bold" }}>Physics Parameters</span>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 11 }}>
+                                            <span>GHI: <span style={{ color: "#fff" }}>{solarData.physics_metrics.daily_peak_sun_hours} kWh/m²/day</span></span>
+                                            <span>PR: <span style={{ color: "#fff" }}>{(solarData.physics_metrics.system_performance_ratio * 100).toFixed(1)}%</span></span>
+                                            <span>Shadow: <span style={{ color: "#fff" }}>{solarData.physics_metrics.astronomical_shadow_loss_pct}%</span></span>
+                                            <span>Temp Loss: <span style={{ color: "#fff" }}>{solarData.physics_metrics.temperature_loss_pct}%</span></span>
+                                            <span>Soiling: <span style={{ color: "#fff" }}>{solarData.physics_metrics.soiling_loss_pct}%</span></span>
+                                            <span>Orientation: <span style={{ color: "#fff" }}>{(solarData.physics_metrics.orientation_factor * 100).toFixed(1)}%</span></span>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
             )}
 
             {/* Sun Simulation Panel */}
-            <div className={`sun-sim-panel ${isSimOpen ? 'expanded' : 'compact'}`}>
+            <div className={`sun-sim-panel ${isSimOpen ? 'expanded' : 'compact'}`} style={{
+                position: "absolute",
+                bottom: 100,
+                left: 24,
+                zIndex: 1000,
+                width: 320,
+                background: "var(--card-bg)",
+                backdropFilter: "blur(12px)",
+                padding: 16,
+                borderRadius: 12,
+                border: "1px solid var(--card-border)",
+                color: "var(--foreground)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+                pointerEvents: "auto"
+            }}>
                 <div
                     style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
                     onClick={() => setIsSimOpen(!isSimOpen)}

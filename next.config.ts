@@ -10,7 +10,11 @@ const withPWA = withPWAInit({
   skipWaiting: true
 });
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ["lucide-react"]
+  }
+};
 
 export default withSentryConfig(withPWA(nextConfig), {
   // For all available options, see:

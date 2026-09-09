@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { usable_area_sqm, system_size_kw, lat, lng, polygon_area_sqm } = body;
+        const { usable_area_sqm, system_size_kw, lat, lng, polygon_area_sqm, roof_tilt_deg, roof_azimuth_deg } = body;
 
         // Use internal Docker URL for local dev, or the public Render URL in production
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://backend:8000";
@@ -20,7 +20,9 @@ export async function POST(req: Request) {
                 system_size_kw,
                 lat,
                 lng,
-                polygon_area_sqm
+                polygon_area_sqm,
+                roof_tilt_deg: roof_tilt_deg !== undefined ? roof_tilt_deg : 15.0,
+                roof_azimuth_deg: roof_azimuth_deg !== undefined ? roof_azimuth_deg : 180.0
             })
         });
 

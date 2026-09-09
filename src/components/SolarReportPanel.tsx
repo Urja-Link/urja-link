@@ -15,6 +15,7 @@ interface MonthlyGeneration {
 }
 
 interface SolarData {
+    job_id?: string;
     system_capacity_kw: number;
     annual_generation_kwh: number;
     total_cost_inr: number;
@@ -84,9 +85,23 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
 
     return (
         <div className="report-panel glass-card">
-            <h2 style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Sun size={20} color="var(--accent)" /> Solar Potential Report
-            </h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h2 style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Sun size={20} color="var(--accent)" /> Solar Potential Report
+                </h2>
+                {data?.job_id && (
+                    <button
+                        onClick={() => window.open(`/api/job/${data.job_id}/report`, "_blank")}
+                        style={{
+                            background: "var(--accent)", color: "#fff", border: "none",
+                            padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: "bold",
+                            cursor: "pointer", display: "flex", alignItems: "center", gap: 4
+                        }}
+                    >
+                        Save PDF
+                    </button>
+                )}
+            </div>
 
             {/* Location */}
             <div style={{ marginBottom: 14 }}>

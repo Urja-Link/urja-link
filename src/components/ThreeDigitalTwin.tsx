@@ -11,13 +11,16 @@ interface ThreeDigitalTwinProps {
     simulationTime: Date; // Controlled by UI slider
     usableAreaSqFt: number; // Simulating the AI's output
     roofOrientation?: number;
+    digitalTwinData?: any;
 }
 
-const ProceduralHouse = ({ area, orientation = 0 }: { area: number, orientation?: number }) => {
+const ProceduralHouse = ({ area, orientation = 0, digitalTwinData }: { area: number, orientation?: number, digitalTwinData?: any }) => {
     // Rough estimate of box size based on Area (sqft)
     // 1 unit = 1 ft exactly in this scene scale
     const sideLength = Math.sqrt(area);
-    const height = 15; // 15 ft tall roughly for a residential block
+
+    // Scale real backend data (meters) to scene units (feet) if available
+    const height = digitalTwinData?.building_height_m ? digitalTwinData.building_height_m * 3.28084 : 15;
 
     return (
         <group rotation={[0, (orientation * Math.PI) / 180, 0]}>
@@ -31,6 +34,33 @@ const ProceduralHouse = ({ area, orientation = 0 }: { area: number, orientation?
                 <boxGeometry args={[sideLength + 2, 0.5, sideLength + 2]} />
                 <meshStandardMaterial color="#444444" roughness={0.8} />
             </mesh>
+
+            {/* Render AI-detected structural obstacles (Scale M to FT) */}
+            {digitalTwinData?.obstacle_nodes?.map((obs: any, idx: number) => {
+                const obsHeight = obs.height_m * 3.28084;
+                const xOffset = obs.x_offset * 3.28084;
+                const yOffset = obs.y_offset * 3.28084;
+                const baseY = height + 0.5 + obsHeight / 2;
+
+                if (obs.type === "water_tank") {
+                    return (
+                        <mesh key={idx} castShadow position={[xOffset, baseY, yOffset]}>
+                            <cylinderGeometry args={[2.5, 2.5, obsHeight, 16]} />
+                            <meshStandardMaterial color="#1a1a1a" roughness={0.7} />
+                        </mesh>
+                    );
+                }
+                if (obs.type === "ac_unit") {
+                    return (
+                        <mesh key={idx} castShadow position={[xOffset, baseY, yOffset]}>
+                            <boxGeometry args={[4, obsHeight, 4]} />
+                            <meshStandardMaterial color="#e5e5e5" metalness={0.6} />
+                        </mesh>
+                    );
+                }
+                return null;
+            })}
+
             {/* Procedurally generate Solar Panels laid out based on AI area */}
             <SolarPanelArray roofSideLength={sideLength} height={height} />
         </group>
@@ -83,7 +113,8 @@ export default function ThreeDigitalTwin({
     longitude,
     simulationTime,
     usableAreaSqFt,
-    roofOrientation = 0
+    roofOrientation = 0,
+    digitalTwinData
 }: ThreeDigitalTwinProps) {
 
     return (
@@ -97,7 +128,7 @@ export default function ThreeDigitalTwin({
                     />
 
                     {/* Procedural physical house generated entirely from AI Roof segmentation data */}
-                    <ProceduralHouse area={Math.max(400, usableAreaSqFt)} orientation={roofOrientation} />
+                    <ProceduralHouse area={Math.max(400, usableAreaSqFt)} orientation={roofOrientation} digitalTwinData={digitalTwinData} />
 
                     {/* Ground Plane mimicking the surrounding Earth footprint */}
                     <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>

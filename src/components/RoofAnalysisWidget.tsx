@@ -9,6 +9,7 @@ export default function RoofAnalysisWidget() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [analyzing, setAnalyzing] = useState(false);
     const [results, setResults] = useState<any>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -16,6 +17,7 @@ export default function RoofAnalysisWidget() {
             setFile(selected);
             setPreviewUrl(URL.createObjectURL(selected));
             setResults(null);
+            setErrorMsg(null);
         }
     };
 
@@ -35,17 +37,11 @@ export default function RoofAnalysisWidget() {
             });
             const data = await res.json();
             setResults(data);
+            setErrorMsg(null);
         } catch (error) {
             console.error("Analysis failed", error);
-            // Fallback for demo if backend is offline/unreachable
-            setResults({
-                status: "demo",
-                usable_area_sqm: 120.5,
-                physics: { system_capacity_kw: 24.1, annual_generation_kwh: 43900 },
-                financials: { annual_savings_inr: 263400, payback_years: 4.5, co2_offset_tonnes: 36.0, installation_cost_est_inr: 1205000 },
-                urja_score_total: 84,
-                urja_score_breakdown: { roof_area: 24, orientation: 20, solar_resource: 20, obstructions: 12, shading: 8 }
-            });
+            setErrorMsg("Failed to reach AI Diagnostic API. Please ensure backend is running.");
+            setResults(null);
         } finally {
             setAnalyzing(false);
         }
@@ -95,6 +91,12 @@ export default function RoofAnalysisWidget() {
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, border: "1px solid rgba(56,189,248,0.2)", borderRadius: 12, background: "rgba(56,189,248,0.05)", minHeight: 200 }}>
                             <div className="spin-slow"><Sun size={32} color="#38bdf8" /></div>
                             <span style={{ color: "#38bdf8", fontWeight: 600 }}>Analyzing roof vectors & superstructures...</span>
+                        </div>
+                    )}
+
+                    {errorMsg && !analyzing && (
+                        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, background: "rgba(239,68,68,0.05)", color: "#ef4444", fontSize: 13, minHeight: 200, padding: 16, textAlign: "center" }}>
+                            {errorMsg}
                         </div>
                     )}
 

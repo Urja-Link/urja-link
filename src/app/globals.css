@@ -263,21 +263,12 @@ p {
 }
 
 .live-operations-container {
-  position: absolute;
-  bottom: 44px;
-  /* Boosted up to create gap above footer */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: max-content;
   max-width: 90vw;
-}
-
-@media (max-width: 1200px) {
-  .live-operations-container {
-    bottom: auto;
-    top: 80px;
-  }
+  pointer-events: auto;
 }
 
 .search-input {
@@ -328,19 +319,117 @@ p {
   transform: translateY(-50%) scale(1.1);
 }
 
+/* ========== Application Layout Architecture ========== */
+.app-main-layout {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  /* Map takes remaining space, panel takes auto/defined */
+  grid-template-rows: 100px 1fr auto;
+  /* Header space, map space, bottom sheet space */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-layer {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  z-index: 1;
+}
+
+.ui-interaction-layer {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  /* Let map be clickable behind UI */
+  z-index: 100;
+}
+
+.ui-header-spacer {
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.ui-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 0 24px 24px 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ui-bottom-controls {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  gap: 12px;
+}
+
 /* ========== Solar Report Panel ========== */
 .report-panel {
-  position: absolute;
-  top: 80px;
-  right: 24px;
-  z-index: 1000;
   width: 440px;
-  max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 120px);
+  max-width: 100%;
+  max-height: 100%;
   overflow-y: auto;
   padding: 24px;
   animation: slideIn 0.4s ease-out;
   border-radius: 16px;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TABLET MODE */
+@media (max-width: 1024px) {
+  .app-main-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ui-header-spacer {
+    height: 130px;
+    /* Taller header on tablet/mobile when wrapped */
+  }
+
+  .report-panel {
+    width: 320px;
+  }
+}
+
+/* MOBILE MODE (BottomSheet Approach) */
+@media (max-width: 768px) {
+  .ui-content-area {
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  .report-panel {
+    width: 100%;
+    max-height: 60vh;
+    border-radius: 24px 24px 0 0;
+    border-bottom: none;
+    margin: 0;
+    padding: 20px;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+
+    to {
+      transform: translateY(0);
+    }
+  }
 }
 
 @keyframes slideIn {
@@ -370,8 +459,9 @@ p {
   font-weight: 700;
   background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   margin-bottom: 18px;
 }
 
@@ -753,88 +843,10 @@ p {
   gap: 20px;
 }
 
-/* ========== Map Overlays ========== */
-.draw-control-btn {
-  position: absolute;
-  top: 130px;
-  left: 12px;
-  z-index: 1000;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(12px);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.draw-control-btn.active {
-  background: var(--foreground);
-  color: var(--background);
-}
-
-.draw-control-btn.inactive {
-  background: var(--card-bg);
-  color: var(--foreground);
-}
-
-.sun-sim-panel {
-  position: absolute;
-  bottom: 100px;
-  left: 24px;
-  z-index: 1000;
-  width: 320px;
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--card-border);
-  color: var(--foreground);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-.bottom-action-bar {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 480px;
-  padding: 0 16px;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.bottom-action-bar .action-bar-btn {
-  pointer-events: auto;
-  border-radius: 100px !important;
-}
-
-/* ========== Responsive ========== */
+/* Responsive cleanup complete */
 @media (max-width: 1024px) {
   .search-container {
     width: calc(100vw - 32px);
-  }
-
-  .report-panel {
-    top: auto;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
-    max-height: 60vh;
-    border-radius: 20px 20px 0 0;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
-  }
-
-  .bottom-action-bar {
-    bottom: calc(24px + env(safe-area-inset-bottom));
   }
 
   .responsive-grid-split {
