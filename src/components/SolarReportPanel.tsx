@@ -60,6 +60,12 @@ interface SolarData {
         co2_reduction_tonnes_lifetime: number;
         trees_equivalent: number;
     };
+    grid_intelligence?: {
+        region: string;
+        tariff_inr: number;
+        grid_deficit_pct: number;
+        state_subsidy_inr: number;
+    };
     financial_projections?: {
         payback_period_years_exact: number;
         lifetime_net_savings_inr: number;
@@ -152,6 +158,15 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             <span className="env-badge"><Thermometer size={12} /> {formatNumber(data.environmental_data.current_temperature_c)}°C</span>
                             <span className="env-badge"><Cloud size={12} /> {formatPercentage(data.environmental_data.current_cloud_cover_pct)}</span>
                             <span className="env-badge"><Wind size={12} /> PM2.5: {formatNumber(data.environmental_data.air_quality_pm25)}</span>
+                        </div>
+                    )}
+
+                    {/* Grid Intelligence Badge */}
+                    {data.grid_intelligence && (
+                        <div style={{ padding: "8px 12px", background: "rgba(16, 185, 129, 0.1)", borderRadius: 6, marginBottom: 14, fontSize: 12, border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                            <span style={{ color: "var(--success)", fontWeight: "bold", marginRight: 8 }}>⚡ Grid Region: {data.grid_intelligence.region}</span>
+                            <span style={{ color: "var(--text-secondary)", marginRight: 8 }}>Tariff: ₹{data.grid_intelligence.tariff_inr}/kWh</span>
+                            <span style={{ color: "var(--text-secondary)" }}>Deficit: {formatPercentage(data.grid_intelligence.grid_deficit_pct)}</span>
                         </div>
                     )}
 
