@@ -65,55 +65,18 @@ export default function Home() {
       const effectiveLng = lng ?? markerPos?.lng ?? INDIA_CENTER.lng;
 
       try {
-        const usableArea = polyArea ?? systemKw * 10;
-
-        const res = await fetch(`/api/calculate-job`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            usable_area_sqm: usableArea,
-            system_size_kw: systemKw,
-            lat: effectiveLat,
-            lng: effectiveLng,
-            polygon_area_sqm: polyArea ?? null,
-            roof_tilt_deg: tilt,
-            roof_azimuth_deg: azimuth,
-            geojson: polygonGeoJSON,
-          }),
+        const url = `${API_BASE}/api/v1/solar/fast-estimate?lat=${effectiveLat}&lng=${effectiveLng}`;
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
         });
 
-        if (!res.ok) throw new Error("API error on job creation");
-        const initData = await res.json();
-        const jobId = initData.job_id;
-
-        // Polling loop
-        let isDone = false;
-        let attempts = 0;
-        const maxAttempts = 30; // 60 seconds max
-
-        while (!isDone && attempts < maxAttempts) {
-          attempts++;
-          const pollRes = await fetch(`/api/job/${jobId}`);
-          if (pollRes.ok) {
-            const jobData = await pollRes.json();
-            if (jobData.status === "COMPLETED") {
-              setSolarData(jobData.result_data);
-              isDone = true;
-            } else if (jobData.status === "FAILED") {
-              throw new Error("Analysis job failed on backend.");
-            } else {
-              // Wait 2 seconds before checking again
-              await new Promise(r => setTimeout(r, 2000));
-            }
-          }
-        }
-
-        if (!isDone) {
-          throw new Error("Job timed out");
-        }
+        if (!res.ok) throw new Error("API error on fast estimate");
+        const data = await res.json();
+        setSolarData(data);
       } catch (error: any) {
-        console.error("Failed to fetch calculation API", error);
-        setErrorMsg("Failed to connect to Physics Calculation Engine (500 Error).");
+        console.error("Failed to fetch fast estimate API", error);
+        setErrorMsg("Failed to connect to Google Solar Estimate Engine (500 Error).");
         setTimeout(() => setErrorMsg(null), 5000);
       } finally {
         setIsLoading(false);
