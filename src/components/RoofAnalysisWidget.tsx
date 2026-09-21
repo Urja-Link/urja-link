@@ -30,7 +30,7 @@ export default function RoofAnalysisWidget() {
 
         try {
             // Updated to fallback to onrender or use local backend 
-            const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000";
+            const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://urja-link-api.onrender.com";
             const res = await fetch(`${baseUrl}/api/v1/ai/analyze-roof`, {
                 method: "POST",
                 body: formData,
