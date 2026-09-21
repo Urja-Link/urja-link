@@ -427,7 +427,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             {/* Map Controls */}
             <div className="bottom-action-bar" style={{
                 position: "absolute",
-                bottom: 24,
+                top: 24,
                 left: "50%",
                 transform: "translateX(-50%)",
                 display: "flex",

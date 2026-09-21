@@ -40,5 +40,16 @@
     "f_contact": "Contact",
     "f_about": "About Us",
     "f_privacy": "Privacy Policy",
+    "report_location": "Location",
+    "report_system_size": "Select System Size",
+    "report_ai_recommends": "AI Recommends",
+    "report_energy_gen": "Energy Generation",
+    "report_monthly_gen": "Monthly Generation",
+    "report_savings": "Savings",
+    "report_system_capacity": "System Capacity",
+    "report_install_cost": "Total Installation Cost",
+    "report_net_cost": "Your Net Cost",
+    "report_environmental": "Environmental Impact",
+    "report_physics": "Physics Parameters",
     "copy_right": "© Urja-Link 2026. All Rights Reserved."
 }

@@ -15,6 +15,7 @@ export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
     const subtotal = CART_ITEMS.reduce((sum, item) => sum + (item.qty * item.price), 0);
@@ -24,6 +25,7 @@ export default function CheckoutPage() {
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsProcessing(true);
+        setErrorMsg(null);
 
         try {
             const formData = new FormData(formRef.current!);
@@ -37,7 +39,8 @@ export default function CheckoutPage() {
                 payment_method: paymentMethod
             };
 
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) throw sessionError;
 
             const payload = {
                 user_id: session?.user?.id || null, // Allow anonymous orders if session doesn't exist for prototyping
@@ -52,7 +55,7 @@ export default function CheckoutPage() {
 
             setIsSuccess(true);
         } catch (error: any) {
-            alert(`Checkout Error: ${error.message}`);
+            setErrorMsg(`Checkout Error: ${error.message || "Failed to connect to database"}`);
         } finally {
             setIsProcessing(false);
         }
@@ -83,6 +86,13 @@ export default function CheckoutPage() {
                 <Link href="/store" style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", textDecoration: "none", fontWeight: 600, marginBottom: 24, width: "fit-content" }}>
                     <ArrowLeft size={18} /> Back to Store
                 </Link>
+
+                {errorMsg && (
+                    <div style={{ padding: 16, background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", border: "1px solid #ef4444", borderRadius: 8, marginBottom: 24 }}>
+                        {errorMsg}
+                    </div>
+                )}
+
 
                 <form ref={formRef} onSubmit={handleCheckout} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 32, alignItems: "start" }}>
 

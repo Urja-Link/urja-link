@@ -40,5 +40,16 @@
     "f_contact": "संपर्क",
     "f_about": "हमारे बारे में",
     "f_privacy": "गोपनीयता नीति",
+    "report_location": "स्थान",
+    "report_system_size": "सिस्टम आकार चुनें",
+    "report_ai_recommends": "AI सिफारिश",
+    "report_energy_gen": "ऊर्जा उत्पादन",
+    "report_monthly_gen": "मासिक उत्पादन",
+    "report_savings": "बचत",
+    "report_system_capacity": "सिस्टम क्षमता",
+    "report_install_cost": "कुल स्थापना लागत",
+    "report_net_cost": "आपकी शुद्ध लागत",
+    "report_environmental": "पर्यावरणीय प्रभाव",
+    "report_physics": "भौतिकी पैरामीटर",
     "copy_right": "© ऊर्जा-लिंक 2026. सर्वाधिकार सुरक्षित।"
 }

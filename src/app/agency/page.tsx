@@ -110,7 +110,7 @@ export default function AgencyPage() {
                                 <span style={{ ...S.val, color: "var(--success)" }}>{inst.total_installations.toLocaleString("en-IN")}</span>
                             </div>
                             <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-                                <button style={S.btnPrimary}>Get Quotation</button>
+                                <button style={S.btnPrimary} onClick={() => alert('Quotation engine is currently down for maintenance. Please check back later.')}>Get Quotation</button>
                                 <button style={S.btnSecondary}><Phone size={14} /> Contact</button>
                             </div>
                         </div>

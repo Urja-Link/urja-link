@@ -85,15 +85,17 @@ interface SolarReportPanelProps {
 }
 
 import { formatNumber, formatCurrency, formatPercentage, formatEnergy } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function SolarReportPanel({ data, isLoading, selectedSystem, onSystemChange, coords }: SolarReportPanelProps) {
+    const { t } = useLanguage();
     if (!coords) return null;
 
     return (
         <div className="report-panel glass-card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h2 style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <Sun size={20} color="var(--accent)" /> Solar Potential Report
+                    <Sun size={20} color="var(--accent)" /> {t("report_title")}
                 </h2>
                 {data?.job_id && (
                     <button
@@ -111,7 +113,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
 
             {/* Location */}
             <div style={{ marginBottom: 14 }}>
-                <span className="metric-label" style={{ display: "flex", alignItems: "center", gap: 4 }}><MapPin size={12} /> Location</span>
+                <span className="metric-label" style={{ display: "flex", alignItems: "center", gap: 4 }}><MapPin size={12} /> {t("report_location")}</span>
                 <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 2 }}>
                     {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
                 </p>
@@ -119,7 +121,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
 
             {/* System Size Selector */}
             <div>
-                <span className="metric-label">Select System Size</span>
+                <span className="metric-label">{t("report_system_size")}</span>
                 <div className="system-btn-group">
                     {[3, 5, 10].map((kw) => (
                         <button key={kw} className={`system-btn ${selectedSystem === kw ? "active" : ""}`}
@@ -172,7 +174,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
 
                     {/* AI Recommendation */}
                     <div style={{ textAlign: "center", margin: "14px 0" }}>
-                        <span className="recommendation-badge">AI Recommends: {data.system_capacity_kw} kW System</span>
+                        <span className="recommendation-badge">{t("report_ai_recommends")}: {data.system_capacity_kw} kW</span>
                     </div>
 
                     {/* Energy Generation Breakdown */}
@@ -181,7 +183,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                         background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.15)",
                     }}>
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-                            <Zap size={16} style={{ flexShrink: 0 }} /> Energy Generation
+                            <Zap size={16} style={{ flexShrink: 0 }} /> {t("report_energy_gen")}
                         </h3>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: 8, textAlign: "center" }}>
                             <div>
@@ -246,7 +248,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)",
                         }}>
                             <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--success)", marginBottom: 10, display: "flex", alignItems: "center", gap: 4 }}>
-                                <IndianRupee size={16} style={{ flexShrink: 0 }} /> Savings
+                                <IndianRupee size={16} style={{ flexShrink: 0 }} /> {t("report_savings")}
                             </h3>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: 8, textAlign: "center" }}>
                                 <div>
@@ -273,29 +275,29 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
 
                     {/* Core Metrics */}
                     <div className="metric-row">
-                        <span className="metric-label">System Capacity</span>
+                        <span className="metric-label">{t("report_system_capacity")}</span>
                         <span className="metric-value accent">{formatNumber(data.system_capacity_kw)} kW</span>
                     </div>
                     <div className="metric-row">
-                        <span className="metric-label">Total Installation Cost</span>
+                        <span className="metric-label">{t("report_install_cost")}</span>
                         <span className="metric-value">{formatCurrency(data.total_cost_inr)}</span>
                     </div>
 
                     {/* Subsidy */}
                     <div className="subsidy-section">
-                        <h3 style={{ display: "flex", alignItems: "center", gap: 6 }}><Landmark size={14} style={{ flexShrink: 0 }} /> PM Surya Ghar Subsidy</h3>
+                        <h3 style={{ display: "flex", alignItems: "center", gap: 6 }}><Landmark size={14} style={{ flexShrink: 0 }} /> {t("report_subsidy")}</h3>
                         <div className="metric-row">
-                            <span className="metric-label">Subsidy Amount</span>
+                            <span className="metric-label">{t("report_subsidy")}</span>
                             <span className="metric-value highlight">{formatCurrency(data.subsidy_inr)}</span>
                         </div>
                         <div className="metric-row">
-                            <span className="metric-label">Your Net Cost</span>
+                            <span className="metric-label">{t("report_net_cost")}</span>
                             <span className="metric-value accent">{formatCurrency(data.net_cost_inr)}</span>
                         </div>
                     </div>
 
                     <div className="metric-row">
-                        <span className="metric-label">Payback Period</span>
+                        <span className="metric-label">{t("report_payback")}</span>
                         <span className="metric-value warning">{formatNumber(data.payback_period_years)} years</span>
                     </div>
 
@@ -305,7 +307,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             margin: "14px 0", padding: 12, borderRadius: 10,
                             background: "rgba(34,197,94,0.06)", textAlign: "center",
                         }}>
-                            <span style={{ fontSize: 12, color: "var(--text-muted)", display: "flex", justifyContent: "center", alignItems: "center", gap: 4 }}><Globe size={14} /> Environmental Impact</span>
+                            <span style={{ fontSize: 12, color: "var(--text-muted)", display: "flex", justifyContent: "center", alignItems: "center", gap: 4 }}><Globe size={14} /> {t("report_environmental")}</span>
                             <p style={{ fontSize: 15, fontWeight: 700, color: "var(--success)", marginTop: 4 }}>
                                 {data.savings.co2_reduction_tonnes_lifetime} tonnes CO₂ saved over 25 years
                             </p>
@@ -321,7 +323,7 @@ export default function SolarReportPanel({ data, isLoading, selectedSystem, onSy
                             marginTop: 12, padding: 12, borderRadius: 10,
                             background: "rgba(15,23,42,0.3)", border: "1px dashed var(--card-border)",
                         }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={14} style={{ flexShrink: 0 }} /> Physics Parameters</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={14} style={{ flexShrink: 0 }} /> {t("report_physics")}</span>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8, fontSize: 11 }}>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Sun size={10} color="#f59e0b" style={{ flexShrink: 0 }} /> GHI: <b>{formatNumber(data.physics_metrics.daily_peak_sun_hours)} <span style={{ fontSize: 9 }}>kWh/m²/day</span></b></span>
                                 <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}><Settings size={10} style={{ flexShrink: 0 }} /> PR: <b>{formatPercentage(data.physics_metrics.system_performance_ratio * 100)}</b></span>
