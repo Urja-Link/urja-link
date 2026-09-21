@@ -11,8 +11,6 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  basePath: "/tools/3000",
-
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
