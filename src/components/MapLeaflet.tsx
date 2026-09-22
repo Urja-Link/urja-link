@@ -341,6 +341,24 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
         }
     };
 
+    // AI AUTO-DETECT FLOW
+    const parseWktPolygon = (wkt: string): L.LatLng[] => {
+        try {
+            const cleaned = wkt.replace("POLYGON", "").replace("Z", "").replace(/[()]/g, "").trim();
+            const points = cleaned.split(",").map(pair => {
+                const [lng, lat] = pair.trim().split(/\s+/).map(Number);
+                return L.latLng(lat, lng);
+            });
+            if (points.length > 1 && points[0].equals(points[points.length - 1])) {
+                points.pop();
+            }
+            return points;
+        } catch (e) {
+            console.error("WKT parse error:", e);
+            return [];
+        }
+    };
+
     const handleAiScan = async (latlng: L.LatLng) => {
         setIsAiLoading(true);
         if (mapRef.current) mapRef.current.off("click");
@@ -351,11 +369,21 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
             if (!res.ok) throw new Error("API failed");
             const data = await res.json();
 
-            const syntheticPoints = data.rooftop_polygon.map((p: any) => L.latLng(p.lat, p.lng));
+            let syntheticPoints: L.LatLng[] = [];
+            if (data.rooftop_polygons && data.rooftop_polygons.length > 0) {
+                syntheticPoints = parseWktPolygon(data.rooftop_polygons[0]);
+            } else if (data.rooftop_polygon) {
+                // Fallback for legacy format
+                syntheticPoints = data.rooftop_polygon.map((p: any) => L.latLng(p.lat, p.lng));
+            }
+
+            if (syntheticPoints.length === 0) {
+                throw new Error("No roof detected");
+            }
 
             let obstaclesList: L.LatLng[][] = [];
             if (data.obstacles && Array.isArray(data.obstacles)) {
-                obstaclesList = data.obstacles.map((obs: any[]) => obs.map((p: any) => L.latLng(p.lat, p.lng)));
+                obstaclesList = data.obstacles.map((obsStr: string) => parseWktPolygon(obsStr));
             }
 
             drawPointsRef.current = syntheticPoints;
@@ -393,21 +421,14 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
     };
 
     const toggleAiScanMode = () => {
-        if (isAiScanning) {
-            setIsAiScanning(false);
-            if (mapRef.current) {
-                mapRef.current.off("click");
-                mapRef.current.on("click", defaultClickHandler);
-            }
-            return;
-        }
+        if (isAiLoading) return; // Prevent double clicks
 
+        const targetLatLng = markerPosition ? L.latLng(markerPosition.lat, markerPosition.lng) : L.latLng(center.lat, center.lng);
         setIsDrawing(false);
         setIsAiScanning(true);
-        if (mapRef.current) {
-            mapRef.current.off("click");
-            mapRef.current.on("click", (e: L.LeafletMouseEvent) => handleAiScan(e.latlng));
-        }
+
+        // Execute immediately on the active selection
+        handleAiScan(targetLatLng);
     };
 
     return (
@@ -471,7 +492,7 @@ export default function MapLeaflet({ center, markerPosition, onLocationSelect, o
                         height: "48px"
                     }}
                 >
-                    {isAiLoading ? <><Loader2 size={16} className="lucide-spin" /> Scanning...</> : isAiScanning ? <><CheckCircle size={16} /> Click Roof on Map</> : <><Cpu size={16} /> AI Auto-Detect</>}
+                    {isAiLoading ? <><Loader2 size={16} className="lucide-spin" /> Scanning...</> : <><Cpu size={16} /> AI Auto-Detect</>}
                 </button>
             </div>
 
